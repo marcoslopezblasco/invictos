@@ -20,11 +20,43 @@ export interface PitchNode {
   y: number;
 }
 
+/** Lowercase surname particles kept with the following word (Di María, Van Basten, …). */
+const SURNAME_PARTICLES = new Set([
+  "da",
+  "das",
+  "de",
+  "del",
+  "della",
+  "der",
+  "di",
+  "do",
+  "dos",
+  "du",
+  "el",
+  "la",
+  "las",
+  "le",
+  "los",
+  "van",
+  "von",
+  "y",
+]);
+
+function truncateLabel(label: string, max = 13): string {
+  return label.length > max ? `${label.slice(0, max - 1)}…` : label;
+}
+
 export function shortPlayerName(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  if (parts.length <= 1) return name.length > 13 ? `${name.slice(0, 11)}…` : name;
-  const last = parts[parts.length - 1]!;
-  return last.length > 13 ? `${last.slice(0, 11)}…` : last;
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length <= 1) return truncateLabel(name);
+
+  let start = parts.length - 1;
+  while (start > 0 && SURNAME_PARTICLES.has(parts[start - 1]!.toLowerCase())) {
+    start -= 1;
+  }
+
+  const label = parts.slice(start).join(" ");
+  return truncateLabel(label);
 }
 
 function rowXPositions(count: number): number[] {

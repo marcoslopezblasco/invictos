@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { layoutPlayersOnPitch } from "../pitch-layout";
+import { layoutPlayersOnPitch, shortPlayerName } from "../pitch-layout";
 import type { DraftedPlayer } from "@/types/simulation";
 
 function makeDrafted(
@@ -36,6 +36,19 @@ function makeDrafted(
     },
   };
 }
+
+describe("shortPlayerName", () => {
+  it("keeps compound surnames with particles", () => {
+    expect(shortPlayerName("Ángel Di María")).toBe("Di María");
+    expect(shortPlayerName("José Della Torre")).toBe("Della Torre");
+    expect(shortPlayerName("Marco van Basten")).toBe("van Basten");
+  });
+
+  it("uses a single-word surname when there is no particle", () => {
+    expect(shortPlayerName("Gabriel Batistuta")).toBe("Batistuta");
+    expect(shortPlayerName("Lionel Messi")).toBe("Messi");
+  });
+});
 
 describe("layoutPlayersOnPitch", () => {
   it("places 4-4-2 on four tactical rows", () => {
