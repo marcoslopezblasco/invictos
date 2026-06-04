@@ -55,6 +55,17 @@ After computing base ratings:
 
 **Auto cap:** computed profiles (after all boosts) clamp to **max OVR 96** and **max stat 98**. Only `manual-overrides.json` can assign 97–100 (reserved for a handful of all-time greats).
 
+## Squad structure (simulation)
+
+`calculateBalanceScore` + `buildTeamProfile` penalize impossible XIs (e.g. **1-3-6** with one defender):
+
+- Large negative **balance** subtracted directly from `tournamentPower`
+- Thin back lines reduce **defensiveSecurity** (depth multiplier)
+- Missing GK tanks goalkeeper/defense ratings
+- Match loop adds extra **structurePenalty**; broken squads concede more and score less
+
+A stacked attack line cannot mask a non-existent defense in the tournament sim.
+
 ## Historic simulation mode
 
 `GameMode: "historico"` — card UI same as Classic; tournament faces **real national teams** from the 24-country set only.

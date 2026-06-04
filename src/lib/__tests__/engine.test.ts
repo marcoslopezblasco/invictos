@@ -87,7 +87,36 @@ describe("formations", () => {
     expect(getFormationString(counts)).toBe("4-4-2");
     expect(calculateBalanceScore(counts)).toBeGreaterThan(5);
   });
+
+  it("heavily penalizes 1-3-6 chaos formations", () => {
+    const counts = { GK: 1, DEF: 1, MID: 3, FWD: 6 };
+    expect(getFormationString(counts)).toBe("1-3-6");
+    expect(calculateBalanceScore(counts)).toBeLessThan(-25);
+  });
 });
+
+function buildChaosXI(): DraftedPlayer[] {
+  const roster: Array<[string, Player["position"], Partial<Player["profile"]>]> = [
+    ["gk1", "GK", { defense: 88, overall: 85 }],
+    ["def1", "DEF", { defense: 90, overall: 88 }],
+    ["mid1", "MID", { control: 90, attack: 85 }],
+    ["mid2", "MID", { control: 88 }],
+    ["mid3", "MID", { control: 86 }],
+    ["fwd1", "FWD", { attack: 94 }],
+    ["fwd2", "FWD", { attack: 92 }],
+    ["fwd3", "FWD", { attack: 91 }],
+    ["fwd4", "FWD", { attack: 90 }],
+    ["fwd5", "FWD", { attack: 89 }],
+    ["fwd6", "FWD", { attack: 88 }],
+  ];
+  return roster.map(([id, pos, stats]) => {
+    const player = makePlayer(id, pos, stats);
+    return {
+      player,
+      appearance: makeAppearance(player, "Brazil", 2002),
+    };
+  });
+}
 
 describe("scoring", () => {
   it("builds team profile from 11 players", () => {
@@ -95,6 +124,14 @@ describe("scoring", () => {
     expect(team.formation).toBe("4-4-2");
     expect(team.tournamentPower).toBeGreaterThan(70);
     expect(team.goalkeeperQuality).toBeGreaterThan(80);
+  });
+
+  it("crushes tournament power for structurally broken XIs", () => {
+    const chaos = buildTeamProfile(buildChaosXI());
+    expect(chaos.formation).toBe("1-3-6");
+    expect(chaos.balance).toBeLessThan(-25);
+    expect(chaos.tournamentPower).toBeLessThan(55);
+    expect(chaos.defensiveSecurity).toBeLessThan(55);
   });
 
   it("marginal contribution is higher for GK when team lacks goalkeeper", () => {
@@ -131,6 +168,21 @@ describe("simulation", () => {
 
   it("has 7 stages defined", () => {
     expect(STAGES).toHaveLength(7);
+  });
+
+  it("chaos XI rarely survives the group stage", () => {
+    const chaos = buildChaosXI();
+    let earlyExit = 0;
+    let deepRun = 0;
+    for (let i = 0; i < 40; i++) {
+      const r = simulateTournament(`Chaos FC ${i}`, chaos, "en");
+      if (r.finalStage === "GROUP_1" || r.finalStage === "GROUP_2") {
+        earlyExit++;
+      }
+      if (r.matches.length >= 6) deepRun++;
+    }
+    expect(earlyExit).toBeGreaterThan(20);
+    expect(deepRun).toBeLessThan(8);
   });
 
   it("champion score adds full goal difference on top of base", () => {

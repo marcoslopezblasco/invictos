@@ -55,24 +55,33 @@ function matchOutcome(
   return "clear_loss";
 }
 
+/** Extra goals conceded / fewer scored when the XI is structurally broken. */
+function structuralGoalBias(balance: number): { gf: number; gc: number } {
+  const chaos = Math.max(0, -balance);
+  return { gf: -chaos / 22, gc: chaos / 16 };
+}
+
 function computeGoals(
   team: ReturnType<typeof buildTeamProfile>,
   difficulty: number,
   seed: string,
 ): { gf: number; gc: number } {
+  const bias = structuralGoalBias(team.balance);
   const expectedGF = clamp(
     1 +
       (team.attackPower - difficulty) / 18 +
-      (team.midfieldControl - 75) / 35,
+      (team.midfieldControl - 75) / 35 +
+      bias.gf,
     0,
     5,
   );
   const expectedGC = clamp(
     1 +
       (difficulty - team.defensiveSecurity) / 18 -
-      (team.goalkeeperQuality - 75) / 40,
+      (team.goalkeeperQuality - 75) / 40 +
+      bias.gc,
     0,
-    4,
+    5,
   );
   const gf = clamp(
     deterministicRound(expectedGF, `${seed}-gf`) + goalNoise(seed, "gf"),
@@ -205,8 +214,12 @@ export function simulateTournament(
     if (opponent) usedOpponents.add(opponent.country);
 
     const difficulty = opponent?.difficulty ?? defaultDifficulty;
+    const structurePenalty = Math.max(0, -team.balance) * 1.15;
     const matchScore =
-      team.tournamentPower - difficulty + matchPowerJitter(matchSeed);
+      team.tournamentPower -
+      difficulty +
+      matchPowerJitter(matchSeed) -
+      structurePenalty;
     const outcome = matchOutcome(matchScore);
     const rawGoals = computeGoals(team, difficulty, matchSeed);
 
@@ -361,7 +374,7 @@ function computeFinalScore(
 
   const jitter = hashToUnit(`${seed}-score`);
   let score = min + jitter * (max - min);
-  score += team.balance * 0.2;
+  score += team.balance * 0.35;
 
   if (champion) {
     score += gf - gc;

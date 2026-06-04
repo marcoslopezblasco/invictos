@@ -24,6 +24,15 @@ function byPosition(players: DraftedPlayer[], pos: Player["position"]) {
   return players.filter((p) => p.appearance.position === pos);
 }
 
+/** Scale defensive ratings when the XI has too few defenders. */
+function defenderDepthMultiplier(defCount: number): number {
+  if (defCount >= 4) return 1;
+  if (defCount === 3) return 0.92;
+  if (defCount === 2) return 0.72;
+  if (defCount === 1) return 0.52;
+  return 0.35;
+}
+
 export function buildTeamProfile(players: DraftedPlayer[]): TeamProfile {
   const counts = countPositions(players);
   const fwd = byPosition(players, "FWD");
@@ -45,13 +54,18 @@ export function buildTeamProfile(players: DraftedPlayer[]): TeamProfile {
     teamMentality * 0.1 +
     physicality * 0.05;
 
-  const gkOverall = gk[0]?.player.profile.overall ?? 50;
-  const defensiveSecurity =
+  const hasGk = gk.length > 0;
+  const gkOverall = hasGk ? (gk[0]?.player.profile.overall ?? 50) : 28;
+
+  let defensiveSecurity =
     avg(def.map((p) => p.player.profile.defense)) * 0.4 +
     avg(mid.map((p) => p.player.profile.defense)) * 0.2 +
     gkOverall * 0.25 +
     teamMentality * 0.1 +
     physicality * 0.05;
+
+  defensiveSecurity *= defenderDepthMultiplier(counts.DEF);
+  if (!hasGk) defensiveSecurity *= 0.7;
 
   const midfieldControl =
     avg(mid.map((p) => p.player.profile.control)) * 0.5 +
@@ -67,7 +81,7 @@ export function buildTeamProfile(players: DraftedPlayer[]): TeamProfile {
     defensiveSecurity * 0.28 +
     midfieldControl * 0.24 +
     teamMentality * 0.12 +
-    balance * 0.08;
+    balance;
 
   return {
     attackPower: round2(attackPower),
