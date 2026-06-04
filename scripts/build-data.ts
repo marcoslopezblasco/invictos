@@ -51,6 +51,8 @@ function readCsv(name: string): Record<string, string>[] {
 interface ManualOverride {
   playerId?: string;
   normalizedName?: string;
+  /** Override squad CSV position (e.g. Hierro as defender). */
+  position?: Position;
   profile: PlayerWorldCupProfile;
 }
 
@@ -66,17 +68,39 @@ interface SquadRow {
 function loadOverrides(): {
   byId: Map<string, PlayerWorldCupProfile>;
   byName: Map<string, PlayerWorldCupProfile>;
+  positionById: Map<string, Position>;
+  positionByName: Map<string, Position>;
 } {
   const list = JSON.parse(
     readFileSync(OVERRIDES_PATH, "utf-8"),
   ) as ManualOverride[];
   const byId = new Map<string, PlayerWorldCupProfile>();
   const byName = new Map<string, PlayerWorldCupProfile>();
+  const positionById = new Map<string, Position>();
+  const positionByName = new Map<string, Position>();
   for (const o of list) {
     if (o.playerId) byId.set(o.playerId, o.profile);
     if (o.normalizedName) byName.set(o.normalizedName, o.profile);
+    if (o.position) {
+      if (o.playerId) positionById.set(o.playerId, o.position);
+      if (o.normalizedName) positionByName.set(o.normalizedName, o.position);
+    }
   }
-  return { byId, byName };
+  return { byId, byName, positionById, positionByName };
+}
+
+function resolvePosition(
+  playerId: string,
+  normalizedName: string,
+  squadPosition: Position,
+  positionById: Map<string, Position>,
+  positionByName: Map<string, Position>,
+): Position {
+  return (
+    positionById.get(playerId) ??
+    positionByName.get(normalizedName) ??
+    squadPosition
+  );
 }
 
 function main() {
@@ -168,7 +192,12 @@ function main() {
     if (s.name.length > meta.name.length) meta.name = s.name;
   }
 
-  const { byId: overrideById, byName: overrideByName } = loadOverrides();
+  const {
+    byId: overrideById,
+    byName: overrideByName,
+    positionById,
+    positionByName,
+  } = loadOverrides();
 
   const goalRanking = [...playerMeta.keys()]
     .map((id) => ({ id, goals: goalCount.get(id) ?? 0 }))
@@ -231,12 +260,20 @@ function main() {
 
     profile = { ...profile, goals: career.goals || undefined, matches: career.matchApps || undefined };
 
+    const position = resolvePosition(
+      playerId,
+      meta.normalizedName,
+      meta.position,
+      positionById,
+      positionByName,
+    );
+
     players.push({
       id: playerId,
       name: meta.name,
       normalizedName: meta.normalizedName,
       countries: [...meta.countries].sort(),
-      position: meta.position,
+      position,
       worldCupsPlayed: years,
       profile,
     });
@@ -250,7 +287,13 @@ function main() {
     displayName: s.name,
     displayCountry: s.country,
     displayYear: s.year,
-    position: s.position,
+    position: resolvePosition(
+      s.playerId,
+      s.normalizedName,
+      s.position,
+      positionById,
+      positionByName,
+    ),
   }));
 
   const yearsByCountry = new Map<string, Set<number>>();

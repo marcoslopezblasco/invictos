@@ -12,22 +12,28 @@ export function CountryFlag({
   const meta = getCountryByName(country);
   const code = meta?.flagCode?.trim() || null;
   const flagSrc = meta?.flagSrc;
-  /** 4:3 flag ratio (fi = rectangular; fis = square — we avoid fis). */
+  /** 4:3 for flag-icons; 3:2 for custom flagSrc SVGs/PNGs. */
   const width = size;
-  const height = Math.round((width * 3) / 4);
+  const height = flagSrc
+    ? Math.round((width * 2) / 3)
+    : Math.round((width * 3) / 4);
 
   if (flagSrc) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={flagSrc}
-        alt=""
-        width={width}
-        height={height}
-        className={`inline-block shrink-0 rounded-sm object-cover shadow-sm ${className}`}
+      <span
+        className={`inline-flex shrink-0 items-center justify-center overflow-hidden rounded-sm border border-black/10 bg-white/90 shadow-sm ${className}`}
+        style={{ width, height }}
         role="img"
         aria-label={country}
-      />
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={flagSrc}
+          alt=""
+          className="h-full w-full object-contain"
+          draggable={false}
+        />
+      </span>
     );
   }
 

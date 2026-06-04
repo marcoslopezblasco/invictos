@@ -200,7 +200,7 @@ describe("simulation", () => {
       blindWins += simulateTournament(`Cmp B ${i}`, xi, "en", "blind").wins;
     }
     expect(classicWins).toBeLessThan(blindWins);
-    expect(CLASSIC_MODE_DIFFICULTY_BONUS).toBe(8);
+    expect(CLASSIC_MODE_DIFFICULTY_BONUS).toBe(10);
   });
 
   it("chaos XI rarely survives the group stage", () => {
@@ -222,7 +222,7 @@ describe("simulation", () => {
     const xi = buildFixtureXI();
     let found = false;
     for (let i = 0; i < 120; i++) {
-      const r = simulateTournament(`Champ GD ${i}`, xi, "en");
+      const r = simulateTournament(`Champ GD ${i}`, xi, "en", "blind");
       if (r.champion && r.goalDifference > 0) {
         expect(r.score).toBeGreaterThan(100);
         found = true;

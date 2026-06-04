@@ -13,7 +13,9 @@ import { generateNarrative } from "./narrative";
 import { pickHistoricalOpponent } from "./historical-opponents";
 
 /** Classic sees player tiers — opponents play tougher in the abstract bracket. */
-export const CLASSIC_MODE_DIFFICULTY_BONUS = 8;
+export const CLASSIC_MODE_DIFFICULTY_BONUS = 10;
+/** Hardcore uses the same abstract bracket with a smaller bump (draft constraint is the main lever). */
+export const HARDCORE_MODE_DIFFICULTY_BONUS = 8;
 
 const STAGES: { stage: MatchStage; difficulty: number }[] = [
   { stage: "GROUP_1", difficulty: 72 },
@@ -282,8 +284,10 @@ export function simulateTournament(
     if (opponent) usedOpponents.add(opponent.country);
 
     let difficulty = opponent?.difficulty ?? defaultDifficulty;
-    if (mode === "classic" || mode === "hardcore") {
+    if (mode === "classic") {
       difficulty += CLASSIC_MODE_DIFFICULTY_BONUS;
+    } else if (mode === "hardcore") {
+      difficulty += HARDCORE_MODE_DIFFICULTY_BONUS;
     }
     const structurePenalty = Math.max(0, -team.balance) * 1.15;
     const matchScore =

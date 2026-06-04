@@ -59,7 +59,7 @@ After computing base ratings:
 
 | Mode | Draft info | Rerolls | Simulation |
 |------|------------|--------:|------------|
-| **Classic** | Tiers, mundiales, partidos | 3 | +8 opponent difficulty (abstract bracket) |
+| **Classic** | Tiers, mundiales, partidos | 3 | +10 opponent difficulty (abstract bracket) |
 | **Blind** | Names + positions only | 3 | Base difficulty |
 | **Histórico** | Same as Classic | 3 | Real national teams by phase |
 
