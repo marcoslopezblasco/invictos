@@ -3,7 +3,7 @@ import type { SavedResult } from "@/lib/storage";
 import { t } from "@/lib/i18n";
 
 /** Canonical production URL when sharing from localhost. */
-export const DEFAULT_PUBLIC_SITE_URL = "https://invictos-zeta.vercel.app";
+export const DEFAULT_PUBLIC_SITE_URL = "https://www.invictos.world";
 
 const CAPTION_SUMMARY_MAX = 140;
 

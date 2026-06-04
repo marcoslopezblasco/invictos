@@ -18,9 +18,14 @@ export function RecentResults() {
 
   return (
     <section className="mt-8 w-full max-w-md px-4">
-      <h2 className="mb-3 text-sm font-bold text-[var(--text-muted)]">
-        {t(locale, "recent.title")}
-      </h2>
+      <div className="mb-3">
+        <h2 className="text-sm font-bold text-[var(--text-muted)]">
+          {t(locale, "recent.title")}
+        </h2>
+        <p className="mt-0.5 text-[10px] text-[var(--text-muted)]/80">
+          {t(locale, "recent.localOnly")}
+        </p>
+      </div>
       <ul className="flex flex-col gap-2">
         {results.map((r) => (
           <li key={r.id}>

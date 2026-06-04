@@ -11,10 +11,10 @@ const geist = Geist({
 export const metadata: Metadata = {
   title: "Invictos — Draft a historic XI",
   description:
-    "Draft a historic World Cup XI. Simulate a World Cup. See if you can win it undefeated.",
+    "Draft a historic World Cup XI. Simulate a World Cup. See if you can win it invicto.",
   openGraph: {
     title: "Invictos",
-    description: "Can your XI win the World Cup undefeated?",
+    description: "Can your XI win the World Cup invicto?",
     type: "website",
   },
 };

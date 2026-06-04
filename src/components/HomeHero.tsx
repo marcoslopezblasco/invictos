@@ -2,18 +2,17 @@
 
 import Link from "next/link";
 import { useGame } from "@/context/GameContext";
-import { t } from "@/lib/i18n";
+import { modeLabelKey, t, tFormat } from "@/lib/i18n";
 import { ModeSelector } from "./ModeSelector";
 import { LanguageToggle } from "./LanguageToggle";
 
 export function HomeHero() {
-  const { locale } = useGame();
+  const { locale, mode } = useGame();
 
   return (
     <div className="flex flex-col items-center gap-8 px-4 py-10 text-center">
-      <div className="flex w-full max-w-md items-center justify-between">
+      <div className="flex w-full max-w-md justify-start">
         <LanguageToggle />
-        <span className="text-xs text-[var(--text-muted)]">MVP</span>
       </div>
 
       <div>
@@ -31,7 +30,9 @@ export function HomeHero() {
         href="/play"
         className="w-full max-w-md rounded-2xl bg-[var(--accent)] px-8 py-4 text-lg font-bold text-white shadow-lg transition hover:brightness-110 active:scale-[0.98]"
       >
-        {t(locale, "home.play")}
+        {tFormat(locale, "home.playAs", {
+          mode: t(locale, modeLabelKey(mode)),
+        })}
       </Link>
 
       <Link

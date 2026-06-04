@@ -2,7 +2,7 @@
 
 import { useRef, useMemo } from "react";
 import type { SavedResult } from "@/lib/storage";
-import { t } from "@/lib/i18n";
+import { t, tFormat } from "@/lib/i18n";
 import { draftedFromSavedResult } from "@/lib/result-draft";
 import { FormationPitch } from "./FormationPitch";
 import { buildShareCaption, getPublicSiteUrl } from "@/lib/share";
@@ -37,7 +37,7 @@ function ShareImageCard({
 
       <div className="mt-4 rounded-xl border-2 border-amber-900/25 bg-amber-950/5 py-3 text-center">
         <p className="text-[10px] font-bold uppercase tracking-wider text-amber-900/60">
-          Score
+          {t(locale, "result.score")}
         </p>
         <p className="text-5xl font-black leading-none tabular-nums text-amber-950">
           {result.score}
@@ -46,7 +46,13 @@ function ShareImageCard({
           {t(locale, `badge.${result.badge}`)}
         </p>
         <p className="mt-1 text-[11px] font-bold tabular-nums text-amber-800/90">
-          {tr.wins}W · {tr.draws}D · {tr.losses}L · GF {tr.goalsFor}–{tr.goalsAgainst}
+          {tFormat(locale, "share.statsCompact", {
+            wins: tr.wins,
+            draws: tr.draws,
+            losses: tr.losses,
+            gf: tr.goalsFor,
+            gc: tr.goalsAgainst,
+          })}
         </p>
       </div>
     </div>

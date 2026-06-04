@@ -17,8 +17,11 @@ export function ClientAppShell({ children }: { children: React.ReactNode }) {
 
   if (!locale) {
     return (
-      <div className="flex min-h-screen items-center justify-center text-[var(--text-muted)]">
-        ...
+      <div
+        className="flex min-h-screen items-center justify-center text-[var(--text-muted)]"
+        aria-busy="true"
+      >
+        …
       </div>
     );
   }

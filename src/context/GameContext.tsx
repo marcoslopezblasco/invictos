@@ -22,6 +22,7 @@ import {
   picksToDrafted,
 } from "@/lib/draft";
 import { pickRandomTeamName } from "@/lib/i18n";
+import { getTeamName, setTeamName } from "@/lib/storage";
 import { simulateTournament } from "@/lib/simulation";
 import {
   clearActiveGame,
@@ -84,7 +85,11 @@ export function GameProvider({
   const startGame = useCallback(
     (teamName?: string) => {
       const id = newGameId();
-      const name = teamName?.trim() || pickRandomTeamName(locale);
+      const name =
+        teamName?.trim() ||
+        getTeamName()?.trim() ||
+        pickRandomTeamName(locale);
+      setTeamName(name);
       const state = createInitialGameState(id, name, mode, locale, null);
       setGameState(state);
       setSpinCounter(0);

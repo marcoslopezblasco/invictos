@@ -1,20 +1,11 @@
 "use client";
 
 import { useGame } from "@/context/GameContext";
-import { t } from "@/lib/i18n";
+import { modeLabelKey, t } from "@/lib/i18n";
 import { setSavedMode } from "@/lib/storage";
 import type { GameMode } from "@/types/simulation";
 
 const MODES: GameMode[] = ["classic", "blind", "historico", "hardcore"];
-
-function modeLabelKey(
-  m: GameMode,
-): "home.classic" | "home.blind" | "home.historico" | "home.hardcore" {
-  if (m === "classic") return "home.classic";
-  if (m === "blind") return "home.blind";
-  if (m === "historico") return "home.historico";
-  return "home.hardcore";
-}
 
 function modeDescKey(m: GameMode): string {
   return `home.mode.${m}.desc`;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useGame } from "@/context/GameContext";
 import { loadData, getAppearancesById } from "@/lib/data";
 import {
@@ -22,6 +22,7 @@ import { SpinSlotMachine } from "./SpinSlotMachine";
 
 const POSITION_FILTERS: PositionFilter[] = ["ALL", "GK", "DEF", "MID", "FWD"];
 const SORT_OPTIONS: EligibleSort[] = ["fit", "ovr", "position"];
+const HARDCORE_HINT_KEY = "invictos_hardcore_hint_seen";
 
 function positionFilterLabel(locale: Parameters<typeof t>[0], f: PositionFilter): string {
   if (f === "ALL") return t(locale, "draft.filterAll");
@@ -50,6 +51,8 @@ export function DraftScreen() {
   const appearancesById = useMemo(() => getAppearancesById(), []);
   const [positionFilter, setPositionFilter] = useState<PositionFilter>("ALL");
   const [sortBy, setSortBy] = useState<EligibleSort>("fit");
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [hardcoreHintSeen, setHardcoreHintSeen] = useState(true);
   const [spinAnim, setSpinAnim] = useState<{
     active: boolean;
     target: Spin;
@@ -81,9 +84,23 @@ export function DraftScreen() {
     });
   }, [spin, gameState]);
 
-  if (!gameState?.currentSpin || !spin) return null;
+  const pickNum = (gameState?.picks.length ?? 0) + 1;
 
-  const pickNum = gameState.picks.length + 1;
+  useEffect(() => {
+    setHardcoreHintSeen(
+      typeof sessionStorage !== "undefined" &&
+        Boolean(sessionStorage.getItem(HARDCORE_HINT_KEY)),
+    );
+  }, []);
+
+  useEffect(() => {
+    if (pickNum > 1 && typeof sessionStorage !== "undefined") {
+      sessionStorage.setItem(HARDCORE_HINT_KEY, "1");
+      setHardcoreHintSeen(true);
+    }
+  }, [pickNum]);
+
+  if (!gameState?.currentSpin || !spin) return null;
   const picksLeft = TOTAL_PICKS - gameState.picks.length;
   const counts = getPositionCountsFromPicks(
     gameState.picks,
@@ -92,6 +109,7 @@ export function DraftScreen() {
   );
   const urgency = getPositionUrgency(counts, picksLeft, locale);
   const isRolling = spinAnim?.active ?? false;
+  const showHardcoreHint = isHardcoreMode(mode) && pickNum === 1 && !hardcoreHintSeen;
 
   const drafted = picksToDrafted(
     gameState.picks,
@@ -122,6 +140,12 @@ export function DraftScreen() {
   };
 
   const showSpin = spinAnim ?? { active: false, target: spin, onDone: () => {} };
+  const rerollLabel =
+    gameState.rerollsRemaining <= 0
+      ? t(locale, "draft.noRerolls")
+      : isRolling
+        ? t(locale, "draft.rolling")
+        : t(locale, "draft.reroll");
 
   return (
     <div className="flex flex-col gap-4 px-4 pb-8">
@@ -136,7 +160,7 @@ export function DraftScreen() {
 
       <TeamBuilderPanel gameState={gameState} locale={locale} />
 
-      {isHardcoreMode(mode) && (
+      {showHardcoreHint && (
         <p className="text-center text-[11px] leading-snug text-[var(--text-muted)]">
           {t(locale, "draft.hardcoreHint")}
         </p>
@@ -152,6 +176,7 @@ export function DraftScreen() {
         <SpinSlotMachine
           target={showSpin.target}
           pool={pool}
+          locale={locale}
           active={showSpin.active}
           onComplete={showSpin.onDone}
         />
@@ -159,9 +184,14 @@ export function DraftScreen() {
           type="button"
           disabled={gameState.rerollsRemaining <= 0 || isRolling}
           onClick={handleReroll}
+          title={
+            gameState.rerollsRemaining <= 0
+              ? t(locale, "draft.noRerolls")
+              : undefined
+          }
           className="shrink-0 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] px-4 py-2 text-sm font-semibold disabled:opacity-40"
         >
-          {isRolling ? t(locale, "draft.rolling") : t(locale, "draft.reroll")}
+          {rerollLabel}
         </button>
       </div>
 
@@ -170,85 +200,98 @@ export function DraftScreen() {
           {t(locale, "draft.rolling")}
         </p>
       ) : (
-      <div className="flex flex-col gap-2">
         <div className="flex flex-col gap-2">
-          <span className="text-xs font-bold uppercase tracking-wide text-[var(--text-muted)]">
-            {t(locale, "draft.filter")}
-          </span>
-          <div className="flex flex-wrap gap-1.5">
-            {POSITION_FILTERS.map((f) => (
-              <button
-                key={f}
-                type="button"
-                disabled={isRolling}
-                onClick={() => setPositionFilter(f)}
-                className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
-                  positionFilter === f
-                    ? "bg-[var(--accent)] text-white"
-                    : "border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-muted)]"
-                }`}
-              >
-                {positionFilterLabel(locale, f)}
-              </button>
-            ))}
+          <button
+            type="button"
+            onClick={() => setFiltersOpen((o) => !o)}
+            className="flex min-h-11 items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-xs font-bold uppercase tracking-wide text-[var(--text-muted)]"
+          >
+            {t(locale, "draft.filtersToggle")}
+            <span className="text-[var(--accent-gold)]">{filtersOpen ? "−" : "+"}</span>
+          </button>
+
+          {filtersOpen && (
+            <>
+              <div className="flex flex-col gap-2">
+                <span className="text-xs font-bold uppercase tracking-wide text-[var(--text-muted)]">
+                  {t(locale, "draft.filter")}
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {POSITION_FILTERS.map((f) => (
+                    <button
+                      key={f}
+                      type="button"
+                      disabled={isRolling}
+                      onClick={() => setPositionFilter(f)}
+                      className={`min-h-11 rounded-lg px-3 py-2 text-xs font-bold transition ${
+                        positionFilter === f
+                          ? "bg-[var(--accent)] text-white"
+                          : "border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-muted)]"
+                      }`}
+                    >
+                      {positionFilterLabel(locale, f)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <span className="text-xs font-bold uppercase tracking-wide text-[var(--text-muted)]">
+                  {t(locale, "draft.sort")}
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {SORT_OPTIONS.map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      disabled={isRolling}
+                      onClick={() => setSortBy(s)}
+                      className={`min-h-11 rounded-lg px-3 py-2 text-xs font-bold transition ${
+                        sortBy === s
+                          ? "bg-[var(--accent-gold)] text-black"
+                          : "border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-muted)]"
+                      }`}
+                    >
+                      {sortLabel(locale, s)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+
+          <p className="text-sm font-semibold text-[var(--text-muted)]">
+            {t(locale, "draft.choose")}
+            {displayed.length !== eligible.length && (
+              <span className="ml-1 text-[var(--accent-gold)]">
+                ({displayed.length})
+              </span>
+            )}
+          </p>
+
+          <div className="flex flex-col gap-2">
+            {displayed.length === 0 ? (
+              <p className="rounded-xl border border-dashed border-[var(--border)] px-4 py-6 text-center text-sm text-[var(--text-muted)]">
+                {t(locale, "draft.filterEmpty")}
+              </p>
+            ) : (
+              displayed.map((app) => {
+                const player = indexes.playersById.get(app.playerId);
+                if (!player) return null;
+                return (
+                  <PlayerCard
+                    key={app.id}
+                    appearance={app}
+                    player={player}
+                    mode={mode}
+                    locale={locale}
+                    onSelect={() => selectPlayer(app.id)}
+                  />
+                );
+              })
+            )}
           </div>
         </div>
-
-        <div className="flex flex-col gap-2">
-          <span className="text-xs font-bold uppercase tracking-wide text-[var(--text-muted)]">
-            {t(locale, "draft.sort")}
-          </span>
-          <div className="flex flex-wrap gap-1.5">
-            {SORT_OPTIONS.map((s) => (
-              <button
-                key={s}
-                type="button"
-                disabled={isRolling}
-                onClick={() => setSortBy(s)}
-                className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
-                  sortBy === s
-                    ? "bg-[var(--accent-gold)] text-black"
-                    : "border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-muted)]"
-                }`}
-              >
-                {sortLabel(locale, s)}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <p className="text-sm font-semibold text-[var(--text-muted)]">
-          {t(locale, "draft.choose")}
-          {displayed.length !== eligible.length && (
-            <span className="ml-1 text-[var(--accent-gold)]">
-              ({displayed.length})
-            </span>
-          )}
-        </p>
-
-        <div className="flex flex-col gap-2">
-          {displayed.length === 0 ? (
-            <p className="rounded-xl border border-dashed border-[var(--border)] px-4 py-6 text-center text-sm text-[var(--text-muted)]">
-              —
-            </p>
-          ) : (
-            displayed.map((app) => {
-              const player = indexes.playersById.get(app.playerId);
-              if (!player) return null;
-              return (
-                <PlayerCard
-                  key={app.id}
-                  appearance={app}
-                  player={player}
-                  mode={mode}
-                  locale={locale}
-                  onSelect={() => selectPlayer(app.id)}
-                />
-              );
-            })
-          )}
-        </div>
-      </div>
       )}
     </div>
   );

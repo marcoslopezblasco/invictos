@@ -25,7 +25,7 @@ export default function ReviewPage() {
   if (!gameState || gameState.picks.length < TOTAL_PICKS) {
     return (
       <div className="px-4 py-10 text-center">
-        <p className="text-[var(--text-muted)]">No draft in progress.</p>
+        <p className="text-[var(--text-muted)]">{t(locale, "review.noDraft")}</p>
         <Link href="/play" className="mt-4 inline-block text-[var(--accent)]">
           {t(locale, "home.play")}
         </Link>
@@ -55,18 +55,19 @@ export default function ReviewPage() {
     <div className="flex flex-col gap-6 pb-8">
       <PlayHomeButton locale={locale} />
       <div className="flex flex-col gap-6 px-4">
-      <h1 className="text-xl font-bold">{t(locale, "review.title")}</h1>
-      <TeamSummary drafted={drafted} teamName={gameState.teamName} />
-      {fixturePreview && (
-        <MatchSchedule locale={locale} matches={fixturePreview} preview />
-      )}
-      <button
-        type="button"
-        onClick={handleSimulate}
-        className="rounded-2xl bg-[var(--accent-gold)] py-4 text-lg font-black text-black"
-      >
-        {t(locale, "review.simulate")}
-      </button>
+        <h1 className="text-xl font-bold">{t(locale, "review.title")}</h1>
+        <p className="text-sm text-[var(--text-muted)]">{t(locale, "review.hint")}</p>
+        <TeamSummary drafted={drafted} teamName={gameState.teamName} locale={locale} />
+        {fixturePreview && (
+          <MatchSchedule locale={locale} matches={fixturePreview} preview />
+        )}
+        <button
+          type="button"
+          onClick={handleSimulate}
+          className="rounded-2xl bg-[var(--accent-gold)] py-4 text-lg font-black text-black"
+        >
+          {t(locale, "review.simulate")}
+        </button>
       </div>
     </div>
   );

@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useGame } from "@/context/GameContext";
 import { DraftScreen } from "@/components/DraftScreen";
 import { InitialRollScreen } from "@/components/InitialRollScreen";
 import { PlayHomeButton } from "@/components/PlayHomeButton";
+import { TeamNameScreen } from "@/components/TeamNameScreen";
 import { t } from "@/lib/i18n";
 import { setSavedMode, getActiveGame } from "@/lib/storage";
 import type { GameState } from "@/types/game";
@@ -23,6 +24,7 @@ export default function PlayPage() {
     needsInitialRoll,
   } = useGame();
   const booted = useRef(false);
+  const [awaitingName, setAwaitingName] = useState(false);
 
   useEffect(() => {
     setSavedMode(mode);
@@ -45,9 +47,9 @@ export default function PlayPage() {
       }
     }
 
-    startGame();
     booted.current = true;
-  }, [gameState, restoreGame, startGame]);
+    setAwaitingName(true);
+  }, [gameState, restoreGame]);
 
   useEffect(() => {
     if (isDraftComplete) {
@@ -55,10 +57,25 @@ export default function PlayPage() {
     }
   }, [isDraftComplete, router]);
 
+  if (awaitingName && !gameState) {
+    return (
+      <TeamNameScreen
+        locale={locale}
+        onStart={(teamName) => {
+          setAwaitingName(false);
+          startGame(teamName);
+        }}
+      />
+    );
+  }
+
   if (!gameState) {
     return (
-      <div className="px-4 py-10 text-center text-[var(--text-muted)]">
-        {t(locale, "home.play")}…
+      <div
+        className="px-4 py-10 text-center text-[var(--text-muted)]"
+        aria-busy="true"
+      >
+        {t(locale, "app.loading")}
       </div>
     );
   }

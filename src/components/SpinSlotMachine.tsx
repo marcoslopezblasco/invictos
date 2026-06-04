@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import type { Spin } from "@/types/game";
 import { stableHash } from "@/lib/hash";
+import { getCountryDisplayName } from "@/lib/data";
+import { t } from "@/lib/i18n";
+import type { Language } from "@/types/simulation";
 import { CountryFlag } from "./CountryFlag";
 
 const SPIN_MS = 1900;
@@ -16,12 +19,14 @@ function pickFromPool(pool: Spin[], seed: string): Spin {
 export function SpinSlotMachine({
   target,
   pool,
+  locale,
   active,
   onComplete,
   className = "",
 }: {
   target: Spin;
   pool: Spin[];
+  locale: Language;
   active: boolean;
   onComplete?: () => void;
   className?: string;
@@ -88,10 +93,10 @@ export function SpinSlotMachine({
           landed ? "opacity-100" : "opacity-80"
         }`}
       >
-        {display.country}
+        {getCountryDisplayName(display.country, locale)}
       </span>
       <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-amber-900/50">
-        WC
+        {t(locale, "spin.wcLabel")}
       </span>
       <span
         className={`shrink-0 text-xl font-black tabular-nums leading-none text-amber-900 ${

@@ -3,6 +3,7 @@
 import type { Player, PlayerAppearance } from "@/types/player";
 import type { GameMode, Language } from "@/types/simulation";
 import { CountryFlag } from "./CountryFlag";
+import { getCountryDisplayName } from "@/lib/data";
 import { showsClassicCardStats, tierBadgeClass, tierLabel } from "@/lib/player-display";
 import { t } from "@/lib/i18n";
 
@@ -35,7 +36,7 @@ export function PlayerCard({
           <div className="flex items-center gap-1.5 text-xs font-medium text-amber-900/70">
             <CountryFlag country={appearance.country} size={18} />
             <span>
-              {appearance.country} {appearance.worldCup}
+              {getCountryDisplayName(appearance.country, locale)} {appearance.worldCup}
             </span>
           </div>
           <div className="text-base font-bold leading-tight">{appearance.displayName}</div>

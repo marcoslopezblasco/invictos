@@ -9,6 +9,8 @@ import {
 import type { DraftedPlayer } from "@/types/simulation";
 import { calculateMarginalContribution } from "./scoring";
 import { stableHash } from "./hash";
+import { formatPositionUrgency } from "./i18n";
+import type { Language } from "@/types/simulation";
 
 export interface DataIndexes {
   countries: Country[];
@@ -106,15 +108,12 @@ export function getValidAssignedPositions(
 export function getPositionUrgency(
   counts: PositionCounts,
   picksLeft: number,
-  locale: "es" | "en",
+  locale: Language,
 ): string | null {
   const forced = getForcedPosition(counts, picksLeft);
   if (!forced) return null;
   const need = POSITION_MINIMUMS[forced] - counts[forced];
-  if (locale === "es") {
-    return `Necesitas ${need} ${forced} en ${picksLeft} pick${picksLeft === 1 ? "" : "s"}`;
-  }
-  return `Need ${need} ${forced} in ${picksLeft} pick${picksLeft === 1 ? "" : "s"}`;
+  return formatPositionUrgency(locale, forced, need, picksLeft);
 }
 
 function picksRemaining(gameState: GameState): number {

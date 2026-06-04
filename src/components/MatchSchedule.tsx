@@ -11,7 +11,9 @@ export { getStageLabel } from "@/lib/stages";
 function resultLine(m: MatchResult, locale: Language): string | null {
   const score = `${m.goalsFor}-${m.goalsAgainst}`;
   const penNote =
-    m.advancedOnPenalties || m.eliminatedOnPenalties ? " (pen)" : "";
+    m.advancedOnPenalties || m.eliminatedOnPenalties
+      ? ` (${t(locale, "sim.pen")})`
+      : "";
   const icon = m.advancedOnPenalties
     ? "✓"
     : m.eliminatedOnPenalties
@@ -22,6 +24,16 @@ function resultLine(m: MatchResult, locale: Language): string | null {
           ? "="
           : "✗";
   return `${icon} ${score}${penNote}`;
+}
+
+function resultAria(m: MatchResult, locale: Language): string {
+  const outcome =
+    m.result === "W"
+      ? t(locale, "sim.win")
+      : m.result === "D"
+        ? t(locale, "sim.draw")
+        : t(locale, "sim.loss");
+  return `${outcome} ${m.goalsFor}-${m.goalsAgainst}`;
 }
 
 export function MatchSchedule({
@@ -35,10 +47,8 @@ export function MatchSchedule({
   locale: Language;
   matches: MatchResult[];
   preview?: boolean;
-  /** Tighter rows for results page (stage + opponent + score). */
   compact?: boolean;
   showHeading?: boolean;
-  /** Classic/Blind: stage + score only. */
   abstract?: boolean;
 }) {
   return (
@@ -55,6 +65,7 @@ export function MatchSchedule({
           : null;
         const year = m.opponentWorldCup;
         const result = preview ? null : resultLine(m, locale);
+        const resultLabel = preview ? null : resultAria(m, locale);
         const label = getStageLabel(locale, m.stage);
 
         if (compact && abstract) {
@@ -65,7 +76,12 @@ export function MatchSchedule({
             >
               <span className="font-bold text-[var(--accent-gold)]">{label}</span>
               {result && (
-                <span className="shrink-0 font-mono font-bold">{result}</span>
+                <span
+                  className="shrink-0 font-mono font-bold"
+                  aria-label={resultLabel ?? undefined}
+                >
+                  {result}
+                </span>
               )}
             </div>
           );
@@ -97,7 +113,12 @@ export function MatchSchedule({
                 </div>
               </div>
               {result && (
-                <span className="shrink-0 font-mono text-sm font-bold">{result}</span>
+                <span
+                  className="shrink-0 font-mono text-sm font-bold"
+                  aria-label={resultLabel ?? undefined}
+                >
+                  {result}
+                </span>
               )}
             </div>
           );
@@ -128,12 +149,22 @@ export function MatchSchedule({
                   </span>
                 </div>
                 {result && (
-                  <span className="shrink-0 font-mono text-sm font-bold">{result}</span>
+                  <span
+                    className="shrink-0 font-mono text-sm font-bold"
+                    aria-label={resultLabel ?? undefined}
+                  >
+                    {result}
+                  </span>
                 )}
               </div>
             ) : (
               result && (
-                <div className="mt-1 text-right font-mono text-sm font-bold">{result}</div>
+                <div
+                  className="mt-1 text-right font-mono text-sm font-bold"
+                  aria-label={resultLabel ?? undefined}
+                >
+                  {result}
+                </div>
               )
             )}
           </div>
