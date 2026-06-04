@@ -90,7 +90,7 @@ export function SpinSlotMachine({
       >
         {display.country}
       </span>
-      <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-amber-900/50">
+      <span className="shrink-0 text-[18px] font-bold uppercase tracking-wider text-amber-900/50">
         WC
       </span>
       <span

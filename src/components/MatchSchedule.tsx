@@ -78,11 +78,11 @@ export function MatchSchedule({
               className="flex items-center justify-between gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2"
             >
               <div className="min-w-0 flex-1">
-                <div className="text-[10px] font-bold uppercase tracking-wide text-[var(--accent-gold)]">
+                <div className="text-[20px] font-bold uppercase tracking-wide text-[var(--accent-gold)]">
                   {label}
                 </div>
                 <div className="mt-0.5 flex min-w-0 items-center gap-1.5">
-                  <span className="text-[10px] font-semibold text-[var(--text-muted)]">
+                  <span className="text-[20px] font-semibold text-[var(--text-muted)]">
                     {t(locale, "sim.vs")}
                   </span>
                   <CountryFlag country={opponent!} size={18} />
@@ -108,7 +108,7 @@ export function MatchSchedule({
             key={m.stage}
             className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2.5"
           >
-            <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+            <div className="text-[20px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
               {label}
             </div>
             {displayName ? (

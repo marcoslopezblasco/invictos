@@ -45,7 +45,7 @@ export function InitialRollScreen() {
                 : t(locale, "home.classic")}
         </p>
         {isHardcoreMode(mode) && (
-          <p className="mt-2 text-[11px] leading-snug text-[var(--text-muted)]">
+          <p className="mt-2 text-[22px] leading-snug text-[var(--text-muted)]">
             {t(locale, "draft.hardcoreHint")}
           </p>
         )}

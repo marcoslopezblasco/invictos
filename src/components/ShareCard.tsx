@@ -21,7 +21,7 @@ function ShareImageCard({
 
   return (
     <div className="paper-texture w-[360px] rounded-2xl border-2 border-amber-800/50 p-5 text-amber-950 shadow-xl">
-      <div className="text-center text-[10px] font-bold tracking-[0.2em] text-amber-900/55">
+      <div className="text-center text-[20px] font-bold tracking-[0.2em] text-amber-900/55">
         INVICTOS
       </div>
       <h3 className="mt-1 text-center text-xl font-black leading-tight">
@@ -36,7 +36,7 @@ function ShareImageCard({
       </div>
 
       <div className="mt-4 rounded-xl border-2 border-amber-900/25 bg-amber-950/5 py-3 text-center">
-        <p className="text-[10px] font-bold uppercase tracking-wider text-amber-900/60">
+        <p className="text-[20px] font-bold uppercase tracking-wider text-amber-900/60">
           Score
         </p>
         <p className="text-5xl font-black leading-none tabular-nums text-amber-950">
@@ -45,7 +45,7 @@ function ShareImageCard({
         <p className="mt-2 text-sm font-black text-amber-900">
           {t(locale, `badge.${result.badge}`)}
         </p>
-        <p className="mt-1 text-[11px] font-bold tabular-nums text-amber-800/90">
+        <p className="mt-1 text-[22px] font-bold tabular-nums text-amber-800/90">
           {tr.wins}W · {tr.draws}D · {tr.losses}L · GF {tr.goalsFor}–{tr.goalsAgainst}
         </p>
       </div>

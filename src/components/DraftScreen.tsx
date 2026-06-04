@@ -137,7 +137,7 @@ export function DraftScreen() {
       <TeamBuilderPanel gameState={gameState} locale={locale} />
 
       {isHardcoreMode(mode) && (
-        <p className="text-center text-[11px] leading-snug text-[var(--text-muted)]">
+        <p className="text-center text-[22px] leading-snug text-[var(--text-muted)]">
           {t(locale, "draft.hardcoreHint")}
         </p>
       )}

@@ -25,7 +25,7 @@ export function PositionSlots({
           key={key}
           className="flex min-w-0 flex-1 items-center justify-center gap-1 rounded-md border border-[var(--border)] bg-[var(--bg-card)] px-1.5 py-1"
         >
-          <span className="text-[10px] font-bold text-[var(--text-muted)]">
+          <span className="text-[20px] font-bold text-[var(--text-muted)]">
             {t(locale, labelKey)}
           </span>
           <span className="text-sm font-black tabular-nums leading-none text-[var(--accent-gold)]">

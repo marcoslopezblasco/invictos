@@ -45,14 +45,14 @@ export function PlayerCard({
         </div>
         {showStats && (
           <div
-            className={`shrink-0 rounded-lg px-2 py-1 text-center text-[10px] font-black uppercase tracking-wide ${tierBadgeClass(p.overall)}`}
+            className={`shrink-0 rounded-lg px-2 py-1 text-center text-[20px] font-black uppercase tracking-wide ${tierBadgeClass(p.overall)}`}
           >
             {tierLabel(locale, p.overall)}
           </div>
         )}
       </div>
       {showStats && (
-        <div className="mt-2 grid grid-cols-2 gap-2 text-[10px] font-semibold">
+        <div className="mt-2 grid grid-cols-2 gap-2 text-[20px] font-semibold">
           <div className="rounded bg-amber-900/8 px-2 py-1">
             <div className="text-amber-900/50">{t(locale, "card.worldCups")}</div>
             <div className="text-sm font-black text-amber-950">{worldCups}</div>

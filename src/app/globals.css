@@ -19,6 +19,11 @@
   --font-mono: var(--font-super-dario), ui-monospace, monospace;
 }
 
+html {
+  /* 200% root: doubles all rem-based Tailwind text (text-sm, text-xl, etc.) */
+  font-size: 200%;
+}
+
 body {
   background: var(--bg);
   color: var(--text);
