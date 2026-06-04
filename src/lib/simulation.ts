@@ -29,6 +29,18 @@ function deterministicRound(n: number, seed: string): number {
   return n + frac >= 0.5 ? Math.ceil(n) : Math.floor(n);
 }
 
+/** ±8 swing on effective strength per match (deterministic from seed). */
+function matchPowerJitter(seed: string): number {
+  return (hashToUnit(`${seed}-pwr`) - 0.5) * 16;
+}
+
+function goalNoise(seed: string, key: "gf" | "gc"): number {
+  const u = hashToUnit(`${seed}-${key}n`);
+  if (u < 0.33) return -1;
+  if (u > 0.66) return 1;
+  return 0;
+}
+
 function matchOutcome(
   matchScore: number,
 ): "clear_win" | "win" | "narrow_win" | "draw" | "narrow_loss" | "loss" | "clear_loss" {
@@ -60,10 +72,17 @@ function computeGoals(
     0,
     4,
   );
-  return {
-    gf: deterministicRound(expectedGF, `${seed}-gf`),
-    gc: deterministicRound(expectedGC, `${seed}-gc`),
-  };
+  const gf = clamp(
+    deterministicRound(expectedGF, `${seed}-gf`) + goalNoise(seed, "gf"),
+    0,
+    6,
+  );
+  const gc = clamp(
+    deterministicRound(expectedGC, `${seed}-gc`) + goalNoise(seed, "gc"),
+    0,
+    5,
+  );
+  return { gf, gc };
 }
 
 function isKnockoutStage(stage: MatchStage): boolean {
@@ -149,9 +168,10 @@ export function simulateTournament(
   for (const { stage, difficulty } of STAGES) {
     if (eliminated) break;
 
-    const matchScore = team.tournamentPower - difficulty;
-    const outcome = matchOutcome(matchScore);
     const matchSeed = `${seed}-${stage}`;
+    const matchScore =
+      team.tournamentPower - difficulty + matchPowerJitter(matchSeed);
+    const outcome = matchOutcome(matchScore);
     const rawGoals = computeGoals(team, difficulty, matchSeed);
 
     let result: MatchResult["result"] = "D";
@@ -302,8 +322,15 @@ function computeFinalScore(
 
   const jitter = hashToUnit(`${seed}-score`);
   let score = min + jitter * (max - min);
-  score += (gf - gc) * 0.3 + team.balance * 0.2;
-  return Math.round(clamp(score, min, max === 100 ? 100 : max + 2));
+  score += team.balance * 0.2;
+
+  if (champion) {
+    score += gf - gc;
+    return Math.round(Math.max(score, min));
+  }
+
+  score += (gf - gc) * 0.3;
+  return Math.round(clamp(score, min, max + 2));
 }
 
 /** Exposed for tests */

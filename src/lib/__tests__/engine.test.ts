@@ -129,6 +129,20 @@ describe("simulation", () => {
     expect(STAGES).toHaveLength(7);
   });
 
+  it("champion score adds full goal difference on top of base", () => {
+    const xi = buildFixtureXI();
+    let found = false;
+    for (let i = 0; i < 120; i++) {
+      const r = simulateTournament(`Champ GD ${i}`, xi, "en");
+      if (r.champion && r.goalDifference > 0) {
+        expect(r.score).toBeGreaterThan(100);
+        found = true;
+        break;
+      }
+    }
+    expect(found).toBe(true);
+  });
+
   it("scorelines always match result (no 5-2 penalty loss)", () => {
     const xi = buildFixtureXI();
     for (let i = 0; i < 80; i++) {
