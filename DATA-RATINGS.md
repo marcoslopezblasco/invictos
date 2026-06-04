@@ -62,6 +62,7 @@ After computing base ratings:
 - Data: `src/data/tournament-pools.json` (built from `squads.csv` + `player_appearances.csv`)
 - **Group** (3 matches): random from any team that ever played a World Cup group stage
 - **R16 / QF / SF / FINAL**: random from teams that ever reached that round (any edition; cross-era in one run)
+- Each fixture also picks a **World Cup year** for that opponent at that stage (from historical data)
 - Opponent strength: country `tier` + stage modifier → `opponentDifficulty`
 - No duplicate opponent in the same tournament run
 

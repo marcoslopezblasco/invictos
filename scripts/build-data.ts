@@ -281,7 +281,7 @@ function main() {
       JSON.stringify(pools, null, 2),
     );
     console.log(
-      `Historical pools: group ${pools.group.length}, R16 ${pools.R16.length}, QF ${pools.QF.length}, SF ${pools.SF.length}, FINAL ${pools.FINAL.length}`,
+      `Historical pools: group ${Object.keys(pools.group).length}, R16 ${Object.keys(pools.R16).length}, FINAL ${Object.keys(pools.FINAL).length}`,
     );
   }
 

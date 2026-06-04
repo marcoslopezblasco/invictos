@@ -47,7 +47,7 @@ export function ShareCard({ result }: { result: SavedResult }) {
             .filter((m) => m.opponentCountry)
             .map(
               (m) =>
-                `${getStageLabel(locale, m.stage)}: ${getCountryDisplayName(m.opponentCountry!, locale)} ${m.goalsFor}-${m.goalsAgainst}`,
+                `${getStageLabel(locale, m.stage)}: ${getCountryDisplayName(m.opponentCountry!, locale)}${m.opponentWorldCup ? ` ${m.opponentWorldCup}` : ""} ${m.goalsFor}-${m.goalsAgainst}`,
             )
         : []),
       t(locale, "share.cta"),
@@ -90,6 +90,7 @@ export function ShareCard({ result }: { result: SavedResult }) {
                   <span>
                     {getStageLabel(locale, m.stage)} vs{" "}
                     {getCountryDisplayName(m.opponentCountry!, locale)}
+                    {m.opponentWorldCup ? ` ${m.opponentWorldCup}` : ""}
                   </span>
                   <span className="font-mono">
                     {m.goalsFor}-{m.goalsAgainst}

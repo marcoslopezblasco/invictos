@@ -1,16 +1,23 @@
 import { readFileSync } from "fs";
 import { join } from "path";
 import { parse } from "csv-parse/sync";
-import { canonicalTeamName, COUNTRIES } from "./constants";
+import {
+  canonicalTeamName,
+  COUNTRIES,
+  parseTournamentYear,
+} from "./constants";
 
 export type HistoricalPoolStage = "group" | "R16" | "QF" | "SF" | "FINAL";
 
+/** Country name → World Cup years they reached that stage (sorted). */
+export type StagePool = Record<string, number[]>;
+
 export interface TournamentPools {
-  group: string[];
-  R16: string[];
-  QF: string[];
-  SF: string[];
-  FINAL: string[];
+  group: StagePool;
+  R16: StagePool;
+  QF: StagePool;
+  SF: StagePool;
+  FINAL: StagePool;
 }
 
 function mapStage(stageName: string): HistoricalPoolStage | null {
@@ -23,58 +30,82 @@ function mapStage(stageName: string): HistoricalPoolStage | null {
   return null;
 }
 
+function addYear(
+  pools: Record<HistoricalPoolStage, Map<string, Set<number>>>,
+  stage: HistoricalPoolStage,
+  country: string,
+  year: number,
+): void {
+  const byCountry = pools[stage].get(country) ?? new Set<number>();
+  byCountry.add(year);
+  pools[stage].set(country, byCountry);
+}
+
+function finalize(pool: Map<string, Set<number>>): StagePool {
+  const out: StagePool = {};
+  for (const [country, years] of pool) {
+    out[country] = [...years].sort((a, b) => a - b);
+  }
+  return out;
+}
+
 export function buildTournamentPools(rawDir: string): TournamentPools {
-  const group = new Set<string>();
-  const R16 = new Set<string>();
-  const QF = new Set<string>();
-  const SF = new Set<string>();
-  const FINAL = new Set<string>();
+  const maps: Record<HistoricalPoolStage, Map<string, Set<number>>> = {
+    group: new Map(),
+    R16: new Map(),
+    QF: new Map(),
+    SF: new Map(),
+    FINAL: new Map(),
+  };
 
   const squadsPath = join(rawDir, "squads.csv");
   const squads = parse(readFileSync(squadsPath, "utf-8"), {
     columns: true,
     skip_empty_lines: true,
-  }) as { team_name: string }[];
+  }) as { team_name: string; tournament_name: string }[];
 
   for (const row of squads) {
     const name = canonicalTeamName(row.team_name);
-    if (name) group.add(name);
+    const year = parseTournamentYear(row.tournament_name);
+    if (name && year) addYear(maps, "group", name, year);
   }
 
   const appsPath = join(rawDir, "player_appearances.csv");
   const apps = parse(readFileSync(appsPath, "utf-8"), {
     columns: true,
     skip_empty_lines: true,
-  }) as { team_name: string; stage_name: string }[];
+  }) as {
+    team_name: string;
+    stage_name: string;
+    tournament_name: string;
+  }[];
 
   for (const row of apps) {
     const name = canonicalTeamName(row.team_name);
-    if (!name) continue;
+    const year = parseTournamentYear(row.tournament_name);
     const pool = mapStage(row.stage_name);
-    if (!pool) continue;
-    if (pool === "group") group.add(name);
-    else if (pool === "R16") R16.add(name);
-    else if (pool === "QF") QF.add(name);
-    else if (pool === "SF") SF.add(name);
-    else FINAL.add(name);
+    if (!name || !year || !pool) continue;
+    addYear(maps, pool, name, year);
+    if (pool !== "group") addYear(maps, "group", name, year);
   }
-
-  const sort = (s: Set<string>) => [...s].sort((a, b) => a.localeCompare(b));
-
-  const pools: TournamentPools = {
-    group: sort(group),
-    R16: sort(R16),
-    QF: sort(QF),
-    SF: sort(SF),
-    FINAL: sort(FINAL),
-  };
 
   for (const c of COUNTRIES) {
-    if (c.worldCups.length > 0 && !pools.group.includes(c.name)) {
-      pools.group.push(c.name);
+    for (const year of c.worldCups) {
+      if (!maps.group.has(c.name)) {
+        addYear(maps, "group", c.name, year);
+      }
     }
   }
-  pools.group.sort((a, b) => a.localeCompare(b));
 
-  return pools;
+  return {
+    group: finalize(maps.group),
+    R16: finalize(maps.R16),
+    QF: finalize(maps.QF),
+    SF: finalize(maps.SF),
+    FINAL: finalize(maps.FINAL),
+  };
+}
+
+export function poolCountries(pool: StagePool): string[] {
+  return Object.keys(pool).sort((a, b) => a.localeCompare(b));
 }

@@ -65,6 +65,7 @@ export function MatchSchedule({
         const displayName = opponent
           ? getCountryDisplayName(opponent, locale)
           : null;
+        const year = m.opponentWorldCup;
         const result = preview ? null : resultLine(m, locale);
 
         return (
@@ -82,7 +83,14 @@ export function MatchSchedule({
                     {t(locale, "sim.vs")}
                   </span>
                   <CountryFlag country={opponent!} size={22} />
-                  <span className="truncate text-base font-black">{displayName}</span>
+                  <span className="min-w-0 truncate">
+                    <span className="text-base font-black">{displayName}</span>
+                    {year != null && (
+                      <span className="ml-1.5 text-sm font-bold tabular-nums text-[var(--accent-gold)]">
+                        {year}
+                      </span>
+                    )}
+                  </span>
                 </div>
                 {result && (
                   <span className="shrink-0 font-mono text-sm font-bold">{result}</span>
@@ -108,12 +116,14 @@ export function fixturesToPreviewMatches(
   fixtures: {
     stage: MatchStage;
     opponentCountry: string;
+    opponentWorldCup: number;
     opponentFlagCode: string | null;
   }[],
 ): MatchResult[] {
   return fixtures.map((f) => ({
     stage: f.stage,
     opponentCountry: f.opponentCountry,
+    opponentWorldCup: f.opponentWorldCup,
     opponentFlagCode: f.opponentFlagCode,
     opponentDifficulty: 0,
     goalsFor: 0,

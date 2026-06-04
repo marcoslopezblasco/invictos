@@ -43,12 +43,13 @@ function loadJson<T>(file: string): T {
 const players = z.array(PlayerSchema).parse(loadJson("players.json"));
 const appearances = z.array(AppearanceSchema).parse(loadJson("appearances.json"));
 const countries = loadJson<Array<{ name: string; worldCups: number[] }>>("countries.json");
+const stagePoolSchema = z.record(z.string(), z.array(z.number()).min(1));
 const poolsSchema = z.object({
-  group: z.array(z.string()).min(1),
-  R16: z.array(z.string()).min(1),
-  QF: z.array(z.string()).min(1),
-  SF: z.array(z.string()).min(1),
-  FINAL: z.array(z.string()).min(1),
+  group: stagePoolSchema,
+  R16: stagePoolSchema,
+  QF: stagePoolSchema,
+  SF: stagePoolSchema,
+  FINAL: stagePoolSchema,
 });
 const pools = poolsSchema.parse(loadJson("tournament-pools.json"));
 
@@ -98,8 +99,11 @@ for (const country of countries) {
 }
 
 const countryNames = new Set(countries.map((c) => c.name));
-for (const [stage, list] of Object.entries(pools) as [string, string[]][]) {
-  for (const team of list) {
+for (const [stage, pool] of Object.entries(pools) as [
+  string,
+  Record<string, number[]>,
+][]) {
+  for (const team of Object.keys(pool)) {
     if (!countryNames.has(team)) {
       console.error(`FAIL: pool ${stage} has unknown country "${team}"`);
       errors++;
@@ -111,7 +115,7 @@ console.log(`Players: ${players.length}`);
 console.log(`Appearances: ${appearances.length}`);
 console.log(`Country-Cup combos: ${comboCounts.size}`);
 console.log(
-  `Historical pools: group ${pools.group.length}, R16 ${pools.R16.length}, FINAL ${pools.FINAL.length}`,
+  `Historical pools: group ${Object.keys(pools.group).length}, R16 ${Object.keys(pools.R16).length}, FINAL ${Object.keys(pools.FINAL).length}`,
 );
 
 if (appearances.length < 600) {

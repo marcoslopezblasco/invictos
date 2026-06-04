@@ -4,16 +4,19 @@ import { stableHash } from "./hash";
 import { getCountries, getCountryByName } from "./data";
 import poolsJson from "@/data/tournament-pools.json";
 
+export type StagePool = Record<string, number[]>;
+
 export interface TournamentPools {
-  group: string[];
-  R16: string[];
-  QF: string[];
-  SF: string[];
-  FINAL: string[];
+  group: StagePool;
+  R16: StagePool;
+  QF: StagePool;
+  SF: StagePool;
+  FINAL: StagePool;
 }
 
 export interface HistoricalOpponent {
   country: string;
+  worldCup: number;
   flagCode: string | null;
   tier: 1 | 2 | 3;
   difficulty: number;
@@ -61,22 +64,46 @@ function pickFromList(list: string[], seed: string, used: Set<string>): string {
   return pool[stableHash(seed) % pool.length]!;
 }
 
+function pickYear(years: number[], seed: string): number {
+  if (years.length === 0) return 1970;
+  return years[stableHash(`${seed}-year`) % years.length]!;
+}
+
+function getStagePool(stage: MatchStage): StagePool {
+  const key = STAGE_POOL_KEY[stage];
+  const pool = POOLS[key];
+  if (Object.keys(pool).length > 0) return pool;
+  return POOLS.group;
+}
+
 export function pickHistoricalOpponent(
   stage: MatchStage,
   matchSeed: string,
   usedCountries: Set<string>,
 ): HistoricalOpponent {
-  const key = STAGE_POOL_KEY[stage];
-  let list = POOLS[key];
-  if (list.length === 0) {
-    list = POOLS.group.length > 0 ? POOLS.group : getCountries().map((c) => c.name);
-  }
+  const stagePool = getStagePool(stage);
+  const countries = Object.keys(stagePool).sort((a, b) => a.localeCompare(b));
+  const fallbackList =
+    countries.length > 0
+      ? countries
+      : getCountries().map((c) => c.name);
 
-  const countryName = pickFromList(list, `${matchSeed}-opp`, usedCountries);
+  const countryName = pickFromList(
+    fallbackList,
+    `${matchSeed}-opp`,
+    usedCountries,
+  );
   const country = getCountryByName(countryName) ?? getCountries()[0]!;
+  const years =
+    stagePool[countryName] ??
+    POOLS.group[countryName] ??
+    country.worldCups ??
+    [1970];
+  const worldCup = pickYear(years, matchSeed);
 
   return {
     country: country.name,
+    worldCup,
     flagCode: country.flagCode,
     tier: country.tier,
     difficulty: difficultyFor(country, stage),
@@ -85,4 +112,10 @@ export function pickHistoricalOpponent(
 
 export function getTournamentPools(): TournamentPools {
   return POOLS;
+}
+
+export function poolCountriesForStage(
+  stage: keyof TournamentPools,
+): string[] {
+  return Object.keys(POOLS[stage]).sort((a, b) => a.localeCompare(b));
 }

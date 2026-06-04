@@ -146,7 +146,12 @@ function resolvePenalties(
 export function buildHistoricalFixtures(
   teamName: string,
   drafted: DraftedPlayer[],
-): { stage: MatchStage; opponentCountry: string; opponentFlagCode: string | null }[] {
+): {
+  stage: MatchStage;
+  opponentCountry: string;
+  opponentWorldCup: number;
+  opponentFlagCode: string | null;
+}[] {
   const seed = getTeamSeed(teamName, drafted);
   const used = new Set<string>();
   return STAGES.map(({ stage }) => {
@@ -156,6 +161,7 @@ export function buildHistoricalFixtures(
     return {
       stage,
       opponentCountry: opponent.country,
+      opponentWorldCup: opponent.worldCup,
       opponentFlagCode: opponent.flagCode,
     };
   });
@@ -234,6 +240,7 @@ export function simulateTournament(
       stage,
       opponentDifficulty: difficulty,
       opponentCountry: opponent?.country,
+      opponentWorldCup: opponent?.worldCup,
       opponentFlagCode: opponent?.flagCode,
       goalsFor: goalsForMatch,
       goalsAgainst: goalsAgainstMatch,

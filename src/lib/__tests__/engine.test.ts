@@ -4,7 +4,10 @@ import type { DraftedPlayer } from "@/types/simulation";
 import { getFormationString, calculateBalanceScore } from "../formations";
 import { buildTeamProfile, calculateMarginalContribution } from "../scoring";
 import { simulateTournament, simulateMatchScore, STAGES } from "../simulation";
-import { getTournamentPools } from "../historical-opponents";
+import {
+  getTournamentPools,
+  poolCountriesForStage,
+} from "../historical-opponents";
 import {
   getPositionCountsFromPicks,
   generateSpin,
@@ -151,12 +154,15 @@ describe("simulation", () => {
     expect(result.matches.length).toBeGreaterThan(0);
     for (const m of result.matches) {
       expect(m.opponentCountry).toBeTruthy();
+      expect(m.opponentWorldCup).toBeGreaterThan(1900);
       const key =
         m.stage === "GROUP_1" || m.stage === "GROUP_2" || m.stage === "GROUP_3"
           ? "group"
           : m.stage;
-      expect(pools[key as keyof typeof pools]).toContain(m.opponentCountry);
+      const stagePool = pools[key as keyof typeof pools];
+      expect(stagePool[m.opponentCountry!]).toContain(m.opponentWorldCup);
     }
+    expect(poolCountriesForStage("FINAL").length).toBeGreaterThan(0);
     const opponents = result.matches.map((m) => m.opponentCountry);
     expect(new Set(opponents).size).toBe(opponents.length);
   });
