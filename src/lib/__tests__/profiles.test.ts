@@ -54,7 +54,8 @@ describe("applyLegendBoost", () => {
       overall: 70,
     };
     const boosted = applyLegendBoost(base, "elite", "FWD");
-    expect(boosted.overall).toBeGreaterThanOrEqual(88);
+    expect(boosted.overall).toBeGreaterThanOrEqual(84);
+    expect(boosted.overall).toBeLessThanOrEqual(96);
     expect(boosted.attack).toBeGreaterThan(boosted.defense);
     expect(boosted.control).not.toBe(boosted.attack);
   });

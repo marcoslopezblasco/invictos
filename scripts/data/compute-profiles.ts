@@ -19,8 +19,16 @@ export interface CareerAgg {
   starterApps: number;
 }
 
-function clamp(n: number, min = 1, max = 100): number {
+/** Hard cap for auto-generated stats (manual overrides may go higher). */
+export const MAX_AUTO_STAT = 98;
+export const MAX_AUTO_OVERALL = 96;
+
+function clamp(n: number, min = 1, max = MAX_AUTO_STAT): number {
   return Math.max(min, Math.min(max, Math.round(n)));
+}
+
+function clampOverall(n: number): number {
+  return Math.max(1, Math.min(MAX_AUTO_OVERALL, Math.round(n)));
 }
 
 export function eraMultiplierFromYears(years: number[]): number {
@@ -96,7 +104,7 @@ export function computeProfileFromCareer(
     control: clamp(control),
     mentality: clamp(mentality),
     physical: clamp(physical),
-    overall: clamp(overall),
+    overall: clampOverall(overall),
     goals: goals || undefined,
     matches: matchApps || undefined,
   };
@@ -155,7 +163,7 @@ export function applyVeteranBoost(
     control: clamp(attrs.control),
     mentality: clamp(attrs.mentality),
     physical: clamp(attrs.physical),
-    overall: clamp(weightedOverall(position, attrs)),
+    overall: clampOverall(weightedOverall(position, attrs)),
     goals: profile.goals,
     assists: profile.assists,
     matches: profile.matches,
@@ -168,8 +176,8 @@ export function applyLegendBoost(
   tier: "elite" | "star" | "notable",
   position: Position,
 ): PlayerWorldCupProfile {
-  const mul = tier === "elite" ? 1.08 : tier === "star" ? 1.04 : 1.02;
-  const overallFloor = tier === "elite" ? 88 : tier === "star" ? 82 : 78;
+  const mul = tier === "elite" ? 1.05 : tier === "star" ? 1.03 : 1.015;
+  const overallFloor = tier === "elite" ? 84 : tier === "star" ? 78 : 74;
 
   const attrs = {
     attack: profile.attack * mul,
@@ -196,7 +204,7 @@ export function applyLegendBoost(
     control: clamp(attrs.control),
     mentality: clamp(attrs.mentality),
     physical: clamp(attrs.physical),
-    overall: clamp(overall),
+    overall: clampOverall(overall),
     goals: profile.goals,
     assists: profile.assists,
     matches: profile.matches,

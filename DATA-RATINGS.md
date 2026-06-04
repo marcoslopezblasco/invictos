@@ -51,7 +51,13 @@ After computing base ratings:
 | Star | Next 120 | Next 120 apps |
 | Notable | Next 100 | Next 100 apps |
 
-`applyLegendBoost` preserves position stat shape (union of both tracks).
+`applyLegendBoost` preserves position stat shape (union of both tracks). Elite = ×1.05 with OVR floor 84; star = ×1.03 / 78; notable = ×1.015 / 74.
+
+**Auto cap:** computed profiles (after all boosts) clamp to **max OVR 96** and **max stat 98**. Only `manual-overrides.json` can assign 97–100 (reserved for a handful of all-time greats).
+
+### Why 100 was too common (fixed)
+
+Previously elite tier used ×1.08 + OVR floor 88, then scaled every attribute proportionally. Top WC scorers with max goals + apps already had ~90+ bases, so many stats hit `clamp(100)` → **34 players at OVR 100** with no manual override.
 
 Manual overrides in `manual-overrides.json` **replace** computed values (exact `normalizedName` match).
 
