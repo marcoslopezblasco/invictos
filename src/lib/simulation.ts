@@ -66,6 +66,36 @@ function computeGoals(
   };
 }
 
+function isKnockoutStage(stage: MatchStage): boolean {
+  return stage !== "GROUP_1" && stage !== "GROUP_2" && stage !== "GROUP_3";
+}
+
+/** Scoreline must match W/D/L so the UI never shows 5-2 with a penalty loss. */
+function alignGoalsToResult(
+  gf: number,
+  gc: number,
+  result: MatchResult["result"],
+  seed: string,
+): { goalsFor: number; goalsAgainst: number } {
+  if (result === "W") {
+    if (gf <= gc) return { goalsFor: gc + 1, goalsAgainst: gc };
+    return { goalsFor: gf, goalsAgainst: gc };
+  }
+  if (result === "L") {
+    if (gf >= gc) return { goalsFor: gf, goalsAgainst: gf + 1 };
+    return { goalsFor: gf, goalsAgainst: gc };
+  }
+  const drawTotal = clamp(
+    deterministicRound(
+      Math.min(gf, gc, Math.max(0, (gf + gc) / 2)),
+      `${seed}-draw`,
+    ),
+    0,
+    4,
+  );
+  return { goalsFor: drawTotal, goalsAgainst: drawTotal };
+}
+
 function resolvePenalties(
   team: ReturnType<typeof buildTeamProfile>,
   difficulty: number,
@@ -122,23 +152,17 @@ export function simulateTournament(
     const matchScore = team.tournamentPower - difficulty;
     const outcome = matchOutcome(matchScore);
     const matchSeed = `${seed}-${stage}`;
-    const { gf, gc } = computeGoals(team, difficulty, matchSeed);
+    const rawGoals = computeGoals(team, difficulty, matchSeed);
 
     let result: MatchResult["result"] = "D";
-    let goalsForMatch = gf;
-    let goalsAgainstMatch = gc;
     let advancedOnPenalties = false;
     let eliminatedOnPenalties = false;
 
     if (outcome === "clear_win" || outcome === "win" || outcome === "narrow_win") {
       result = "W";
-      if (goalsForMatch <= goalsAgainstMatch) {
-        goalsForMatch = goalsAgainstMatch + 1;
-      }
     } else if (outcome === "draw") {
       result = "D";
-      const isKnockout = stage !== "GROUP_1" && stage !== "GROUP_2" && stage !== "GROUP_3";
-      if (isKnockout) {
+      if (isKnockoutStage(stage)) {
         const wonPen = resolvePenalties(team, difficulty, drafted, matchSeed);
         if (wonPen) {
           advancedOnPenalties = true;
@@ -151,10 +175,10 @@ export function simulateTournament(
     } else {
       result = "L";
       eliminated = true;
-      if (goalsForMatch >= goalsAgainstMatch) {
-        goalsAgainstMatch = goalsForMatch + 1;
-      }
     }
+
+    const { goalsFor: goalsForMatch, goalsAgainst: goalsAgainstMatch } =
+      alignGoalsToResult(rawGoals.gf, rawGoals.gc, result, matchSeed);
 
     matches.push({
       stage,

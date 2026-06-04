@@ -128,6 +128,25 @@ describe("simulation", () => {
   it("has 7 stages defined", () => {
     expect(STAGES).toHaveLength(7);
   });
+
+  it("scorelines always match result (no 5-2 penalty loss)", () => {
+    const xi = buildFixtureXI();
+    for (let i = 0; i < 80; i++) {
+      const result = simulateTournament(`Scoreline FC ${i}`, xi, "en");
+      for (const m of result.matches) {
+        if (m.eliminatedOnPenalties || m.advancedOnPenalties) {
+          expect(m.goalsFor).toBe(m.goalsAgainst);
+          expect(m.result).toBe("D");
+        }
+        if (m.result === "W") {
+          expect(m.goalsFor).toBeGreaterThan(m.goalsAgainst);
+        }
+        if (m.result === "L") {
+          expect(m.goalsFor).toBeLessThan(m.goalsAgainst);
+        }
+      }
+    }
+  });
 });
 
 describe("draft position forcing", () => {

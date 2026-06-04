@@ -39,13 +39,17 @@ export function SimulationResult({
       {tournament.matches.map((m) => {
         const label = labels[m.stage] ?? m.stage;
         const score = `${m.goalsFor}-${m.goalsAgainst}`;
-        const resultIcon =
-          m.result === "W" ? "✓" : m.result === "D" ? "=" : "✗";
-        const penNote = m.advancedOnPenalties
-          ? " (pen)"
+        const resultIcon = m.advancedOnPenalties
+          ? "✓"
           : m.eliminatedOnPenalties
-            ? " (out pen)"
-            : "";
+            ? "✗"
+            : m.result === "W"
+              ? "✓"
+              : m.result === "D"
+                ? "="
+                : "✗";
+        const penNote =
+          m.advancedOnPenalties || m.eliminatedOnPenalties ? " (pen)" : "";
 
         return (
           <div
