@@ -13,6 +13,15 @@ const translations: Record<Locale, Record<string, string>> = {
     "home.blind": "Blind",
     "home.historico": "Histórico",
     "home.hardcore": "Hardcore",
+    "home.modeLabel": "Modo de juego",
+    "home.mode.classic.desc":
+      "El modo estándar: ves país, mundial, partidos y nivel en cada carta. La simulación es más exigente que en Blind.",
+    "home.mode.blind.desc":
+      "Draft a ciegas: solo nombre y posición hasta que fichas. Sin mundiales ni nivel en la carta — puro instinto.",
+    "home.mode.historico.desc":
+      "Como Classic en las cartas, pero en el Mundial enfrentas selecciones reales por fase (rivales de distintos años en la misma run).",
+    "home.mode.hardcore.desc":
+      "Como Classic, con regla extra: cada país solo puede salir una vez. Tras fichar, ese país desaparece del rollo.",
     "draft.hardcoreHint":
       "Cada país solo puede salir una vez: al fichar un jugador, ese país desaparece del rollo.",
     "sim.vs": "vs",
@@ -102,6 +111,15 @@ const translations: Record<Locale, Record<string, string>> = {
     "home.blind": "Blind",
     "home.historico": "Historic",
     "home.hardcore": "Hardcore",
+    "home.modeLabel": "Game mode",
+    "home.mode.classic.desc":
+      "The standard run: country, World Cup, matches, and tier on every card. Simulation is tougher than Blind.",
+    "home.mode.blind.desc":
+      "Blind draft: name and position only until you pick. No World Cups or tiers on the card — pure instinct.",
+    "home.mode.historico.desc":
+      "Classic-style cards, but the tournament faces real national teams by round (rivals from different eras in one run).",
+    "home.mode.hardcore.desc":
+      "Like Classic, plus one rule: each country can only appear once. After you pick, that nation leaves the wheel.",
     "draft.hardcoreHint":
       "Each country can only appear once: after you pick a player, that nation leaves the wheel.",
     "sim.vs": "vs",

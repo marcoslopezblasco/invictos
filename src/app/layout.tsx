@@ -3,9 +3,9 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { ClientAppShell } from "@/components/ClientAppShell";
 
-const pixelation = localFont({
-  src: "./fonts/Pixelation.ttf",
-  variable: "--font-pixelation",
+const superDario = localFont({
+  src: "./fonts/SuperDario-Regular.otf",
+  variable: "--font-super-dario",
   display: "swap",
 });
 
@@ -26,8 +26,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${pixelation.variable} h-full`}>
-      <body className={`${pixelation.className} min-h-full font-sans antialiased`}>
+    <html lang="es" className={`${superDario.variable} h-full`}>
+      <body className={`${superDario.className} min-h-full font-sans antialiased`}>
         <ClientAppShell>{children}</ClientAppShell>
       </body>
     </html>
