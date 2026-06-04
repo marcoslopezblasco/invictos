@@ -1,11 +1,11 @@
 import type { Language } from "@/types/simulation";
 import type { SavedResult } from "@/lib/storage";
 import { t } from "@/lib/i18n";
-import { getCountryDisplayName } from "@/lib/data";
-import { getStageLabel } from "@/lib/stages";
 
 /** Canonical production URL when sharing from localhost. */
 export const DEFAULT_PUBLIC_SITE_URL = "https://invictos-zeta.vercel.app";
+
+const CAPTION_SUMMARY_MAX = 140;
 
 export function getPublicSiteUrl(): string {
   const fromEnv = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
@@ -20,60 +20,48 @@ export function getPublicSiteUrl(): string {
   return origin.replace(/\/$/, "");
 }
 
-export function buildShareMessage(result: SavedResult): string {
+function truncateSummary(text: string, max = CAPTION_SUMMARY_MAX): string {
+  const trimmed = text.trim().replace(/\s+/g, " ");
+  if (trimmed.length <= max) return trimmed;
+  return `${trimmed.slice(0, max - 1)}…`;
+}
+
+function buildQuickSummary(result: SavedResult): string {
   const locale = result.language;
   const tr = result.tournament;
-  const siteUrl = getPublicSiteUrl();
-  const lines = [
-    "INVICTOS",
-    "",
-    `${result.teamName} · ${result.formation}`,
-    `${t(locale, `badge.${result.badge}`)} · ${result.score} pts`,
-    "",
-    `PJ ${tr.played} | PG ${tr.wins} | PE ${tr.draws} | PP ${tr.losses}`,
-    `GF ${tr.goalsFor} | GC ${tr.goalsAgainst} | DG ${tr.goalDifference >= 0 ? "+" : ""}${tr.goalDifference}`,
-  ];
+  const badge = t(locale, `badge.${result.badge}`);
+  const gd =
+    tr.goalDifference >= 0 ? `+${tr.goalDifference}` : `${tr.goalDifference}`;
 
-  if (result.mode === "historico") {
-    const fixtures = tr.matches.filter((m) => m.opponentCountry);
-    if (fixtures.length) {
-      lines.push("");
-      for (const m of fixtures) {
-        const name = getCountryDisplayName(m.opponentCountry!, locale);
-        const yr = m.opponentWorldCup ? ` ${m.opponentWorldCup}` : "";
-        const icon = m.result === "W" ? "W" : m.result === "D" ? "D" : "L";
-        lines.push(
-          `${getStageLabel(locale, m.stage)}: ${icon} vs ${name}${yr} ${m.goalsFor}-${m.goalsAgainst}`,
-        );
-      }
-    }
+  if (locale === "es") {
+    return `${result.teamName}: ${badge}, ${result.score} pts (${tr.wins} victorias, DG ${gd}).`;
   }
+  return `${result.teamName}: ${badge}, ${result.score} pts (${tr.wins} wins, GD ${gd}).`;
+}
 
-  lines.push(
-    "",
-    t(locale, "share.challenge"),
-    t(locale, "share.subtitle"),
-    siteUrl,
+/** Short caption: one-line result + challenge + link (pairs with share image). */
+export function buildShareCaption(result: SavedResult): string {
+  const locale = result.language;
+  const siteUrl = getPublicSiteUrl();
+  const summary = truncateSummary(
+    result.tournament.narrative?.trim() || buildQuickSummary(result),
   );
 
-  return lines.join("\n");
+  return `${summary}\n\n${t(locale, "share.challenge")} ${t(locale, "share.playCta")}\n${siteUrl}`;
 }
 
-export function getTwitterShareUrl(text: string): string {
-  return `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
-}
-
-export function getWhatsAppShareUrl(text: string): string {
-  return `https://wa.me/?text=${encodeURIComponent(text)}`;
-}
-
-export function openShareWindow(url: string): void {
-  window.open(url, "_blank", "noopener,noreferrer");
+/** @deprecated Use buildShareCaption — kept for tests migrating from long text posts. */
+export function buildShareMessage(result: SavedResult): string {
+  return buildShareCaption(result);
 }
 
 export async function renderShareCardPng(cardEl: HTMLElement): Promise<string> {
   const { toPng } = await import("html-to-image");
-  return toPng(cardEl, { pixelRatio: 2, cacheBust: true });
+  return toPng(cardEl, {
+    pixelRatio: 2,
+    cacheBust: true,
+    skipFonts: false,
+  });
 }
 
 export function downloadPngDataUrl(dataUrl: string, filename: string): void {
@@ -83,26 +71,26 @@ export function downloadPngDataUrl(dataUrl: string, filename: string): void {
   a.click();
 }
 
-export async function shareToInstagram(
+export type ShareImageOutcome = "shared" | "saved";
+
+export async function shareWithImage(
   cardEl: HTMLElement,
-  text: string,
+  caption: string,
   filename: string,
-): Promise<"shared" | "saved"> {
+): Promise<ShareImageOutcome> {
   const dataUrl = await renderShareCardPng(cardEl);
   const blob = await (await fetch(dataUrl)).blob();
   const file = new File([blob], filename, { type: "image/png" });
 
   if (typeof navigator !== "undefined" && navigator.share) {
     try {
+      const payload = { files: [file], text: caption };
       const canUseFiles =
         !navigator.canShare || navigator.canShare({ files: [file] });
       if (canUseFiles) {
-        await navigator.share({ files: [file], text });
+        await navigator.share(payload);
         return "shared";
       }
-      await navigator.share({ text, url: getPublicSiteUrl() });
-      downloadPngDataUrl(dataUrl, filename);
-      return "saved";
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") {
         return "saved";
@@ -111,6 +99,8 @@ export async function shareToInstagram(
   }
 
   downloadPngDataUrl(dataUrl, filename);
-  await navigator.clipboard.writeText(text);
+  if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(caption);
+  }
   return "saved";
 }

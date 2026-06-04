@@ -3,19 +3,61 @@
 import { useRef, useMemo } from "react";
 import type { SavedResult } from "@/lib/storage";
 import { t } from "@/lib/i18n";
-import { getCountryDisplayName } from "@/lib/data";
-import { getStageLabel } from "@/lib/stages";
 import { draftedFromSavedResult } from "@/lib/result-draft";
 import { FormationPitch } from "./FormationPitch";
-import { buildShareMessage, getPublicSiteUrl } from "@/lib/share";
+import { buildShareCaption, getPublicSiteUrl } from "@/lib/share";
 import { SocialShareButtons } from "./SocialShareButtons";
 
-export function ShareCard({ result }: { result: SavedResult }) {
-  const ref = useRef<HTMLDivElement>(null);
+/** Off-screen card captured as PNG: XI + score only (caption is separate). */
+function ShareImageCard({
+  result,
+  drafted,
+}: {
+  result: SavedResult;
+  drafted: ReturnType<typeof draftedFromSavedResult>;
+}) {
   const locale = result.language;
   const tr = result.tournament;
+
+  return (
+    <div className="paper-texture w-[360px] rounded-2xl border-2 border-amber-800/50 p-5 text-amber-950 shadow-xl">
+      <div className="text-center text-[10px] font-bold tracking-[0.2em] text-amber-900/55">
+        INVICTOS
+      </div>
+      <h3 className="mt-1 text-center text-xl font-black leading-tight">
+        {result.teamName}
+      </h3>
+      <p className="text-center text-sm font-bold text-amber-900/80">
+        {result.formation}
+      </p>
+
+      <div className="mt-4">
+        <FormationPitch drafted={drafted} share />
+      </div>
+
+      <div className="mt-4 rounded-xl border-2 border-amber-900/25 bg-amber-950/5 py-3 text-center">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-amber-900/60">
+          Score
+        </p>
+        <p className="text-5xl font-black leading-none tabular-nums text-amber-950">
+          {result.score}
+        </p>
+        <p className="mt-2 text-sm font-black text-amber-900">
+          {t(locale, `badge.${result.badge}`)}
+        </p>
+        <p className="mt-1 text-[11px] font-bold tabular-nums text-amber-800/90">
+          {tr.wins}W · {tr.draws}D · {tr.losses}L · GF {tr.goalsFor}–{tr.goalsAgainst}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export function ShareCard({ result }: { result: SavedResult }) {
+  const captureRef = useRef<HTMLDivElement>(null);
+  const locale = result.language;
   const siteUrl = getPublicSiteUrl();
-  const shareText = useMemo(() => buildShareMessage(result), [result]);
+  const shareCaption = useMemo(() => buildShareCaption(result), [result]);
   const drafted = useMemo(
     () => draftedFromSavedResult(result),
     [result],
@@ -45,63 +87,37 @@ export function ShareCard({ result }: { result: SavedResult }) {
         </a>
       </div>
 
+      <p className="text-center text-xs text-[var(--text-muted)]">
+        {t(locale, "share.previewHint")}
+      </p>
+
+      <div className="mx-auto w-full max-w-sm overflow-hidden rounded-2xl border border-[var(--border)]">
+        <ShareImageCard result={result} drafted={drafted} />
+      </div>
+
+      <p className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-center text-xs leading-relaxed text-[var(--text-muted)]">
+        {shareCaption.split("\n").map((line, i) => (
+          <span key={i} className="block">
+            {line}
+          </span>
+        ))}
+      </p>
+
+      {/* Captured at 2× — positioned off-screen but painted for html-to-image */}
       <div
-        ref={ref}
-        className="paper-texture mx-auto w-full max-w-sm rounded-2xl border-2 border-amber-800/40 p-5 text-amber-950 shadow-lg"
+        aria-hidden
+        className="pointer-events-none fixed top-0 -left-[9999px] -z-50"
+        style={{ width: 360 }}
       >
-        <div className="text-center text-xs font-bold tracking-widest text-amber-900/60">
-          INVICTOS
-        </div>
-        <h3 className="mt-1 text-center text-lg font-black">{result.teamName}</h3>
-        <p className="text-center text-sm font-bold">{result.formation}</p>
-        <div className="mt-3">
-          <FormationPitch drafted={drafted} compact />
-        </div>
-        <div className="mt-4 text-center text-sm font-black text-amber-900">
-          🏆 {t(locale, `badge.${result.badge}`)}
-        </div>
-        <p className="mt-1 text-center text-xs font-bold tabular-nums text-amber-800">
-          {result.score} pts
-        </p>
-        <p className="mt-2 text-center text-xs font-mono">
-          PJ {tr.played} | PG {tr.wins} | PE {tr.draws} | PP {tr.losses}
-        </p>
-        <p className="text-center text-xs font-mono">
-          GF {tr.goalsFor} | GC {tr.goalsAgainst} | DG{" "}
-          {tr.goalDifference >= 0 ? "+" : ""}
-          {tr.goalDifference}
-        </p>
-        {result.mode === "historico" && (
-          <ul className="mt-3 space-y-1 text-left text-[10px] font-semibold text-amber-900/80">
-            {tr.matches
-              .filter((m) => m.opponentCountry)
-              .map((m) => (
-                <li key={m.stage} className="flex justify-between gap-2">
-                  <span>
-                    {getStageLabel(locale, m.stage)} vs{" "}
-                    {getCountryDisplayName(m.opponentCountry!, locale)}
-                    {m.opponentWorldCup ? ` ${m.opponentWorldCup}` : ""}
-                  </span>
-                  <span className="font-mono">
-                    {m.result === "W" ? "✓" : m.result === "D" ? "=" : "✗"}{" "}
-                    {m.goalsFor}-{m.goalsAgainst}
-                  </span>
-                </li>
-              ))}
-          </ul>
-        )}
-        <div className="mt-4 rounded-xl border border-amber-900/20 bg-amber-950/5 px-3 py-3 text-center">
-          <p className="text-sm font-black leading-snug text-amber-950">
-            {t(locale, "share.challenge")}
-          </p>
-          <p className="mt-1 text-[11px] font-bold text-amber-900/70">{displayHost}</p>
+        <div ref={captureRef}>
+          <ShareImageCard result={result} drafted={drafted} />
         </div>
       </div>
 
       <SocialShareButtons
         locale={locale}
-        shareText={shareText}
-        cardRef={ref}
+        shareCaption={shareCaption}
+        cardRef={captureRef}
         resultId={result.id}
       />
     </section>

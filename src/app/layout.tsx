@@ -3,9 +3,9 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { ClientAppShell } from "@/components/ClientAppShell";
 
-const arcadeGamer = localFont({
-  src: "./fonts/ArcadeGamer-Regular.ttf",
-  variable: "--font-arcade",
+const pixelation = localFont({
+  src: "./fonts/Pixelation.ttf",
+  variable: "--font-pixelation",
   display: "swap",
 });
 
@@ -26,8 +26,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${arcadeGamer.variable} h-full`}>
-      <body className={`${arcadeGamer.className} min-h-full font-sans antialiased`}>
+    <html lang="es" className={`${pixelation.variable} h-full`}>
+      <body className={`${pixelation.className} min-h-full font-sans antialiased`}>
         <ClientAppShell>{children}</ClientAppShell>
       </body>
     </html>

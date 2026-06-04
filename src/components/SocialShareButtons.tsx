@@ -4,10 +4,9 @@ import { useState } from "react";
 import type { Language } from "@/types/simulation";
 import { t } from "@/lib/i18n";
 import {
-  getTwitterShareUrl,
-  getWhatsAppShareUrl,
-  openShareWindow,
-  shareToInstagram,
+  shareWithImage,
+  renderShareCardPng,
+  downloadPngDataUrl,
 } from "@/lib/share";
 
 function IconX({ className }: { className?: string }) {
@@ -39,44 +38,34 @@ const btnBase =
 
 export function SocialShareButtons({
   locale,
-  shareText,
+  shareCaption,
   cardRef,
   resultId,
-  onCopied,
 }: {
   locale: Language;
-  shareText: string;
+  shareCaption: string;
   cardRef: React.RefObject<HTMLDivElement | null>;
   resultId: string;
-  onCopied?: () => void;
 }) {
   const [status, setStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const filename = `invictos-${resultId}.png`;
 
-  const shareTwitter = () => {
-    openShareWindow(getTwitterShareUrl(shareText));
-  };
-
-  const shareWhatsApp = () => {
-    openShareWindow(getWhatsAppShareUrl(shareText));
-  };
-
-  const shareInstagram = async () => {
+  const runShare = async (channel: string) => {
     if (!cardRef.current) return;
-    setBusy("instagram");
+    setBusy(channel);
     setStatus(null);
     try {
-      const outcome = await shareToInstagram(
+      const outcome = await shareWithImage(
         cardRef.current,
-        shareText,
-        `invictos-${resultId}.png`,
+        shareCaption,
+        filename,
       );
       setStatus(
         outcome === "shared"
-          ? t(locale, "share.instagramShared")
-          : t(locale, "share.instagramFallback"),
+          ? t(locale, "share.imageShared")
+          : t(locale, "share.imageFallback"),
       );
-      onCopied?.();
     } catch {
       setStatus(t(locale, "share.instagramError"));
     } finally {
@@ -84,10 +73,9 @@ export function SocialShareButtons({
     }
   };
 
-  const copyAll = async () => {
-    await navigator.clipboard.writeText(shareText);
+  const copyCaption = async () => {
+    await navigator.clipboard.writeText(shareCaption);
     setStatus(t(locale, "share.copied"));
-    onCopied?.();
   };
 
   return (
@@ -95,8 +83,9 @@ export function SocialShareButtons({
       <div className="grid grid-cols-3 gap-2">
         <button
           type="button"
-          onClick={shareTwitter}
-          className={`${btnBase} border-[var(--border)] bg-[#0f1419] text-white hover:border-slate-500`}
+          onClick={() => runShare("twitter")}
+          disabled={busy !== null}
+          className={`${btnBase} border-[var(--border)] bg-[#0f1419] text-white hover:border-slate-500 disabled:opacity-60`}
           aria-label={t(locale, "share.twitter")}
         >
           <IconX className="h-5 w-5" />
@@ -104,8 +93,9 @@ export function SocialShareButtons({
         </button>
         <button
           type="button"
-          onClick={shareWhatsApp}
-          className={`${btnBase} border-[#25D366]/40 bg-[#25D366]/15 text-[#25D366] hover:bg-[#25D366]/25`}
+          onClick={() => runShare("whatsapp")}
+          disabled={busy !== null}
+          className={`${btnBase} border-[#25D366]/40 bg-[#25D366]/15 text-[#25D366] hover:bg-[#25D366]/25 disabled:opacity-60`}
           aria-label={t(locale, "share.whatsapp")}
         >
           <IconWhatsApp className="h-5 w-5" />
@@ -113,8 +103,8 @@ export function SocialShareButtons({
         </button>
         <button
           type="button"
-          onClick={shareInstagram}
-          disabled={busy === "instagram"}
+          onClick={() => runShare("instagram")}
+          disabled={busy !== null}
           className={`${btnBase} border-[#E4405F]/40 bg-gradient-to-br from-[#833AB4]/20 via-[#FD1D1D]/15 to-[#FCAF45]/15 text-[#F77737] hover:from-[#833AB4]/30 disabled:opacity-60`}
           aria-label={t(locale, "share.instagram")}
         >
@@ -126,7 +116,7 @@ export function SocialShareButtons({
       <div className="flex gap-2">
         <button
           type="button"
-          onClick={copyAll}
+          onClick={copyCaption}
           className="flex-1 rounded-xl border border-[var(--border)] py-3 text-sm font-semibold"
         >
           {t(locale, "result.copy")}
@@ -137,16 +127,14 @@ export function SocialShareButtons({
             if (!cardRef.current) return;
             setBusy("download");
             try {
-              const { renderShareCardPng, downloadPngDataUrl } = await import(
-                "@/lib/share"
-              );
               const dataUrl = await renderShareCardPng(cardRef.current);
-              downloadPngDataUrl(dataUrl, `invictos-${resultId}.png`);
+              downloadPngDataUrl(dataUrl, filename);
+              setStatus(t(locale, "share.imageSaved"));
             } finally {
               setBusy(null);
             }
           }}
-          disabled={busy === "download"}
+          disabled={busy !== null}
           className="flex-1 rounded-xl border border-[var(--accent-gold)]/50 bg-[var(--accent-gold)]/10 py-3 text-sm font-bold text-[var(--accent-gold)] disabled:opacity-60"
         >
           {t(locale, "share.saveImage")}

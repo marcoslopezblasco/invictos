@@ -7,17 +7,41 @@ import { CountryFlag } from "./CountryFlag";
 export function FormationPitch({
   drafted,
   compact = false,
+  share = false,
 }: {
   drafted: DraftedPlayer[];
   compact?: boolean;
+  /** Taller layout for social share screenshots. */
+  share?: boolean;
 }) {
   const nodes = layoutPlayersOnPitch(drafted);
 
+  const sizeClass = share
+    ? "aspect-[4/5] max-h-80"
+    : compact
+      ? "aspect-[4/5] max-h-52"
+      : "aspect-[3/4] max-h-[420px]";
+
+  const flagSize = share ? 16 : compact ? 14 : 18;
+  const nameClass = share
+    ? "text-[10px]"
+    : compact
+      ? "text-[9px]"
+      : "text-[10px]";
+  const posClass = share
+    ? "text-[9px]"
+    : compact
+      ? "text-[8px]"
+      : "text-[9px]";
+  const nodeWidth = share
+    ? "min-w-[56px] max-w-[68px]"
+    : compact
+      ? "min-w-[52px] max-w-[64px]"
+      : "min-w-[64px] max-w-[80px]";
+
   return (
     <div
-      className={`relative w-full overflow-hidden rounded-xl border-2 border-emerald-900/50 shadow-inner ${
-        compact ? "aspect-[4/5] max-h-52" : "aspect-[3/4] max-h-[420px]"
-      }`}
+      className={`relative w-full overflow-hidden rounded-xl border-2 border-emerald-900/50 shadow-inner ${sizeClass}`}
       style={{
         background:
           "linear-gradient(180deg, #1a6b38 0%, #228b45 38%, #2d9f52 62%, #1a6b38 100%)",
@@ -38,23 +62,17 @@ export function FormationPitch({
           style={{ left: `${node.x}%`, top: `${node.y}%` }}
         >
           <div
-            className={`flex flex-col items-center rounded-lg border border-amber-900/25 bg-amber-50/95 px-1 py-1 shadow-md ${
-              compact ? "min-w-[52px] max-w-[64px]" : "min-w-[64px] max-w-[80px]"
-            }`}
+            className={`flex flex-col items-center rounded-lg border border-amber-900/25 bg-amber-50/95 px-1 py-1 shadow-md ${nodeWidth}`}
           >
-            <CountryFlag country={node.country} size={compact ? 14 : 18} />
+            <CountryFlag country={node.country} size={flagSize} />
             <span
-              className={`mt-0.5 w-full truncate text-center font-bold leading-tight text-amber-950 ${
-                compact ? "text-[9px]" : "text-[10px]"
-              }`}
+              className={`mt-0.5 w-full truncate text-center font-bold leading-tight text-amber-950 ${nameClass}`}
               title={node.name}
             >
               {node.shortName}
             </span>
             <span
-              className={`font-bold text-emerald-800/80 ${
-                compact ? "text-[8px]" : "text-[9px]"
-              }`}
+              className={`font-bold text-emerald-800/80 ${posClass}`}
             >
               {node.position}
             </span>

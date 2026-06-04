@@ -15,8 +15,8 @@
 @theme inline {
   --color-background: var(--bg);
   --color-foreground: var(--text);
-  --font-sans: var(--font-arcade), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-arcade), ui-monospace, monospace;
+  --font-sans: var(--font-pixelation), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-pixelation), ui-monospace, monospace;
 }
 
 body {
