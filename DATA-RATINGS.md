@@ -80,7 +80,7 @@ A stacked attack line cannot mask a non-existent defense in the tournament sim.
 
 ## Historic simulation mode
 
-`GameMode: "historico"` — card UI same as Classic; tournament faces **real national teams** from the 24-country set only.
+`GameMode: "historico"` — card UI same as Classic; tournament faces **real national teams** from the curated country set only.
 
 - Data: `src/data/tournament-pools.json` (built from `squads.csv` + `player_appearances.csv`)
 - **Group** (3 matches): random from any team that ever played a World Cup group stage
@@ -121,8 +121,9 @@ Manual overrides in `manual-overrides.json` **replace** computed values (exact `
 | Dataset name | Invictos country |
 |--------------|------------------|
 | West Germany | Germany |
-| Czechoslovakia | Czech Republic |
-| Yugoslavia / FR Yugoslavia / Serbia and Montenegro | Serbia |
+| FR Yugoslavia | Yugoslavia |
+
+**Separate draft slots** (name + flag match the team that played): Yugoslavia, Serbia and Montenegro, Serbia, Czechoslovakia, Czech Republic. CSV names `Yugoslavia`, `Serbia and Montenegro`, `Serbia`, `Czechoslovakia`, `Czech Republic` map directly.
 
 ## No generic fillers
 

@@ -74,7 +74,12 @@ export function getCountryDisplayName(country: string, locale: Language): string
 }
 
 export function getFlagCodeForCountry(name: string): string | null {
-  return getCountryByName(name)?.flagCode ?? null;
+  const code = getCountryByName(name)?.flagCode?.trim();
+  return code || null;
+}
+
+export function getFlagSrcForCountry(name: string): string | null {
+  return getCountryByName(name)?.flagSrc ?? null;
 }
 
 /** @deprecated Use CountryFlag component for UI; emoji flags break on Windows */

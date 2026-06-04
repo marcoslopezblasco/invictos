@@ -9,9 +9,11 @@ export interface CountryDef {
   id: string;
   name: string;
   nameEs: string;
-  /** ISO 3166-1 alpha-2 (or flagcdn code e.g. gb-eng) for flag images */
+  /** ISO 3166-1 alpha-2 (or flagcdn code e.g. gb-eng) for flag-icons */
   flagCode: string;
   flag: string;
+  /** Dissolved states: image URL when flag-icons has no code */
+  flagSrc?: string;
   tier: 1 | 2 | 3;
   worldCups: number[];
 }
@@ -36,13 +38,43 @@ export const COUNTRIES: CountryDef[] = [
   { id: "denmark", name: "Denmark", nameEs: "Dinamarca", flagCode: "dk", flag: "🇩🇰", tier: 3, worldCups: [1986, 1998, 2002, 2010, 2018, 2022] },
   { id: "poland", name: "Poland", nameEs: "Polonia", flagCode: "pl", flag: "🇵🇱", tier: 3, worldCups: [1938, 1974, 1978, 1982, 1986, 2002, 2006, 2018, 2022] },
   {
+    id: "yugoslavia",
+    name: "Yugoslavia",
+    nameEs: "Yugoslavia",
+    flagCode: "",
+    flag: "",
+    flagSrc: "https://flagcdn.com/w80/yu.webp",
+    tier: 3,
+    worldCups: [1930, 1950, 1954, 1958, 1962, 1974, 1982, 1990, 1998],
+  },
+  {
+    id: "serbia-montenegro",
+    name: "Serbia and Montenegro",
+    nameEs: "Serbia y Montenegro",
+    flagCode: "",
+    flag: "",
+    flagSrc: "https://flagcdn.com/w80/cs.webp",
+    tier: 3,
+    worldCups: [2006],
+  },
+  {
     id: "serbia",
     name: "Serbia",
     nameEs: "Serbia",
     flagCode: "rs",
     flag: "🇷🇸",
     tier: 3,
-    worldCups: [1930, 1938, 1950, 1954, 1958, 1962, 1966, 1974, 1982, 1990, 1998, 2002, 2006, 2010, 2018, 2022],
+    worldCups: [2010, 2018, 2022],
+  },
+  {
+    id: "czechoslovakia",
+    name: "Czechoslovakia",
+    nameEs: "Checoslovaquia",
+    flagCode: "",
+    flag: "",
+    flagSrc: "/flags/czechoslovakia.svg",
+    tier: 3,
+    worldCups: [1934, 1938, 1954, 1958, 1962, 1970, 1982, 1990],
   },
   {
     id: "czech",
@@ -51,7 +83,7 @@ export const COUNTRIES: CountryDef[] = [
     flagCode: "cz",
     flag: "🇨🇿",
     tier: 3,
-    worldCups: [1934, 1938, 1954, 1958, 1962, 1970, 1982, 1990, 2006],
+    worldCups: [2006],
   },
   { id: "hungary", name: "Hungary", nameEs: "Hungría", flagCode: "hu", flag: "🇭🇺", tier: 3, worldCups: [1934, 1938, 1954, 1958, 1962, 1966, 1978, 1982, 1986] },
   { id: "cameroon", name: "Cameroon", nameEs: "Camerún", flagCode: "cm", flag: "🇨🇲", tier: 3, worldCups: [1982, 1990, 1994, 1998, 2002, 2010, 2014, 2022] },
@@ -63,10 +95,7 @@ export const COUNTRIES: CountryDef[] = [
 export const TEAM_NAME_ALIASES: Record<string, string> = {
   "West Germany": "Germany",
   "Germany FR": "Germany",
-  "Czechoslovakia": "Czech Republic",
-  Yugoslavia: "Serbia",
-  "Serbia and Montenegro": "Serbia",
-  "FR Yugoslavia": "Serbia",
+  "FR Yugoslavia": "Yugoslavia",
 };
 
 export const COUNTRY_NAMES = new Set(COUNTRIES.map((c) => c.name));

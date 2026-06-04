@@ -418,11 +418,12 @@
     ]
   },
   {
-    "id": "serbia",
-    "name": "Serbia",
-    "nameEs": "Serbia",
-    "flagCode": "rs",
-    "flag": "🇷🇸",
+    "id": "yugoslavia",
+    "name": "Yugoslavia",
+    "nameEs": "Yugoslavia",
+    "flagCode": "",
+    "flag": "",
+    "flagSrc": "https://flagcdn.com/w80/yu.webp",
     "tier": 3,
     "worldCups": [
       1930,
@@ -433,11 +434,51 @@
       1974,
       1982,
       1990,
-      1998,
-      2006,
+      1998
+    ]
+  },
+  {
+    "id": "serbia-montenegro",
+    "name": "Serbia and Montenegro",
+    "nameEs": "Serbia y Montenegro",
+    "flagCode": "",
+    "flag": "",
+    "flagSrc": "https://flagcdn.com/w80/cs.webp",
+    "tier": 3,
+    "worldCups": [
+      2006
+    ]
+  },
+  {
+    "id": "serbia",
+    "name": "Serbia",
+    "nameEs": "Serbia",
+    "flagCode": "rs",
+    "flag": "🇷🇸",
+    "tier": 3,
+    "worldCups": [
       2010,
       2018,
       2022
+    ]
+  },
+  {
+    "id": "czechoslovakia",
+    "name": "Czechoslovakia",
+    "nameEs": "Checoslovaquia",
+    "flagCode": "",
+    "flag": "",
+    "flagSrc": "/flags/czechoslovakia.svg",
+    "tier": 3,
+    "worldCups": [
+      1934,
+      1938,
+      1954,
+      1958,
+      1962,
+      1970,
+      1982,
+      1990
     ]
   },
   {
@@ -448,14 +489,6 @@
     "flag": "🇨🇿",
     "tier": 3,
     "worldCups": [
-      1934,
-      1938,
-      1954,
-      1958,
-      1962,
-      1970,
-      1982,
-      1990,
       2006
     ]
   },

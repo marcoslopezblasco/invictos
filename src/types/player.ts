@@ -39,6 +39,8 @@ export interface Country {
   nameEs: string;
   flagCode: string;
   flag: string;
+  /** Image URL for dissolved states (no flag-icons code). */
+  flagSrc?: string;
   tier: 1 | 2 | 3;
   worldCups: number[];
 }

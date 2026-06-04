@@ -6,7 +6,7 @@ Mobile-first web app: draft a historic World Cup XI and simulate if they can win
 
 - Next.js 16 (App Router)
 - TypeScript, Tailwind CSS v4
-- Curated JSON data (~4800 real players, ~6500 appearances, 24 countries) from the Fjelstul World Cup Database
+- Curated JSON data (~4800 real players, ~6500 appearances, 27 countries) from the Fjelstul World Cup Database
 - Deterministic simulation engine (Vitest)
 
 ## Scripts

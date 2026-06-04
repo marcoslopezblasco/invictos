@@ -43,7 +43,7 @@ export interface DraftedPlayer {
 export interface MatchResult {
   stage: MatchStage;
   opponentDifficulty: number;
-  /** Set in historico mode — real national team from WC history (24-country pool). */
+  /** Set in historico mode — real national team from WC history (curated country pool). */
   opponentCountry?: string;
   /** Edition of that team in this fixture (may differ per match in one run). */
   opponentWorldCup?: number;
