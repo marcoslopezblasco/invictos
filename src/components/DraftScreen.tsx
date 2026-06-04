@@ -4,9 +4,11 @@ import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useGame } from "@/context/GameContext";
 import { loadData, getAppearancesById } from "@/lib/data";
 import {
+  buildSpinPool,
   filterAndSortEligible,
   getPositionCountsFromPicks,
   getPositionUrgency,
+  isHardcoreMode,
   picksToDrafted,
   type EligibleSort,
   type PositionFilter,
@@ -133,6 +135,12 @@ export function DraftScreen() {
       </div>
 
       <TeamBuilderPanel gameState={gameState} locale={locale} />
+
+      {isHardcoreMode(mode) && (
+        <p className="text-center text-[11px] leading-snug text-[var(--text-muted)]">
+          {t(locale, "draft.hardcoreHint")}
+        </p>
+      )}
 
       {urgency && !isRolling && (
         <p className="rounded-lg border border-amber-600/40 bg-amber-900/20 px-3 py-2 text-center text-xs font-semibold text-amber-200">

@@ -21,6 +21,8 @@ import {
 import {
   getPositionCountsFromPicks,
   generateSpin,
+  buildSpinPool,
+  filterCombosForGame,
   type DataIndexes,
 } from "../draft";
 import type { GameState } from "@/types/game";
@@ -304,6 +306,122 @@ describe("simulation", () => {
         }
       }
     }
+  });
+});
+
+describe("hardcore draft", () => {
+  const indexes: DataIndexes = {
+    countries: [
+      {
+        id: "arg",
+        name: "Argentina",
+        nameEs: "Argentina",
+        flagCode: "ar",
+        flag: "🇦🇷",
+        tier: 1,
+        worldCups: [1986],
+      },
+      {
+        id: "bra",
+        name: "Brazil",
+        nameEs: "Brasil",
+        flagCode: "br",
+        flag: "🇧🇷",
+        tier: 1,
+        worldCups: [2002],
+      },
+    ],
+    appearancesByCountryCup: new Map([
+      ["Argentina::1986", [makeAppearance(makePlayer("a1", "FWD"), "Argentina", 1986)]],
+      ["Brazil::2002", [makeAppearance(makePlayer("b1", "FWD"), "Brazil", 2002)]],
+    ]),
+    playersById: new Map([
+      ["a1", makePlayer("a1", "FWD")],
+      ["b1", makePlayer("b1", "FWD")],
+    ]),
+    countryCupCombos: [
+      { country: "Argentina", worldCup: 1986 },
+      { country: "Brazil", worldCup: 2002 },
+    ],
+  };
+
+  it("excludes countries already on the XI from the spin pool", () => {
+    const state: GameState = {
+      id: "hc-1",
+      teamName: "HC",
+      mode: "hardcore",
+      picks: [
+        {
+          round: 1,
+          country: "Argentina",
+          worldCup: 1986,
+          selectedAppearanceId: "a1-Argentina-1986",
+          selectedPlayerId: "a1",
+        },
+      ],
+      rerollsRemaining: 3,
+      lockedPlayerIds: ["a1"],
+      language: "en",
+      currentSpin: null,
+    };
+
+    const pool = buildSpinPool(state, indexes);
+    expect(pool.every((c) => c.country !== "Argentina")).toBe(true);
+    expect(pool.some((c) => c.country === "Brazil")).toBe(true);
+
+    const filtered = filterCombosForGame(indexes.countryCupCombos, state);
+    expect(filtered).toHaveLength(1);
+    expect(filtered[0]?.country).toBe("Brazil");
+  });
+
+  it("generateSpin never returns a used country in hardcore", () => {
+    const state: GameState = {
+      id: "hc-2",
+      teamName: "HC",
+      mode: "hardcore",
+      picks: [
+        {
+          round: 1,
+          country: "Argentina",
+          worldCup: 1986,
+          selectedAppearanceId: "a1-Argentina-1986",
+          selectedPlayerId: "a1",
+        },
+      ],
+      rerollsRemaining: 3,
+      lockedPlayerIds: ["a1"],
+      language: "en",
+      currentSpin: null,
+    };
+
+    for (let i = 0; i < 20; i++) {
+      const spin = generateSpin(state, indexes, i);
+      expect(spin.country).not.toBe("Argentina");
+    }
+  });
+
+  it("classic mode still allows repeat countries", () => {
+    const state: GameState = {
+      id: "cl-1",
+      teamName: "CL",
+      mode: "classic",
+      picks: [
+        {
+          round: 1,
+          country: "Argentina",
+          worldCup: 1986,
+          selectedAppearanceId: "a1-Argentina-1986",
+          selectedPlayerId: "a1",
+        },
+      ],
+      rerollsRemaining: 3,
+      lockedPlayerIds: ["a1"],
+      language: "en",
+      currentSpin: null,
+    };
+
+    const pool = buildSpinPool(state, indexes);
+    expect(pool.some((c) => c.country === "Argentina")).toBe(true);
   });
 });
 

@@ -5,19 +5,22 @@ import { t } from "@/lib/i18n";
 import { setSavedMode } from "@/lib/storage";
 import type { GameMode } from "@/types/simulation";
 
-const MODES: GameMode[] = ["classic", "blind", "historico"];
+const MODES: GameMode[] = ["classic", "blind", "historico", "hardcore"];
 
-function modeLabelKey(m: GameMode): "home.classic" | "home.blind" | "home.historico" {
+function modeLabelKey(
+  m: GameMode,
+): "home.classic" | "home.blind" | "home.historico" | "home.hardcore" {
   if (m === "classic") return "home.classic";
   if (m === "blind") return "home.blind";
-  return "home.historico";
+  if (m === "historico") return "home.historico";
+  return "home.hardcore";
 }
 
 export function ModeSelector() {
   const { mode, setMode, locale } = useGame();
 
   return (
-    <div className="flex gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-1">
+    <div className="grid grid-cols-2 gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-1 sm:grid-cols-4">
       {MODES.map((m) => (
         <button
           key={m}

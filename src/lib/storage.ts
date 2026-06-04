@@ -48,7 +48,9 @@ export function setLocale(locale: Language): void {
 export function getSavedMode(): GameMode | null {
   if (typeof window === "undefined") return null;
   const v = localStorage.getItem(MODE_KEY);
-  return v === "classic" || v === "blind" || v === "historico" ? v : null;
+  return v === "classic" || v === "blind" || v === "historico" || v === "hardcore"
+    ? v
+    : null;
 }
 
 export function setSavedMode(mode: GameMode): void {

@@ -3,8 +3,10 @@ import type { Language } from "@/types/simulation";
 import type { Spin } from "@/types/game";
 import {
   buildCountryCupCombos,
+  generateSpin,
   type DataIndexes,
 } from "./draft";
+import type { GameState } from "@/types/game";
 
 import playersJson from "@/data/players.json";
 import appearancesJson from "@/data/appearances.json";
@@ -80,13 +82,13 @@ export function getFlagForCountry(name: string): string {
   return getCountryByName(name)?.flag ?? "🏳️";
 }
 
-export function getInitialSpin(gameId: string): Spin {
-  const indexes = loadData();
-  const seed = `${gameId}-0`;
-  const idx =
-    gameId.split("").reduce((a, c) => a + c.charCodeAt(0), 0) %
-    indexes.countryCupCombos.length;
-  return indexes.countryCupCombos[idx] ?? indexes.countryCupCombos[0]!;
+export function getInitialSpin(gameState: GameState, indexes?: DataIndexes): Spin {
+  const idx = indexes ?? loadData();
+  return generateSpin(
+    { ...gameState, picks: [], currentSpin: null },
+    idx,
+    0,
+  );
 }
 
 export function getDataStats() {

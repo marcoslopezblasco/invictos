@@ -282,7 +282,9 @@ export function simulateTournament(
     if (opponent) usedOpponents.add(opponent.country);
 
     let difficulty = opponent?.difficulty ?? defaultDifficulty;
-    if (mode === "classic") difficulty += CLASSIC_MODE_DIFFICULTY_BONUS;
+    if (mode === "classic" || mode === "hardcore") {
+      difficulty += CLASSIC_MODE_DIFFICULTY_BONUS;
+    }
     const structurePenalty = Math.max(0, -team.balance) * 1.15;
     const matchScore =
       team.tournamentPower -

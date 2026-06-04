@@ -1,4 +1,5 @@
 import type { Country, Player, PlayerAppearance, Position } from "@/types/player";
+import type { GameMode } from "@/types/simulation";
 import type { GameState, PositionCounts, Spin } from "@/types/game";
 import {
   INITIAL_REROLLS,
@@ -18,6 +19,38 @@ export interface DataIndexes {
 
 function comboKey(country: string, worldCup: number): string {
   return `${country}::${worldCup}`;
+}
+
+export function isHardcoreMode(mode: GameMode): boolean {
+  return mode === "hardcore";
+}
+
+export function getUsedCountries(picks: GameState["picks"]): Set<string> {
+  return new Set(picks.map((p) => p.country));
+}
+
+/** Hardcore: drop country+WC combos for nations already represented on the XI. */
+export function filterCombosForGame(combos: Spin[], gameState: GameState): Spin[] {
+  if (!isHardcoreMode(gameState.mode)) return combos;
+  const used = getUsedCountries(gameState.picks);
+  if (used.size === 0) return combos;
+  const filtered = combos.filter((c) => !used.has(c.country));
+  return filtered.length > 0 ? filtered : combos;
+}
+
+export function buildSpinPool(gameState: GameState, indexes: DataIndexes): Spin[] {
+  const locked = new Set(gameState.lockedPlayerIds);
+  const counts = getPositionCountsFromPicks(gameState.picks);
+  const picksLeft = picksRemaining(gameState);
+  const forced = getForcedPosition(counts, picksLeft);
+  let pool = filterCombosForGame(indexes.countryCupCombos, gameState);
+
+  if (forced) {
+    const filtered = combosWithPosition(pool, indexes, forced, locked);
+    if (filtered.length > 0) pool = filtered;
+  }
+
+  return pool.length > 0 ? pool : filterCombosForGame(indexes.countryCupCombos, gameState);
 }
 
 export function buildCountryCupCombos(indexes: DataIndexes): Spin[] {
@@ -138,21 +171,12 @@ export function generateSpin(
   indexes: DataIndexes,
   spinIndex: number,
 ): Spin {
-  const locked = new Set(gameState.lockedPlayerIds);
-  const counts = getPositionCountsFromPicks(gameState.picks);
-  const picksLeft = picksRemaining(gameState);
-  const forced = getForcedPosition(counts, picksLeft);
-  const combos = indexes.countryCupCombos;
-
-  let pool = combos;
-  if (forced) {
-    const filtered = combosWithPosition(combos, indexes, forced, locked);
-    if (filtered.length > 0) pool = filtered;
-  }
+  const pool = buildSpinPool(gameState, indexes);
+  const fallback = indexes.countryCupCombos;
 
   const seed = `${gameState.id}-${gameState.picks.length}-${spinIndex}`;
   const idx = stableHash(seed) % pool.length;
-  return pool[idx] ?? combos[0]!;
+  return pool[idx] ?? fallback[0]!;
 }
 
 export function getEligibleAppearances(

@@ -1,6 +1,6 @@
 import type { Player, PlayerAppearance, Position } from "./player";
 
-export type GameMode = "classic" | "blind" | "historico";
+export type GameMode = "classic" | "blind" | "historico" | "hardcore";
 export type Language = "es" | "en";
 
 export type Badge =

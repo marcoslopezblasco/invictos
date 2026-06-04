@@ -12,6 +12,9 @@ const translations: Record<Locale, Record<string, string>> = {
     "home.classic": "Classic",
     "home.blind": "Blind",
     "home.historico": "Histórico",
+    "home.hardcore": "Hardcore",
+    "draft.hardcoreHint":
+      "Cada país solo puede salir una vez: al fichar un jugador, ese país desaparece del rollo.",
     "sim.vs": "vs",
     "sim.fixtures": "Partidos",
     "sim.fixturesPreview": "Tu camino al título",
@@ -86,7 +89,7 @@ const translations: Record<Locale, Record<string, string>> = {
     "badge.ELIMINATED": "Eliminado",
     "how.title": "Cómo funciona",
     "how.body":
-      "1. Elige Classic, Blind o Histórico y pulsa Jugar.\n2. Draftea 11 jugadores (País + Mundial por ronda).\n3. Classic e Histórico muestran mundiales, partidos y nivel; Histórico enfrenta selecciones reales por fase.\n4. Tienes 3 rerolls; Classic enfrenta rivales más duros en la simulación.\n5. Simula un Mundial de 7 partidos.\n6. Descubre si tu XI gana invicto.",
+      "1. Elige Classic, Blind, Histórico o Hardcore y pulsa Jugar.\n2. Draftea 11 jugadores (País + Mundial por ronda).\n3. Classic, Histórico y Hardcore muestran mundiales, partidos y nivel; Histórico enfrenta selecciones reales por fase.\n4. Hardcore: cada país solo puede usarse una vez en todo el draft.\n5. Tienes 3 rerolls; Classic y Hardcore enfrentan rivales más duros en la simulación.\n6. Simula un Mundial de 7 partidos.\n7. Descubre si tu XI gana invicto.",
     "recent.title": "Partidas recientes",
   },
   en: {
@@ -98,6 +101,9 @@ const translations: Record<Locale, Record<string, string>> = {
     "home.classic": "Classic",
     "home.blind": "Blind",
     "home.historico": "Historic",
+    "home.hardcore": "Hardcore",
+    "draft.hardcoreHint":
+      "Each country can only appear once: after you pick a player, that nation leaves the wheel.",
     "sim.vs": "vs",
     "sim.fixtures": "Matches",
     "sim.fixturesPreview": "Your path to the title",
@@ -172,7 +178,7 @@ const translations: Record<Locale, Record<string, string>> = {
     "badge.ELIMINATED": "Eliminated",
     "how.title": "How it works",
     "how.body":
-      "1. Pick Classic, Blind, or Historic and tap Play.\n2. Draft 11 World Cup players (Country + World Cup each round).\n3. Classic and Historic show World Cups, matches, and tier; Historic faces real national teams by round.\n4. You get 3 rerolls; Classic faces tougher opponents in simulation.\n5. Simulate a 7-match World Cup.\n6. See if your XI wins undefeated.",
+      "1. Pick Classic, Blind, Historic, or Hardcore and tap Play.\n2. Draft 11 World Cup players (Country + World Cup each round).\n3. Classic, Historic, and Hardcore show World Cups, matches, and tier; Historic faces real national teams by round.\n4. Hardcore: each country can only be used once across the whole draft.\n5. You get 3 rerolls; Classic and Hardcore face tougher opponents in simulation.\n6. Simulate a 7-match World Cup.\n7. See if your XI wins undefeated.",
     "recent.title": "Recent games",
   },
 };

@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useGame } from "@/context/GameContext";
 import { getInitialSpin, loadData } from "@/lib/data";
+import { buildSpinPool, isHardcoreMode } from "@/lib/draft";
 import { t } from "@/lib/i18n";
 import { TeamBuilderPanel } from "./TeamBuilderPanel";
 import { SpinSlotMachine } from "./SpinSlotMachine";
@@ -14,12 +15,16 @@ export function InitialRollScreen() {
     null,
   );
 
-  const pool = useMemo(() => loadData().countryCupCombos, []);
+  const indexes = useMemo(() => loadData(), []);
+  const pool = useMemo(
+    () => (gameState ? buildSpinPool(gameState, indexes) : indexes.countryCupCombos),
+    [gameState, indexes],
+  );
 
   if (!gameState) return null;
 
   const handleRoll = () => {
-    const spin = getInitialSpin(gameState.id);
+    const spin = getInitialSpin(gameState, indexes);
     setTarget(spin);
     setSpinning(true);
   };
@@ -35,8 +40,15 @@ export function InitialRollScreen() {
             ? t(locale, "home.blind")
             : mode === "historico"
               ? t(locale, "home.historico")
-              : t(locale, "home.classic")}
+              : mode === "hardcore"
+                ? t(locale, "home.hardcore")
+                : t(locale, "home.classic")}
         </p>
+        {isHardcoreMode(mode) && (
+          <p className="mt-2 text-[11px] leading-snug text-[var(--text-muted)]">
+            {t(locale, "draft.hardcoreHint")}
+          </p>
+        )}
       </div>
 
       <TeamBuilderPanel gameState={gameState} locale={locale} />

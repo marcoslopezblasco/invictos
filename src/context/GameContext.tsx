@@ -111,8 +111,8 @@ export function GameProvider({
 
   const rollInitialSpin = useCallback(() => {
     if (!gameState || gameState.currentSpin) return;
-    commitInitialSpin(getInitialSpin(gameState.id));
-  }, [gameState, commitInitialSpin]);
+    commitInitialSpin(getInitialSpin(gameState, indexes));
+  }, [gameState, commitInitialSpin, indexes]);
 
   const previewRerollSpin = useCallback((): Spin | null => {
     if (!gameState || gameState.rerollsRemaining <= 0) return null;
@@ -152,10 +152,20 @@ export function GameProvider({
       if (!appearance || !player) return;
 
       const picksLeft = TOTAL_PICKS - gameState.picks.length - 1;
+      const picksIncludingThis = [
+        ...gameState.picks,
+        {
+          round: gameState.picks.length + 1,
+          country: gameState.currentSpin.country,
+          worldCup: gameState.currentSpin.worldCup,
+          selectedAppearanceId: appearance.id,
+          selectedPlayerId: appearance.playerId,
+        },
+      ];
       const nextSpin =
         picksLeft > 0
           ? generateSpin(
-              { ...gameState, picks: [...gameState.picks] },
+              { ...gameState, picks: picksIncludingThis },
               indexes,
               spinCounter + 1,
             )
