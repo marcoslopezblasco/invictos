@@ -31,6 +31,8 @@ export interface TeamProfile {
   goalkeeperQuality: number;
   tournamentPower: number;
   formation: string;
+  /** 0–1: attack-heavy XI (many FWD, 4-2-4, etc.) — drives high-scoring games. */
+  attackOverload: number;
 }
 
 export interface DraftedPlayer {

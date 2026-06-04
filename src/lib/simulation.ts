@@ -16,13 +16,13 @@ import { pickHistoricalOpponent } from "./historical-opponents";
 export const CLASSIC_MODE_DIFFICULTY_BONUS = 8;
 
 const STAGES: { stage: MatchStage; difficulty: number }[] = [
-  { stage: "GROUP_1", difficulty: 68 },
-  { stage: "GROUP_2", difficulty: 74 },
-  { stage: "GROUP_3", difficulty: 81 },
-  { stage: "R16", difficulty: 84 },
-  { stage: "QF", difficulty: 88 },
-  { stage: "SF", difficulty: 92 },
-  { stage: "FINAL", difficulty: 95 },
+  { stage: "GROUP_1", difficulty: 72 },
+  { stage: "GROUP_2", difficulty: 78 },
+  { stage: "GROUP_3", difficulty: 85 },
+  { stage: "R16", difficulty: 88 },
+  { stage: "QF", difficulty: 92 },
+  { stage: "SF", difficulty: 96 },
+  { stage: "FINAL", difficulty: 99 },
 ];
 
 function clamp(n: number, min: number, max: number): number {
@@ -39,10 +39,11 @@ function matchPowerJitter(seed: string): number {
   return (hashToUnit(`${seed}-pwr`) - 0.5) * 16;
 }
 
-function goalNoise(seed: string, key: "gf" | "gc"): number {
+function goalNoise(seed: string, key: "gf" | "gc", amplitude: 0 | 1): number {
+  if (amplitude === 0) return 0;
   const u = hashToUnit(`${seed}-${key}n`);
-  if (u < 0.33) return -1;
-  if (u > 0.66) return 1;
+  if (u < 0.28) return -1;
+  if (u > 0.72) return 1;
   return 0;
 }
 
@@ -70,33 +71,77 @@ function computeGoals(
   seed: string,
 ): { gf: number; gc: number } {
   const bias = structuralGoalBias(team.balance);
-  const expectedGF = clamp(
-    1 +
-      (team.attackPower - difficulty) / 18 +
-      (team.midfieldControl - 75) / 35 +
-      bias.gf,
-    0,
-    5,
-  );
-  const expectedGC = clamp(
-    1 +
-      (difficulty - team.defensiveSecurity) / 18 -
-      (team.goalkeeperQuality - 75) / 40 +
-      bias.gc,
-    0,
-    5,
-  );
+  const overload = team.attackOverload;
+  const attackEdge = (team.attackPower - difficulty) / 30;
+  const midEdge = (team.midfieldControl - 75) / 55;
+
+  let expectedGF =
+    0.35 +
+    Math.max(0, attackEdge) * 0.35 +
+    Math.max(0, midEdge) * 0.12 +
+    overload * (0.9 + Math.max(0, attackEdge) * 0.7) +
+    bias.gf;
+
+  let expectedGC =
+    0.45 +
+    Math.max(0, (difficulty - team.defensiveSecurity) / 22) +
+    Math.max(0, (75 - team.goalkeeperQuality) / 55) * 0.25 +
+    overload * 0.35 +
+    bias.gc;
+
+  const maxGF = overload >= 0.5 ? 5 : overload >= 0.28 ? 4 : 3;
+  const maxGC = overload >= 0.45 ? 4 : 3;
+  const noise = overload >= 0.35 ? 1 : 0;
+
   const gf = clamp(
-    deterministicRound(expectedGF, `${seed}-gf`) + goalNoise(seed, "gf"),
+    deterministicRound(expectedGF, `${seed}-gf`) + goalNoise(seed, "gf", noise),
     0,
-    6,
+    maxGF,
   );
   const gc = clamp(
-    deterministicRound(expectedGC, `${seed}-gc`) + goalNoise(seed, "gc"),
+    deterministicRound(expectedGC, `${seed}-gc`) + goalNoise(seed, "gc", noise),
     0,
-    5,
+    maxGC,
   );
   return { gf, gc };
+}
+
+type MatchOutcomeBand = ReturnType<typeof matchOutcome>;
+
+function tightenScoreline(
+  goalsFor: number,
+  goalsAgainst: number,
+  result: MatchResult["result"],
+  outcome: MatchOutcomeBand,
+  attackOverload: number,
+): { goalsFor: number; goalsAgainst: number } {
+  const highScoring = attackOverload >= 0.42;
+  let gf = goalsFor;
+  let gc = goalsAgainst;
+
+  if (result === "W") {
+    const maxMargin =
+      outcome === "clear_win" ? (highScoring ? 3 : 2) : outcome === "win" ? 2 : 1;
+    const maxLoser = highScoring ? 2 : 1;
+    if (gf - gc > maxMargin) gf = gc + maxMargin;
+    if (gc > maxLoser) gc = maxLoser;
+    if (gf <= gc) gf = gc + 1;
+    return { goalsFor: gf, goalsAgainst: gc };
+  }
+
+  if (result === "L") {
+    const maxMargin =
+      outcome === "clear_loss" ? (highScoring ? 3 : 2) : outcome === "loss" ? 2 : 1;
+    const maxScorer = highScoring ? 2 : 1;
+    if (gc - gf > maxMargin) gc = gf + maxMargin;
+    if (gf > maxScorer) gf = maxScorer;
+    if (gf >= gc) gc = gf + 1;
+    return { goalsFor: gf, goalsAgainst: gc };
+  }
+
+  const maxDraw = highScoring ? 3 : 2;
+  const drawTotal = clamp(Math.min(gf, gc, Math.round((gf + gc) / 2)), 0, maxDraw);
+  return { goalsFor: drawTotal, goalsAgainst: drawTotal };
 }
 
 function isKnockoutStage(stage: MatchStage): boolean {
@@ -250,8 +295,20 @@ export function simulateTournament(
       eliminated = true;
     }
 
+    const aligned = alignGoalsToResult(
+      rawGoals.gf,
+      rawGoals.gc,
+      result,
+      matchSeed,
+    );
     const { goalsFor: goalsForMatch, goalsAgainst: goalsAgainstMatch } =
-      alignGoalsToResult(rawGoals.gf, rawGoals.gc, result, matchSeed);
+      tightenScoreline(
+        aligned.goalsFor,
+        aligned.goalsAgainst,
+        result,
+        outcome,
+        team.attackOverload,
+      );
 
     matches.push({
       stage,

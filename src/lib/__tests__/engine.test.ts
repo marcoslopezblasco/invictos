@@ -2,7 +2,11 @@ import { describe, expect, it } from "vitest";
 import type { Player, PlayerAppearance } from "@/types/player";
 import type { DraftedPlayer } from "@/types/simulation";
 import { getFormationString, calculateBalanceScore } from "../formations";
-import { buildTeamProfile, calculateMarginalContribution } from "../scoring";
+import {
+  buildTeamProfile,
+  calculateMarginalContribution,
+  computeAttackOverload,
+} from "../scoring";
 import {
   simulateTournament,
   simulateMatchScore,
@@ -129,6 +133,15 @@ describe("scoring", () => {
     expect(team.formation).toBe("4-4-2");
     expect(team.tournamentPower).toBeGreaterThan(70);
     expect(team.goalkeeperQuality).toBeGreaterThan(80);
+    expect(team.attackOverload).toBeLessThan(0.35);
+  });
+
+  it("attack overload is high for front-heavy XIs", () => {
+    const chaos = buildChaosXI();
+    const counts = { GK: 1, DEF: 1, MID: 3, FWD: 6 };
+    const team = buildTeamProfile(chaos);
+    expect(team.attackOverload).toBeGreaterThan(0.45);
+    expect(computeAttackOverload(counts, team.attackPower, team.defensiveSecurity)).toBeGreaterThan(0.45);
   });
 
   it("crushes tournament power for structurally broken XIs", () => {
@@ -241,6 +254,22 @@ describe("simulation", () => {
     for (const m of result.matches) {
       expect(m.opponentCountry).toBeUndefined();
     }
+  });
+
+  it("balanced XI produces modest scorelines on average", () => {
+    const xi = buildFixtureXI();
+    let totalGoals = 0;
+    let matches = 0;
+    for (let i = 0; i < 40; i++) {
+      const r = simulateTournament(`Modest ${i}`, xi, "en");
+      for (const m of r.matches) {
+        totalGoals += m.goalsFor + m.goalsAgainst;
+        matches++;
+        expect(m.goalsFor).toBeLessThanOrEqual(5);
+        expect(m.goalsAgainst).toBeLessThanOrEqual(4);
+      }
+    }
+    expect(totalGoals / matches).toBeLessThan(5.5);
   });
 
   it("scorelines always match result (no 5-2 penalty loss)", () => {

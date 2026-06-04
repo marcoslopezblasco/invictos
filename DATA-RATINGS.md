@@ -76,6 +76,8 @@ Classic’s visible stats are offset by a harder abstract-bracket sim.
 
 A stacked attack line cannot mask a non-existent defense in the tournament sim.
 
+**Scorelines:** Base expected goals are low (~1–2 total for balanced XIs). High-scoring games (4–5 goals per side) only when `attackOverload` is high (4+ forwards, 4-2-4 / 3-4-3, attack ≫ defense). Outcome bands cap margins (narrow win → mostly 1-goal wins).
+
 ## Historic simulation mode
 
 `GameMode: "historico"` — card UI same as Classic; tournament faces **real national teams** from the 24-country set only.

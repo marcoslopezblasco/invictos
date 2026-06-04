@@ -75,6 +75,11 @@ export function buildTeamProfile(players: DraftedPlayer[]): TeamProfile {
     avg(fwd.map((p) => p.player.profile.control)) * 0.1;
 
   const balance = calculateBalanceScore(counts);
+  const attackOverload = computeAttackOverload(
+    counts,
+    attackPower,
+    defensiveSecurity,
+  );
 
   const tournamentPower =
     attackPower * 0.28 +
@@ -93,7 +98,30 @@ export function buildTeamProfile(players: DraftedPlayer[]): TeamProfile {
     goalkeeperQuality: round2(gkOverall),
     tournamentPower: round2(tournamentPower),
     formation: getFormationString(counts),
+    attackOverload: round2(attackOverload * 100) / 100,
   };
+}
+
+/** 0 = balanced/low scoring potential; 1 = goalfest profile. */
+export function computeAttackOverload(
+  counts: ReturnType<typeof countPositions>,
+  attackPower: number,
+  defensiveSecurity: number,
+): number {
+  let score = 0;
+  if (counts.FWD >= 5) score += 0.32;
+  else if (counts.FWD >= 4) score += 0.18;
+  if (counts.FWD >= 4 && counts.DEF <= 3) score += 0.12;
+
+  const ratio = attackPower / Math.max(defensiveSecurity, 42);
+  if (ratio > 1.08) score += Math.min(0.28, (ratio - 1.08) * 1.4);
+
+  const form = getFormationString(counts);
+  if (form === "4-2-4" || form === "3-4-3" || form === "3-3-4" || form === "2-4-4") {
+    score += 0.22;
+  }
+
+  return Math.max(0, Math.min(1, score));
 }
 
 function round2(n: number): number {
