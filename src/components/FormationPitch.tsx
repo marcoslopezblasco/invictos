@@ -24,15 +24,15 @@ export function FormationPitch({
 
   const flagSize = share ? 16 : compact ? 14 : 18;
   const nameClass = share
-    ? "text-[20px]"
+    ? "text-[10px]"
     : compact
-      ? "text-[18px]"
-      : "text-[20px]";
+      ? "text-[9px]"
+      : "text-[10px]";
   const posClass = share
-    ? "text-[18px]"
+    ? "text-[9px]"
     : compact
-      ? "text-[16px]"
-      : "text-[18px]";
+      ? "text-[8px]"
+      : "text-[9px]";
   const nodeWidth = share
     ? "min-w-[56px] max-w-[68px]"
     : compact

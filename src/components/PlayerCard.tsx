@@ -24,55 +24,54 @@ export function PlayerCard({
   const matches = p.matches ?? 0;
   const showStats = showsClassicCardStats(mode);
 
-  if (!showStats) {
-    return (
-      <button
-        type="button"
-        onClick={onSelect}
-        className="card-sticker w-full rounded-lg px-2.5 py-2 text-left transition active:scale-[0.98]"
-      >
-        <div className="flex items-center justify-between gap-2 leading-none">
-          <span className="min-w-0 truncate text-sm font-black">
-            {appearance.displayName}
-          </span>
-          <span className="shrink-0 text-xs font-bold text-amber-800/85">
-            {appearance.position}
-          </span>
-        </div>
-      </button>
-    );
-  }
-
   return (
     <button
       type="button"
       onClick={onSelect}
-      className="card-sticker w-full rounded-lg px-2.5 py-2 text-left transition active:scale-[0.98]"
+      className="card-sticker w-full rounded-xl p-3 text-left transition active:scale-[0.98]"
     >
-      <div className="flex items-center gap-2 leading-tight">
-        <CountryFlag country={appearance.country} size={22} className="shrink-0" />
+      <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5">
-            <span className="min-w-0 flex-1 truncate text-sm font-black text-amber-950">
-              {appearance.displayName}
-            </span>
-            <span className="shrink-0 text-xs font-bold text-amber-800/85">
-              {appearance.position}
-            </span>
-            <span
-              className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-black uppercase leading-none ${tierBadgeClass(p.overall)}`}
-            >
-              {tierLabel(locale, p.overall)}
+          <div className="flex items-center gap-1.5 text-xs font-medium text-amber-900/70">
+            <CountryFlag country={appearance.country} size={18} />
+            <span>
+              {appearance.country} {appearance.worldCup}
             </span>
           </div>
-          <p className="mt-0.5 truncate text-xs text-amber-900/70">
-            {appearance.country} {appearance.worldCup}
-            {" · "}
-            {worldCups} {t(locale, "card.wcShort")}
-            {" · "}
-            {matches} {t(locale, "card.matchesShort")}
-          </p>
+          <div className="text-base font-bold leading-tight">{appearance.displayName}</div>
+          {showStats ? (
+            <p className="mt-1 flex flex-wrap items-baseline gap-x-1 gap-y-0.5 text-xs leading-snug text-amber-900/75">
+              <span className="font-semibold text-amber-900/90">
+                {t(locale, "card.pos")}: {appearance.position}
+              </span>
+              <span className="text-amber-900/40" aria-hidden>
+                ·
+              </span>
+              <span>
+                {t(locale, "card.worldCups")}:{" "}
+                <span className="font-black text-amber-950">{worldCups}</span>
+              </span>
+              <span className="text-amber-900/40" aria-hidden>
+                ·
+              </span>
+              <span>
+                {t(locale, "card.matches")}:{" "}
+                <span className="font-black text-amber-950">{matches}</span>
+              </span>
+            </p>
+          ) : (
+            <div className="mt-0.5 text-xs font-semibold text-amber-900/80">
+              {t(locale, "card.pos")}: {appearance.position}
+            </div>
+          )}
         </div>
+        {showStats && (
+          <div
+            className={`shrink-0 rounded-lg px-2 py-1 text-center text-[10px] font-black uppercase tracking-wide ${tierBadgeClass(p.overall)}`}
+          >
+            {tierLabel(locale, p.overall)}
+          </div>
+        )}
       </div>
     </button>
   );

@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Geist } from "next/font/google";
 import "./globals.css";
 import { ClientAppShell } from "@/components/ClientAppShell";
 
-const superDario = localFont({
-  src: "./fonts/SuperDario-Regular.otf",
-  variable: "--font-super-dario",
-  display: "swap",
+const geist = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -26,8 +25,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${superDario.variable} h-full`}>
-      <body className={`${superDario.className} min-h-full font-sans antialiased`}>
+    <html lang="es" className={`${geist.variable} h-full`}>
+      <body className="min-h-full font-sans antialiased">
         <ClientAppShell>{children}</ClientAppShell>
       </body>
     </html>

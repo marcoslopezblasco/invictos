@@ -18,7 +18,7 @@ export function CountryFlag({
     const initials = getCountryByName(country)?.id.slice(0, 2).toUpperCase() ?? "?";
     return (
       <span
-        className={`inline-flex shrink-0 items-center justify-center rounded-sm bg-amber-900/15 text-[18px] font-bold text-amber-900/60 ${className}`}
+        className={`inline-flex shrink-0 items-center justify-center rounded-sm bg-amber-900/15 text-[9px] font-bold text-amber-900/60 ${className}`}
         style={{ width, height }}
         aria-hidden
       >

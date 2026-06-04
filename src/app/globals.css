@@ -15,19 +15,13 @@
 @theme inline {
   --color-background: var(--bg);
   --color-foreground: var(--text);
-  --font-sans: var(--font-super-dario), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-super-dario), ui-monospace, monospace;
-}
-
-html {
-  /* 200% root: doubles all rem-based Tailwind text (text-sm, text-xl, etc.) */
-  font-size: 200%;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, monospace;
 }
 
 body {
   background: var(--bg);
   color: var(--text);
-  letter-spacing: 0.02em;
   background-image: radial-gradient(
       ellipse at 20% 0%,
       rgba(45, 138, 78, 0.12) 0%,
