@@ -70,11 +70,11 @@ Simulation still uses numeric `profile.*`. Classic mode cards show:
 | ≥95 | Leyenda |
 | ≥90 | Icono |
 | ≥85 | Crack |
-| ≥80 | Estrella |
+| ≥80 | Beast |
 | ≥75 | Sólido |
 | ≥70 | Regular |
-| ≥65 | Plantilla |
-| &lt;65 | Suplente |
+| ≥65 | Titular |
+| &lt;65 | Flojo |
 
 ### Why 100 was too common (fixed)
 

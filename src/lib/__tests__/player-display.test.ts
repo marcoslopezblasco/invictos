@@ -22,6 +22,7 @@ describe("player display tiers", () => {
 
   it("returns localized labels", () => {
     expect(tierLabel("es", 96)).toBe("Leyenda");
-    expect(tierLabel("en", 64)).toBe("Fringe");
+    expect(tierLabel("es", 84)).toBe("Beast");
+    expect(tierLabel("es", 64)).toBe("Flojo");
   });
 });
