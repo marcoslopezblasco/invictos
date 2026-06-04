@@ -1,21 +1,27 @@
 "use client";
 
 import type { Player, PlayerAppearance } from "@/types/player";
-import type { GameMode } from "@/types/simulation";
+import type { GameMode, Language } from "@/types/simulation";
 import { CountryFlag } from "./CountryFlag";
+import { tierBadgeClass, tierLabel } from "@/lib/player-display";
+import { t } from "@/lib/i18n";
 
 export function PlayerCard({
   appearance,
   player,
   mode,
+  locale,
   onSelect,
 }: {
   appearance: PlayerAppearance;
   player: Player;
   mode: GameMode;
+  locale: Language;
   onSelect: () => void;
 }) {
   const p = player.profile;
+  const worldCups = player.worldCupsPlayed.length;
+  const matches = p.matches ?? 0;
 
   return (
     <button
@@ -24,7 +30,7 @@ export function PlayerCard({
       className="card-sticker w-full rounded-xl p-3 text-left transition active:scale-[0.98]"
     >
       <div className="flex items-start justify-between gap-2">
-        <div>
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5 text-xs font-medium text-amber-900/70">
             <CountryFlag country={appearance.country} size={18} />
             <span>
@@ -37,26 +43,23 @@ export function PlayerCard({
           </div>
         </div>
         {mode === "classic" && (
-          <div className="rounded-lg bg-amber-900/10 px-2 py-1 text-center">
-            <div className="text-[10px] uppercase text-amber-900/60">OVR</div>
-            <div className="text-lg font-black">{p.overall}</div>
+          <div
+            className={`shrink-0 rounded-lg px-2 py-1 text-center text-[10px] font-black uppercase tracking-wide ${tierBadgeClass(p.overall)}`}
+          >
+            {tierLabel(locale, p.overall)}
           </div>
         )}
       </div>
       {mode === "classic" && (
-        <div className="mt-2 grid grid-cols-5 gap-1 text-[10px] font-semibold">
-          {[
-            ["ATK", p.attack],
-            ["DEF", p.defense],
-            ["CTL", p.control],
-            ["MEN", p.mentality],
-            ["FIS", p.physical],
-          ].map(([label, val]) => (
-            <div key={label as string} className="rounded bg-amber-900/8 px-1 py-0.5 text-center">
-              <div className="text-amber-900/50">{label}</div>
-              <div>{val}</div>
-            </div>
-          ))}
+        <div className="mt-2 grid grid-cols-2 gap-2 text-[10px] font-semibold">
+          <div className="rounded bg-amber-900/8 px-2 py-1">
+            <div className="text-amber-900/50">{t(locale, "card.worldCups")}</div>
+            <div className="text-sm font-black text-amber-950">{worldCups}</div>
+          </div>
+          <div className="rounded bg-amber-900/8 px-2 py-1">
+            <div className="text-amber-900/50">{t(locale, "card.matches")}</div>
+            <div className="text-sm font-black text-amber-950">{matches}</div>
+          </div>
         </div>
       )}
     </button>

@@ -55,6 +55,27 @@ After computing base ratings:
 
 **Auto cap:** computed profiles (after all boosts) clamp to **max OVR 96** and **max stat 98**. Only `manual-overrides.json` can assign 97–100 (reserved for a handful of all-time greats).
 
+## Visible card stats (UI only)
+
+Simulation still uses numeric `profile.*`. Classic mode cards show:
+
+| Visible | Source |
+|---------|--------|
+| Mundiales | `worldCupsPlayed.length` |
+| Partidos | `profile.matches` (WC career apps) |
+| Tier label | Mapped from hidden `overall` — never show the number |
+
+| OVR (hidden) | Tier (ES) |
+|-------------:|-----------|
+| ≥95 | Leyenda |
+| ≥90 | Icono |
+| ≥85 | Crack |
+| ≥80 | Estrella |
+| ≥75 | Sólido |
+| ≥70 | Regular |
+| ≥65 | Plantilla |
+| &lt;65 | Suplente |
+
 ### Why 100 was too common (fixed)
 
 Previously elite tier used ×1.08 + OVR floor 88, then scaled every attribute proportionally. Top WC scorers with max goals + apps already had ~90+ bases, so many stats hit `clamp(100)` → **34 players at OVR 100** with no manual override.

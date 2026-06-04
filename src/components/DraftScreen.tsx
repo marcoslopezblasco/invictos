@@ -165,13 +165,14 @@ export function DraftScreen() {
             const player = indexes.playersById.get(app.playerId);
             if (!player) return null;
             return (
-              <PlayerCard
-                key={app.id}
-                appearance={app}
-                player={player}
-                mode={mode}
-                onSelect={() => selectPlayer(app.id)}
-              />
+            <PlayerCard
+              key={app.id}
+              appearance={app}
+              player={player}
+              mode={mode}
+              locale={locale}
+              onSelect={() => selectPlayer(app.id)}
+            />
             );
           })
         )}
