@@ -41,7 +41,7 @@ const translations: Record<Locale, Record<string, string>> = {
     "badge.ELIMINATED": "Eliminado",
     "how.title": "Cómo funciona",
     "how.body":
-      "1. Elige modo Classic o Blind.\n2. Draftea 11 jugadores (País + Mundial por ronda).\n3. Asigna posición (GK/DEF/MID/FWD) a cada uno.\n4. Tienes 3 rerolls.\n5. No puedes repetir jugador.\n6. Simula un Mundial de 7 partidos.",
+      "1. Elige modo Classic o Blind.\n2. Draftea 11 jugadores (País + Mundial por ronda).\n3. Tienes 3 rerolls.\n4. No puedes repetir jugador.\n5. Simula un Mundial de 7 partidos.\n6. Descubre si tu XI gana invicto.",
     "recent.title": "Partidas recientes",
   },
   en: {
@@ -82,7 +82,7 @@ const translations: Record<Locale, Record<string, string>> = {
     "badge.ELIMINATED": "Eliminated",
     "how.title": "How it works",
     "how.body":
-      "1. Pick Classic or Blind mode.\n2. Draft 11 players (Country + World Cup each round).\n3. Assign each player's position (GK/DEF/MID/FWD).\n4. You get 3 rerolls.\n5. No duplicate players.\n6. Simulate a 7-match World Cup.",
+      "1. Pick Classic or Blind mode.\n2. Draft 11 World Cup players (Country + World Cup each round).\n3. You get 3 rerolls.\n4. No duplicate players.\n5. Simulate a 7-match World Cup.\n6. See if your XI wins undefeated.",
     "recent.title": "Recent games",
   },
 };

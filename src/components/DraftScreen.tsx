@@ -1,33 +1,17 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useGame } from "@/context/GameContext";
 import { loadData, getAppearancesById } from "@/lib/data";
-import {
-  getPositionCountsFromPicks,
-  getValidAssignedPositions,
-  getPositionUrgency,
-} from "@/lib/draft";
+import { getPositionCountsFromPicks, getPositionUrgency } from "@/lib/draft";
 import { TOTAL_PICKS } from "@/types/game";
 import { t } from "@/lib/i18n";
-import { getFlagForCountry } from "@/lib/data";
-import type { Position } from "@/types/player";
 import { TeamBuilderPanel } from "./TeamBuilderPanel";
-import { PositionPicker } from "./PositionPicker";
+import { CountryFlag } from "./CountryFlag";
 import { PlayerCard } from "./PlayerCard";
 
 export function DraftScreen() {
-  const {
-    gameState,
-    eligible,
-    reroll,
-    beginPlayerSelection,
-    confirmPlayerPosition,
-    cancelPlayerSelection,
-    pendingAppearance,
-    locale,
-    mode,
-  } = useGame();
+  const { gameState, eligible, reroll, selectPlayer, locale, mode } = useGame();
   const indexes = useMemo(() => loadData(), []);
   const appearancesById = useMemo(() => getAppearancesById(), []);
 
@@ -42,17 +26,6 @@ export function DraftScreen() {
   );
   const urgency = getPositionUrgency(counts, picksLeft, locale);
   const spin = gameState.currentSpin;
-  const flag = getFlagForCountry(spin.country);
-
-  const pendingPlayer = pendingAppearance
-    ? indexes.playersById.get(pendingAppearance.playerId)
-    : null;
-  const validPositions = getValidAssignedPositions(counts, picksLeft);
-  const defaultPosition: Position =
-    pendingPlayer?.position ??
-    pendingAppearance?.position ??
-    validPositions[0] ??
-    "MID";
 
   return (
     <div className="flex flex-col gap-4 px-4 pb-8">
@@ -73,57 +46,43 @@ export function DraftScreen() {
         </p>
       )}
 
-      {!pendingAppearance && (
-        <>
-          <div className="paper-texture rounded-2xl border-2 border-amber-800/30 p-4 text-center">
-            <div className="text-3xl">{flag}</div>
-            <div className="text-xl font-black text-amber-950">
-              {spin.country} {spin.worldCup}
-            </div>
-          </div>
+      <div className="paper-texture rounded-2xl border-2 border-amber-800/30 p-4 text-center">
+        <div className="flex justify-center">
+          <CountryFlag country={spin.country} size={48} />
+        </div>
+        <div className="mt-2 text-xl font-black text-amber-950">
+          {spin.country} {spin.worldCup}
+        </div>
+      </div>
 
-          <button
-            type="button"
-            disabled={gameState.rerollsRemaining <= 0}
-            onClick={reroll}
-            className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] py-3 text-sm font-semibold disabled:opacity-40"
-          >
-            {t(locale, "draft.reroll")}
-          </button>
+      <button
+        type="button"
+        disabled={gameState.rerollsRemaining <= 0}
+        onClick={reroll}
+        className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] py-3 text-sm font-semibold disabled:opacity-40"
+      >
+        {t(locale, "draft.reroll")}
+      </button>
 
-          <p className="text-sm font-semibold text-[var(--text-muted)]">
-            {t(locale, "draft.choose")}
-          </p>
+      <p className="text-sm font-semibold text-[var(--text-muted)]">
+        {t(locale, "draft.choose")}
+      </p>
 
-          <div className="flex flex-col gap-2">
-            {eligible.map((app) => {
-              const player = indexes.playersById.get(app.playerId);
-              if (!player) return null;
-              return (
-                <PlayerCard
-                  key={app.id}
-                  appearance={app}
-                  player={player}
-                  mode={mode}
-                  onSelect={() => beginPlayerSelection(app.id)}
-                />
-              );
-            })}
-          </div>
-        </>
-      )}
-
-      {pendingAppearance && pendingPlayer && (
-        <PositionPicker
-          appearance={pendingAppearance}
-          player={pendingPlayer}
-          validPositions={validPositions}
-          defaultPosition={defaultPosition}
-          locale={locale}
-          onConfirm={confirmPlayerPosition}
-          onCancel={cancelPlayerSelection}
-        />
-      )}
+      <div className="flex flex-col gap-2">
+        {eligible.map((app) => {
+          const player = indexes.playersById.get(app.playerId);
+          if (!player) return null;
+          return (
+            <PlayerCard
+              key={app.id}
+              appearance={app}
+              player={player}
+              mode={mode}
+              onSelect={() => selectPlayer(app.id)}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 }

@@ -35,7 +35,7 @@ After computing base ratings:
 
 | Tier | Count | Rule |
 |------|------:|------|
-| Elite | Top 80 WC goal scorers | `applyLegendBoost(..., "elite")` |
+| Elite | Top 80 WC goal scorers (min 1 goal) | `applyLegendBoost(..., "elite")` — preserves position stat shape |
 | Star | Next 120 | `"star"` |
 | Notable | Next 100 | `"notable"` |
 

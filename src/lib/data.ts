@@ -64,6 +64,11 @@ export function getCountryByName(name: string): Country | undefined {
   return getCountries().find((c) => c.name === name);
 }
 
+export function getFlagCodeForCountry(name: string): string | null {
+  return getCountryByName(name)?.flagCode ?? null;
+}
+
+/** @deprecated Use CountryFlag component for UI; emoji flags break on Windows */
 export function getFlagForCountry(name: string): string {
   return getCountryByName(name)?.flag ?? "🏳️";
 }

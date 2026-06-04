@@ -9,34 +9,37 @@ export interface CountryDef {
   id: string;
   name: string;
   nameEs: string;
+  /** ISO 3166-1 alpha-2 (or flagcdn code e.g. gb-eng) for flag images */
+  flagCode: string;
   flag: string;
   tier: 1 | 2 | 3;
   worldCups: number[];
 }
 
 export const COUNTRIES: CountryDef[] = [
-  { id: "argentina", name: "Argentina", nameEs: "Argentina", flag: "🇦🇷", tier: 1, worldCups: [1930, 1934, 1958, 1962, 1966, 1974, 1978, 1982, 1986, 1990, 1994, 1998, 2002, 2006, 2010, 2014, 2018, 2022] },
-  { id: "brazil", name: "Brazil", nameEs: "Brasil", flag: "🇧🇷", tier: 1, worldCups: [1930, 1934, 1938, 1950, 1954, 1958, 1962, 1966, 1970, 1974, 1978, 1982, 1986, 1990, 1994, 1998, 2002, 2006, 2010, 2014, 2018, 2022] },
-  { id: "germany", name: "Germany", nameEs: "Alemania", flag: "🇩🇪", tier: 1, worldCups: [1934, 1938, 1954, 1958, 1962, 1966, 1970, 1974, 1978, 1982, 1986, 1990, 1994, 1998, 2002, 2006, 2010, 2014, 2018, 2022] },
-  { id: "france", name: "France", nameEs: "Francia", flag: "🇫🇷", tier: 1, worldCups: [1930, 1934, 1938, 1954, 1958, 1966, 1978, 1982, 1986, 1998, 2002, 2006, 2010, 2014, 2018, 2022] },
-  { id: "italy", name: "Italy", nameEs: "Italia", flag: "🇮🇹", tier: 1, worldCups: [1934, 1938, 1950, 1954, 1962, 1966, 1970, 1974, 1978, 1982, 1986, 1990, 1994, 1998, 2002, 2006, 2010, 2014] },
-  { id: "spain", name: "Spain", nameEs: "España", flag: "🇪🇸", tier: 1, worldCups: [1934, 1950, 1962, 1966, 1978, 1982, 1986, 1990, 1994, 1998, 2002, 2006, 2010, 2014, 2018, 2022] },
-  { id: "netherlands", name: "Netherlands", nameEs: "Países Bajos", flag: "🇳🇱", tier: 1, worldCups: [1934, 1938, 1974, 1978, 1990, 1994, 1998, 2002, 2006, 2010, 2014, 2022] },
-  { id: "england", name: "England", nameEs: "Inglaterra", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", tier: 1, worldCups: [1950, 1954, 1958, 1962, 1966, 1970, 1982, 1986, 1990, 1998, 2002, 2006, 2010, 2014, 2018, 2022] },
-  { id: "portugal", name: "Portugal", nameEs: "Portugal", flag: "🇵🇹", tier: 2, worldCups: [1966, 1986, 2002, 2006, 2010, 2014, 2018, 2022] },
-  { id: "uruguay", name: "Uruguay", nameEs: "Uruguay", flag: "🇺🇾", tier: 2, worldCups: [1930, 1950, 1954, 1962, 1966, 1970, 1974, 1986, 1990, 2002, 2010, 2014, 2018, 2022] },
-  { id: "croatia", name: "Croatia", nameEs: "Croacia", flag: "🇭🇷", tier: 2, worldCups: [1998, 2002, 2006, 2014, 2018, 2022] },
-  { id: "belgium", name: "Belgium", nameEs: "Bélgica", flag: "🇧🇪", tier: 2, worldCups: [1930, 1934, 1938, 1954, 1970, 1982, 1986, 1990, 1994, 1998, 2002, 2014, 2018, 2022] },
-  { id: "mexico", name: "Mexico", nameEs: "México", flag: "🇲🇽", tier: 2, worldCups: [1930, 1950, 1954, 1958, 1962, 1966, 1970, 1978, 1986, 1994, 1998, 2002, 2006, 2010, 2014, 2018, 2022] },
-  { id: "colombia", name: "Colombia", nameEs: "Colombia", flag: "🇨🇴", tier: 2, worldCups: [1962, 1990, 1994, 1998, 2002, 2014, 2018, 2022] },
-  { id: "chile", name: "Chile", nameEs: "Chile", flag: "🇨🇱", tier: 2, worldCups: [1930, 1950, 1962, 1966, 1974, 1982, 1998, 2010, 2014] },
-  { id: "sweden", name: "Sweden", nameEs: "Suecia", flag: "🇸🇪", tier: 2, worldCups: [1934, 1938, 1950, 1958, 1970, 1974, 1978, 1990, 1994, 2002, 2006, 2018] },
-  { id: "denmark", name: "Denmark", nameEs: "Dinamarca", flag: "🇩🇰", tier: 3, worldCups: [1986, 1998, 2002, 2010, 2018, 2022] },
-  { id: "poland", name: "Poland", nameEs: "Polonia", flag: "🇵🇱", tier: 3, worldCups: [1938, 1974, 1978, 1982, 1986, 2002, 2006, 2018, 2022] },
+  { id: "argentina", name: "Argentina", nameEs: "Argentina", flagCode: "ar", flag: "🇦🇷", tier: 1, worldCups: [1930, 1934, 1958, 1962, 1966, 1974, 1978, 1982, 1986, 1990, 1994, 1998, 2002, 2006, 2010, 2014, 2018, 2022] },
+  { id: "brazil", name: "Brazil", nameEs: "Brasil", flagCode: "br", flag: "🇧🇷", tier: 1, worldCups: [1930, 1934, 1938, 1950, 1954, 1958, 1962, 1966, 1970, 1974, 1978, 1982, 1986, 1990, 1994, 1998, 2002, 2006, 2010, 2014, 2018, 2022] },
+  { id: "germany", name: "Germany", nameEs: "Alemania", flagCode: "de", flag: "🇩🇪", tier: 1, worldCups: [1934, 1938, 1954, 1958, 1962, 1966, 1970, 1974, 1978, 1982, 1986, 1990, 1994, 1998, 2002, 2006, 2010, 2014, 2018, 2022] },
+  { id: "france", name: "France", nameEs: "Francia", flagCode: "fr", flag: "🇫🇷", tier: 1, worldCups: [1930, 1934, 1938, 1954, 1958, 1966, 1978, 1982, 1986, 1998, 2002, 2006, 2010, 2014, 2018, 2022] },
+  { id: "italy", name: "Italy", nameEs: "Italia", flagCode: "it", flag: "🇮🇹", tier: 1, worldCups: [1934, 1938, 1950, 1954, 1962, 1966, 1970, 1974, 1978, 1982, 1986, 1990, 1994, 1998, 2002, 2006, 2010, 2014] },
+  { id: "spain", name: "Spain", nameEs: "España", flagCode: "es", flag: "🇪🇸", tier: 1, worldCups: [1934, 1950, 1962, 1966, 1978, 1982, 1986, 1990, 1994, 1998, 2002, 2006, 2010, 2014, 2018, 2022] },
+  { id: "netherlands", name: "Netherlands", nameEs: "Países Bajos", flagCode: "nl", flag: "🇳🇱", tier: 1, worldCups: [1934, 1938, 1974, 1978, 1990, 1994, 1998, 2002, 2006, 2010, 2014, 2022] },
+  { id: "england", name: "England", nameEs: "Inglaterra", flagCode: "gb-eng", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", tier: 1, worldCups: [1950, 1954, 1958, 1962, 1966, 1970, 1982, 1986, 1990, 1998, 2002, 2006, 2010, 2014, 2018, 2022] },
+  { id: "portugal", name: "Portugal", nameEs: "Portugal", flagCode: "pt", flag: "🇵🇹", tier: 2, worldCups: [1966, 1986, 2002, 2006, 2010, 2014, 2018, 2022] },
+  { id: "uruguay", name: "Uruguay", nameEs: "Uruguay", flagCode: "uy", flag: "🇺🇾", tier: 2, worldCups: [1930, 1950, 1954, 1962, 1966, 1970, 1974, 1986, 1990, 2002, 2010, 2014, 2018, 2022] },
+  { id: "croatia", name: "Croatia", nameEs: "Croacia", flagCode: "hr", flag: "🇭🇷", tier: 2, worldCups: [1998, 2002, 2006, 2014, 2018, 2022] },
+  { id: "belgium", name: "Belgium", nameEs: "Bélgica", flagCode: "be", flag: "🇧🇪", tier: 2, worldCups: [1930, 1934, 1938, 1954, 1970, 1982, 1986, 1990, 1994, 1998, 2002, 2014, 2018, 2022] },
+  { id: "mexico", name: "Mexico", nameEs: "México", flagCode: "mx", flag: "🇲🇽", tier: 2, worldCups: [1930, 1950, 1954, 1958, 1962, 1966, 1970, 1978, 1986, 1994, 1998, 2002, 2006, 2010, 2014, 2018, 2022] },
+  { id: "colombia", name: "Colombia", nameEs: "Colombia", flagCode: "co", flag: "🇨🇴", tier: 2, worldCups: [1962, 1990, 1994, 1998, 2002, 2014, 2018, 2022] },
+  { id: "chile", name: "Chile", nameEs: "Chile", flagCode: "cl", flag: "🇨🇱", tier: 2, worldCups: [1930, 1950, 1962, 1966, 1974, 1982, 1998, 2010, 2014] },
+  { id: "sweden", name: "Sweden", nameEs: "Suecia", flagCode: "se", flag: "🇸🇪", tier: 2, worldCups: [1934, 1938, 1950, 1958, 1970, 1974, 1978, 1990, 1994, 2002, 2006, 2018] },
+  { id: "denmark", name: "Denmark", nameEs: "Dinamarca", flagCode: "dk", flag: "🇩🇰", tier: 3, worldCups: [1986, 1998, 2002, 2010, 2018, 2022] },
+  { id: "poland", name: "Poland", nameEs: "Polonia", flagCode: "pl", flag: "🇵🇱", tier: 3, worldCups: [1938, 1974, 1978, 1982, 1986, 2002, 2006, 2018, 2022] },
   {
     id: "serbia",
     name: "Serbia",
     nameEs: "Serbia",
+    flagCode: "rs",
     flag: "🇷🇸",
     tier: 3,
     worldCups: [1930, 1938, 1950, 1954, 1958, 1962, 1966, 1974, 1982, 1990, 1998, 2002, 2006, 2010, 2018, 2022],
@@ -45,14 +48,15 @@ export const COUNTRIES: CountryDef[] = [
     id: "czech",
     name: "Czech Republic",
     nameEs: "Rep. Checa",
+    flagCode: "cz",
     flag: "🇨🇿",
     tier: 3,
     worldCups: [1934, 1938, 1954, 1958, 1962, 1970, 1982, 1990, 2006],
   },
-  { id: "hungary", name: "Hungary", nameEs: "Hungría", flag: "🇭🇺", tier: 3, worldCups: [1934, 1938, 1954, 1958, 1962, 1966, 1978, 1982, 1986] },
-  { id: "cameroon", name: "Cameroon", nameEs: "Camerún", flag: "🇨🇲", tier: 3, worldCups: [1982, 1990, 1994, 1998, 2002, 2010, 2014, 2022] },
-  { id: "nigeria", name: "Nigeria", nameEs: "Nigeria", flag: "🇳🇬", tier: 3, worldCups: [1994, 1998, 2002, 2010, 2014, 2018] },
-  { id: "morocco", name: "Morocco", nameEs: "Marruecos", flag: "🇲🇦", tier: 3, worldCups: [1970, 1986, 1994, 1998, 2018, 2022] },
+  { id: "hungary", name: "Hungary", nameEs: "Hungría", flagCode: "hu", flag: "🇭🇺", tier: 3, worldCups: [1934, 1938, 1954, 1958, 1962, 1966, 1978, 1982, 1986] },
+  { id: "cameroon", name: "Cameroon", nameEs: "Camerún", flagCode: "cm", flag: "🇨🇲", tier: 3, worldCups: [1982, 1990, 1994, 1998, 2002, 2010, 2014, 2022] },
+  { id: "nigeria", name: "Nigeria", nameEs: "Nigeria", flagCode: "ng", flag: "🇳🇬", tier: 3, worldCups: [1994, 1998, 2002, 2010, 2014, 2018] },
+  { id: "morocco", name: "Morocco", nameEs: "Marruecos", flagCode: "ma", flag: "🇲🇦", tier: 3, worldCups: [1970, 1986, 1994, 1998, 2018, 2022] },
 ];
 
 /** Map Fjelstul / historical team names → Invictos country name */

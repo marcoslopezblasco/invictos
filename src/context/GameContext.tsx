@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import type { GameState } from "@/types/game";
+import type { PlayerAppearance } from "@/types/player";
 import type { GameMode, Language } from "@/types/simulation";
 import { TOTAL_PICKS } from "@/types/game";
 import { loadData, getInitialSpin, getAppearancesById } from "@/lib/data";
@@ -22,7 +23,6 @@ import {
   sortEligibleByContribution,
 } from "@/lib/draft";
 import { simulateTournament } from "@/lib/simulation";
-import type { PlayerAppearance, Position } from "@/types/player";
 import {
   clearActiveGame,
   saveActiveGame,
@@ -40,10 +40,7 @@ interface GameContextValue {
   startGame: (teamName: string) => void;
   restoreGame: (state: GameState) => void;
   reroll: () => void;
-  pendingAppearance: PlayerAppearance | null;
-  beginPlayerSelection: (appearanceId: string) => void;
-  confirmPlayerPosition: (position: Position) => void;
-  cancelPlayerSelection: () => void;
+  selectPlayer: (appearanceId: string) => void;
   runSimulation: () => SavedResult | null;
   isDraftComplete: boolean;
 }
@@ -67,8 +64,6 @@ export function GameProvider({
   const [mode, setMode] = useState<GameMode>(initialMode);
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [spinCounter, setSpinCounter] = useState(0);
-  const [pendingAppearance, setPendingAppearance] =
-    useState<PlayerAppearance | null>(null);
 
   const indexes = useMemo(() => loadData(), []);
   const appearancesById = useMemo(() => getAppearancesById(), []);
@@ -119,23 +114,12 @@ export function GameProvider({
     saveActiveGame({ gameStateJson: JSON.stringify(next) });
   }, [gameState, indexes, spinCounter]);
 
-  const beginPlayerSelection = useCallback(
+  const selectPlayer = useCallback(
     (appearanceId: string) => {
       if (!gameState?.currentSpin) return;
       const appearance = appearancesById.get(appearanceId);
-      if (!appearance) return;
-      setPendingAppearance(appearance);
-    },
-    [gameState, appearancesById],
-  );
-
-  const cancelPlayerSelection = useCallback(() => {
-    setPendingAppearance(null);
-  }, []);
-
-  const confirmPlayerPosition = useCallback(
-    (assignedPosition: Position) => {
-      if (!gameState?.currentSpin || !pendingAppearance) return;
+      const player = indexes.playersById.get(appearance?.playerId ?? "");
+      if (!appearance || !player) return;
 
       const picksLeft = TOTAL_PICKS - gameState.picks.length - 1;
       const nextSpin =
@@ -147,13 +131,7 @@ export function GameProvider({
             )
           : null;
 
-      const next = applyPick(
-        gameState,
-        pendingAppearance,
-        assignedPosition,
-        nextSpin,
-      );
-      setPendingAppearance(null);
+      const next = applyPick(gameState, appearance, player, nextSpin);
       setGameState(next);
       setSpinCounter((c) => c + 1);
       if (next.picks.length >= TOTAL_PICKS) {
@@ -162,7 +140,7 @@ export function GameProvider({
         saveActiveGame({ gameStateJson: JSON.stringify(next) });
       }
     },
-    [gameState, pendingAppearance, appearancesById, indexes, spinCounter],
+    [gameState, appearancesById, indexes, spinCounter],
   );
 
   const runSimulation = useCallback((): SavedResult | null => {
@@ -208,10 +186,7 @@ export function GameProvider({
     startGame,
     restoreGame,
     reroll,
-    pendingAppearance,
-    beginPlayerSelection,
-    confirmPlayerPosition,
-    cancelPlayerSelection,
+    selectPlayer,
     runSimulation,
     isDraftComplete: (gameState?.picks.length ?? 0) >= TOTAL_PICKS,
   };

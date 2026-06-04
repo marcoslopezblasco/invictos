@@ -5,8 +5,8 @@ import type { GameState } from "@/types/game";
 import { TOTAL_PICKS } from "@/types/game";
 import { getPositionCountsFromPicks } from "@/lib/draft";
 import { getFormationString } from "@/lib/formations";
-import { getFlagForCountry } from "@/lib/data";
 import { loadData, getAppearancesById } from "@/lib/data";
+import { CountryFlag } from "./CountryFlag";
 import { t } from "@/lib/i18n";
 import type { Language } from "@/types/simulation";
 import { PositionSlots } from "./PositionSlots";
@@ -39,7 +39,7 @@ export function TeamBuilderPanel({
     return {
       pick,
       name: app?.displayName ?? player?.name ?? "?",
-      flag: getFlagForCountry(pick.country),
+      country: pick.country,
       position:
         pick.assignedPosition ??
         indexes.playersById.get(pick.selectedPlayerId)?.position ??
@@ -71,7 +71,7 @@ export function TeamBuilderPanel({
               <span className="w-4 shrink-0 text-[var(--text-muted)]">
                 {i + 1}
               </span>
-              <span>{slot.flag}</span>
+              <CountryFlag country={slot.country} size={16} />
               <span className="min-w-0 flex-1 truncate font-semibold">
                 {slot.name}
               </span>

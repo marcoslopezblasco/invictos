@@ -37,6 +37,7 @@ export interface Country {
   id: string;
   name: string;
   nameEs: string;
+  flagCode: string;
   flag: string;
   tier: 1 | 2 | 3;
   worldCups: number[];

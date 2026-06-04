@@ -4,7 +4,8 @@ import { useRef } from "react";
 import { toPng } from "html-to-image";
 import type { SavedResult } from "@/lib/storage";
 import { t } from "@/lib/i18n";
-import { getFlagForCountry } from "@/lib/data";
+import { getFlagCodeForCountry } from "@/lib/data";
+import { CountryFlag } from "./CountryFlag";
 
 export function ShareCard({ result }: { result: SavedResult }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -25,9 +26,11 @@ export function ShareCard({ result }: { result: SavedResult }) {
       "INVICTOS",
       result.teamName,
       result.formation,
-      ...result.appearances.map(
-        (a) => `${getFlagForCountry(a.country)} ${a.displayName}`,
-      ),
+      ...result.appearances.map((a) => {
+        const code = getFlagCodeForCountry(a.country);
+        const prefix = code ? `[${code.toUpperCase()}]` : a.country;
+        return `${prefix} ${a.displayName}`;
+      }),
       t(locale, `badge.${result.badge}`),
       `PJ ${tr.played} | PG ${tr.wins} | PE ${tr.draws} | PP ${tr.losses}`,
       `GF ${tr.goalsFor} | GC ${tr.goalsAgainst} | DG ${tr.goalDifference >= 0 ? "+" : ""}${tr.goalDifference}`,
@@ -50,8 +53,9 @@ export function ShareCard({ result }: { result: SavedResult }) {
         <p className="text-center text-sm font-bold">{result.formation}</p>
         <ul className="mt-3 space-y-1 text-xs">
           {result.appearances.slice(0, 11).map((a) => (
-            <li key={a.id}>
-              {getFlagForCountry(a.country)} {a.displayName}
+            <li key={a.id} className="flex items-center gap-2">
+              <CountryFlag country={a.country} size={16} />
+              <span>{a.displayName}</span>
             </li>
           ))}
         </ul>

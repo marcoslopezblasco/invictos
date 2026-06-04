@@ -3,6 +3,7 @@
     "id": "argentina",
     "name": "Argentina",
     "nameEs": "Argentina",
+    "flagCode": "ar",
     "flag": "🇦🇷",
     "tier": 1,
     "worldCups": [
@@ -30,6 +31,7 @@
     "id": "brazil",
     "name": "Brazil",
     "nameEs": "Brasil",
+    "flagCode": "br",
     "flag": "🇧🇷",
     "tier": 1,
     "worldCups": [
@@ -61,6 +63,7 @@
     "id": "germany",
     "name": "Germany",
     "nameEs": "Alemania",
+    "flagCode": "de",
     "flag": "🇩🇪",
     "tier": 1,
     "worldCups": [
@@ -90,6 +93,7 @@
     "id": "france",
     "name": "France",
     "nameEs": "Francia",
+    "flagCode": "fr",
     "flag": "🇫🇷",
     "tier": 1,
     "worldCups": [
@@ -115,6 +119,7 @@
     "id": "italy",
     "name": "Italy",
     "nameEs": "Italia",
+    "flagCode": "it",
     "flag": "🇮🇹",
     "tier": 1,
     "worldCups": [
@@ -142,6 +147,7 @@
     "id": "spain",
     "name": "Spain",
     "nameEs": "España",
+    "flagCode": "es",
     "flag": "🇪🇸",
     "tier": 1,
     "worldCups": [
@@ -167,6 +173,7 @@
     "id": "netherlands",
     "name": "Netherlands",
     "nameEs": "Países Bajos",
+    "flagCode": "nl",
     "flag": "🇳🇱",
     "tier": 1,
     "worldCups": [
@@ -187,6 +194,7 @@
     "id": "england",
     "name": "England",
     "nameEs": "Inglaterra",
+    "flagCode": "gb-eng",
     "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
     "tier": 1,
     "worldCups": [
@@ -212,6 +220,7 @@
     "id": "portugal",
     "name": "Portugal",
     "nameEs": "Portugal",
+    "flagCode": "pt",
     "flag": "🇵🇹",
     "tier": 2,
     "worldCups": [
@@ -229,6 +238,7 @@
     "id": "uruguay",
     "name": "Uruguay",
     "nameEs": "Uruguay",
+    "flagCode": "uy",
     "flag": "🇺🇾",
     "tier": 2,
     "worldCups": [
@@ -252,6 +262,7 @@
     "id": "croatia",
     "name": "Croatia",
     "nameEs": "Croacia",
+    "flagCode": "hr",
     "flag": "🇭🇷",
     "tier": 2,
     "worldCups": [
@@ -267,6 +278,7 @@
     "id": "belgium",
     "name": "Belgium",
     "nameEs": "Bélgica",
+    "flagCode": "be",
     "flag": "🇧🇪",
     "tier": 2,
     "worldCups": [
@@ -290,6 +302,7 @@
     "id": "mexico",
     "name": "Mexico",
     "nameEs": "México",
+    "flagCode": "mx",
     "flag": "🇲🇽",
     "tier": 2,
     "worldCups": [
@@ -316,6 +329,7 @@
     "id": "colombia",
     "name": "Colombia",
     "nameEs": "Colombia",
+    "flagCode": "co",
     "flag": "🇨🇴",
     "tier": 2,
     "worldCups": [
@@ -331,6 +345,7 @@
     "id": "chile",
     "name": "Chile",
     "nameEs": "Chile",
+    "flagCode": "cl",
     "flag": "🇨🇱",
     "tier": 2,
     "worldCups": [
@@ -349,6 +364,7 @@
     "id": "sweden",
     "name": "Sweden",
     "nameEs": "Suecia",
+    "flagCode": "se",
     "flag": "🇸🇪",
     "tier": 2,
     "worldCups": [
@@ -370,6 +386,7 @@
     "id": "denmark",
     "name": "Denmark",
     "nameEs": "Dinamarca",
+    "flagCode": "dk",
     "flag": "🇩🇰",
     "tier": 3,
     "worldCups": [
@@ -385,6 +402,7 @@
     "id": "poland",
     "name": "Poland",
     "nameEs": "Polonia",
+    "flagCode": "pl",
     "flag": "🇵🇱",
     "tier": 3,
     "worldCups": [
@@ -403,6 +421,7 @@
     "id": "serbia",
     "name": "Serbia",
     "nameEs": "Serbia",
+    "flagCode": "rs",
     "flag": "🇷🇸",
     "tier": 3,
     "worldCups": [
@@ -425,6 +444,7 @@
     "id": "czech",
     "name": "Czech Republic",
     "nameEs": "Rep. Checa",
+    "flagCode": "cz",
     "flag": "🇨🇿",
     "tier": 3,
     "worldCups": [
@@ -443,6 +463,7 @@
     "id": "hungary",
     "name": "Hungary",
     "nameEs": "Hungría",
+    "flagCode": "hu",
     "flag": "🇭🇺",
     "tier": 3,
     "worldCups": [
@@ -461,6 +482,7 @@
     "id": "cameroon",
     "name": "Cameroon",
     "nameEs": "Camerún",
+    "flagCode": "cm",
     "flag": "🇨🇲",
     "tier": 3,
     "worldCups": [
@@ -478,6 +500,7 @@
     "id": "nigeria",
     "name": "Nigeria",
     "nameEs": "Nigeria",
+    "flagCode": "ng",
     "flag": "🇳🇬",
     "tier": 3,
     "worldCups": [
@@ -493,6 +516,7 @@
     "id": "morocco",
     "name": "Morocco",
     "nameEs": "Marruecos",
+    "flagCode": "ma",
     "flag": "🇲🇦",
     "tier": 3,
     "worldCups": [

@@ -147,6 +147,7 @@ describe("draft position forcing", () => {
           id: "brazil",
           name: "Brazil",
           nameEs: "Brasil",
+          flagCode: "br",
           flag: "🇧🇷",
           tier: 1,
           worldCups: [2002],

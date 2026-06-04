@@ -2,7 +2,7 @@
 
 import type { Player, PlayerAppearance } from "@/types/player";
 import type { GameMode } from "@/types/simulation";
-import { getFlagForCountry } from "@/lib/data";
+import { CountryFlag } from "./CountryFlag";
 
 export function PlayerCard({
   appearance,
@@ -15,7 +15,6 @@ export function PlayerCard({
   mode: GameMode;
   onSelect: () => void;
 }) {
-  const flag = getFlagForCountry(appearance.country);
   const p = player.profile;
 
   return (
@@ -26,8 +25,11 @@ export function PlayerCard({
     >
       <div className="flex items-start justify-between gap-2">
         <div>
-          <div className="text-xs font-medium text-amber-900/70">
-            {flag} {appearance.country} {appearance.worldCup}
+          <div className="flex items-center gap-1.5 text-xs font-medium text-amber-900/70">
+            <CountryFlag country={appearance.country} size={18} />
+            <span>
+              {appearance.country} {appearance.worldCup}
+            </span>
           </div>
           <div className="text-base font-bold leading-tight">{appearance.displayName}</div>
           <div className="mt-0.5 text-xs font-semibold text-amber-900/80">

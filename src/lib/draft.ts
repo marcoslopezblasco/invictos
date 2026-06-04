@@ -228,12 +228,20 @@ export function applyReroll(gameState: GameState, newSpin: Spin): GameState {
   };
 }
 
+export function defaultPositionForPlayer(
+  appearance: PlayerAppearance,
+  player: Player,
+): Position {
+  return appearance.position ?? player.position;
+}
+
 export function applyPick(
   gameState: GameState,
   appearance: PlayerAppearance,
-  assignedPosition: Position,
+  player: Player,
   nextSpin: Spin | null,
 ): GameState {
+  const assignedPosition = defaultPositionForPlayer(appearance, player);
   const pick = {
     round: gameState.picks.length + 1,
     country: gameState.currentSpin!.country,

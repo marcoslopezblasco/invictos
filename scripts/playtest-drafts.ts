@@ -10,8 +10,6 @@ import {
   applyPick,
   generateSpin,
   getEligibleAppearances,
-  getPositionCountsFromPicks,
-  getValidAssignedPositions,
   sortEligibleByContribution,
   picksToDrafted,
   type DataIndexes,
@@ -75,17 +73,13 @@ function simulateDraft(indexes: DataIndexes, appearancesById: Map<string, Player
     );
     if (eligible.length === 0) break;
     const pick = eligible[0]!;
-    const picksLeft = TOTAL_PICKS - state.picks.length;
-    const counts = getPositionCountsFromPicks(state.picks);
-    const valid = getValidAssignedPositions(counts, picksLeft);
-    const natural =
-      indexes.playersById.get(pick.playerId)?.position ?? pick.position;
-    const assigned = valid.includes(natural) ? natural : valid[0]!;
+    const player = indexes.playersById.get(pick.playerId);
+    if (!player) break;
     const nextSpin =
       state.picks.length + 1 < TOTAL_PICKS
         ? generateSpin(state, indexes, ++spinIdx)
         : null;
-    state = applyPick(state, pick, assigned, nextSpin);
+    state = applyPick(state, pick, player, nextSpin);
   }
 
   const drafted = picksToDrafted(state.picks, appearancesById, indexes.playersById);

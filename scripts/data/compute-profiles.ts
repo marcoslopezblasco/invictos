@@ -102,7 +102,7 @@ export function computeProfileFromCareer(
   };
 }
 
-function weightedOverall(
+export function weightedOverall(
   position: Position,
   s: Pick<PlayerWorldCupProfile, "attack" | "defense" | "control" | "mentality" | "physical">,
 ): number {
@@ -125,24 +125,43 @@ function weightedOverall(
   );
 }
 
-/** Boost computed profile toward legend tier */
+/** Boost computed profile toward legend tier (preserves position shape) */
 export function applyLegendBoost(
   profile: PlayerWorldCupProfile,
   tier: "elite" | "star" | "notable",
+  position: Position,
 ): PlayerWorldCupProfile {
-  const boost = tier === "elite" ? 1.08 : tier === "star" ? 1.04 : 1.02;
-  const floor =
-    tier === "elite" ? 88 : tier === "star" ? 82 : 78;
-  const scaled = {
-    attack: clamp(profile.attack * boost, floor, 99),
-    defense: clamp(profile.defense * boost, floor, 99),
-    control: clamp(profile.control * boost, floor, 99),
-    mentality: clamp(profile.mentality * boost, floor, 99),
-    physical: clamp(profile.physical * boost, floor, 99),
-    overall: clamp(profile.overall * boost, floor, 99),
+  const mul = tier === "elite" ? 1.08 : tier === "star" ? 1.04 : 1.02;
+  const overallFloor = tier === "elite" ? 88 : tier === "star" ? 82 : 78;
+
+  const attrs = {
+    attack: profile.attack * mul,
+    defense: profile.defense * mul,
+    control: profile.control * mul,
+    mentality: profile.mentality * mul,
+    physical: profile.physical * mul,
+  };
+
+  let overall = weightedOverall(position, attrs);
+  if (overall < overallFloor && overall > 0) {
+    const factor = overallFloor / overall;
+    attrs.attack *= factor;
+    attrs.defense *= factor;
+    attrs.control *= factor;
+    attrs.mentality *= factor;
+    attrs.physical *= factor;
+    overall = overallFloor;
+  }
+
+  return {
+    attack: clamp(attrs.attack),
+    defense: clamp(attrs.defense),
+    control: clamp(attrs.control),
+    mentality: clamp(attrs.mentality),
+    physical: clamp(attrs.physical),
+    overall: clamp(overall),
     goals: profile.goals,
     assists: profile.assists,
     matches: profile.matches,
   };
-  return scaled;
 }

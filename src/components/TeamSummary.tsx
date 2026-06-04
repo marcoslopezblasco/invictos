@@ -2,7 +2,7 @@
 
 import type { DraftedPlayer } from "@/types/simulation";
 import { buildTeamProfile } from "@/lib/scoring";
-import { getFlagForCountry } from "@/lib/data";
+import { CountryFlag } from "./CountryFlag";
 
 export function TeamSummary({
   drafted,
@@ -34,7 +34,7 @@ export function TeamSummary({
             key={d.appearance.id}
             className="card-sticker flex items-center gap-2 rounded-lg px-3 py-2 text-sm"
           >
-            <span>{getFlagForCountry(d.appearance.country)}</span>
+            <CountryFlag country={d.appearance.country} size={18} />
             <span className="font-bold">{d.appearance.displayName}</span>
             <span className="text-amber-900/60">
               {d.appearance.position} · {d.appearance.country}{" "}

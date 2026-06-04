@@ -87,7 +87,7 @@ function main() {
   for (const g of goals) {
     if (g.own_goal === "1") continue;
     if (!g.tournament_name?.includes("Men")) continue;
-    const pid = g.player_id;
+    const pid = g.player_id.toLowerCase();
     goalCount.set(pid, (goalCount.get(pid) ?? 0) + 1);
   }
 
@@ -95,7 +95,7 @@ function main() {
   const starterApps = new Map<string, number>();
   for (const a of appearances) {
     if (!a.tournament_name?.includes("Men")) continue;
-    const pid = a.player_id;
+    const pid = a.player_id.toLowerCase();
     matchApps.set(pid, (matchApps.get(pid) ?? 0) + 1);
     if (a.starter === "1") {
       starterApps.set(pid, (starterApps.get(pid) ?? 0) + 1);
@@ -170,6 +170,7 @@ function main() {
 
   const goalRanking = [...playerMeta.keys()]
     .map((id) => ({ id, goals: goalCount.get(id) ?? 0 }))
+    .filter((x) => x.goals > 0)
     .sort((a, b) => b.goals - a.goals);
 
   const eliteIds = new Set(goalRanking.slice(0, 80).map((x) => x.id));
@@ -206,9 +207,9 @@ function main() {
       computeProfileFromCareer(meta.position, career, years, tier);
 
     if (!overrideById.has(playerId) && !overrideByName.has(meta.normalizedName)) {
-      if (eliteIds.has(playerId)) profile = applyLegendBoost(profile, "elite");
-      else if (starIds.has(playerId)) profile = applyLegendBoost(profile, "star");
-      else if (notableIds.has(playerId)) profile = applyLegendBoost(profile, "notable");
+      if (eliteIds.has(playerId)) profile = applyLegendBoost(profile, "elite", meta.position);
+      else if (starIds.has(playerId)) profile = applyLegendBoost(profile, "star", meta.position);
+      else if (notableIds.has(playerId)) profile = applyLegendBoost(profile, "notable", meta.position);
     }
 
     profile = { ...profile, goals: career.goals || undefined, matches: career.matchApps || undefined };
