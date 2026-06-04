@@ -1,5 +1,6 @@
-import type { Language } from "@/types/simulation";
 import type {
+  GameMode,
+  Language,
   Badge,
   DraftedPlayer,
   MatchResult,
@@ -9,6 +10,7 @@ import type {
 import { hashToUnit, stableHash } from "./hash";
 import { buildTeamProfile } from "./scoring";
 import { generateNarrative } from "./narrative";
+import { pickHistoricalOpponent } from "./historical-opponents";
 
 const STAGES: { stage: MatchStage; difficulty: number }[] = [
   { stage: "GROUP_1", difficulty: 68 },
@@ -140,6 +142,25 @@ function resolvePenalties(
   return penaltyPower >= difficulty + threshold;
 }
 
+/** Opponents for all 7 matches (deterministic; same as simulateTournament historico). */
+export function buildHistoricalFixtures(
+  teamName: string,
+  drafted: DraftedPlayer[],
+): { stage: MatchStage; opponentCountry: string; opponentFlagCode: string | null }[] {
+  const seed = getTeamSeed(teamName, drafted);
+  const used = new Set<string>();
+  return STAGES.map(({ stage }) => {
+    const matchSeed = `${seed}-${stage}`;
+    const opponent = pickHistoricalOpponent(stage, matchSeed, used);
+    used.add(opponent.country);
+    return {
+      stage,
+      opponentCountry: opponent.country,
+      opponentFlagCode: opponent.flagCode,
+    };
+  });
+}
+
 export function getTeamSeed(teamName: string, drafted: DraftedPlayer[]): string {
   const ids = drafted
     .map((d) => d.appearance.id)
@@ -152,10 +173,12 @@ export function simulateTournament(
   teamName: string,
   drafted: DraftedPlayer[],
   language: Language = "es",
+  mode: GameMode = "classic",
 ): TournamentResult {
   const team = buildTeamProfile(drafted);
   const seed = getTeamSeed(teamName, drafted);
   const matches: MatchResult[] = [];
+  const usedOpponents = new Set<string>();
   let eliminated = false;
   let goalsFor = 0;
   let goalsAgainst = 0;
@@ -165,10 +188,17 @@ export function simulateTournament(
   let finalStage = "GROUP_3";
   let advancedOnPenaltiesFinal = false;
 
-  for (const { stage, difficulty } of STAGES) {
+  for (const { stage, difficulty: defaultDifficulty } of STAGES) {
     if (eliminated) break;
 
     const matchSeed = `${seed}-${stage}`;
+    const opponent =
+      mode === "historico"
+        ? pickHistoricalOpponent(stage, matchSeed, usedOpponents)
+        : null;
+    if (opponent) usedOpponents.add(opponent.country);
+
+    const difficulty = opponent?.difficulty ?? defaultDifficulty;
     const matchScore =
       team.tournamentPower - difficulty + matchPowerJitter(matchSeed);
     const outcome = matchOutcome(matchScore);
@@ -203,6 +233,8 @@ export function simulateTournament(
     matches.push({
       stage,
       opponentDifficulty: difficulty,
+      opponentCountry: opponent?.country,
+      opponentFlagCode: opponent?.flagCode,
       goalsFor: goalsForMatch,
       goalsAgainst: goalsAgainstMatch,
       result,

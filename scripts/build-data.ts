@@ -24,6 +24,7 @@ import {
   type PlayerWorldCupProfile,
   type CareerAgg,
 } from "./data/compute-profiles";
+import { buildTournamentPools } from "./data/build-tournament-pools";
 
 const ROOT = process.cwd();
 const RAW = join(ROOT, "data", "raw");
@@ -272,6 +273,17 @@ function main() {
   writeFileSync(join(OUT, "appearances.json"), JSON.stringify(appearancesOut));
   writeFileSync(join(OUT, "countries.json"), JSON.stringify(COUNTRIES, null, 2));
   writeFileSync(join(OUT, "worldcups.json"), JSON.stringify(worldcups, null, 2));
+
+  if (existsSync(RAW)) {
+    const pools = buildTournamentPools(RAW);
+    writeFileSync(
+      join(OUT, "tournament-pools.json"),
+      JSON.stringify(pools, null, 2),
+    );
+    console.log(
+      `Historical pools: group ${pools.group.length}, R16 ${pools.R16.length}, QF ${pools.QF.length}, SF ${pools.SF.length}, FINAL ${pools.FINAL.length}`,
+    );
+  }
 
   const genCount = players.filter((p) => p.id.includes("-gen-")).length;
   console.log(`Players: ${players.length} (${genCount} generic — should be 0)`);

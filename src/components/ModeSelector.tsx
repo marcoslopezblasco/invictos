@@ -3,13 +3,22 @@
 import { useGame } from "@/context/GameContext";
 import { t } from "@/lib/i18n";
 import { setSavedMode } from "@/lib/storage";
+import type { GameMode } from "@/types/simulation";
+
+const MODES: GameMode[] = ["classic", "blind", "historico"];
+
+function modeLabelKey(m: GameMode): "home.classic" | "home.blind" | "home.historico" {
+  if (m === "classic") return "home.classic";
+  if (m === "blind") return "home.blind";
+  return "home.historico";
+}
 
 export function ModeSelector() {
   const { mode, setMode, locale } = useGame();
 
   return (
-    <div className="flex gap-2 rounded-xl bg-[var(--bg-card)] p-1 border border-[var(--border)]">
-      {(["classic", "blind"] as const).map((m) => (
+    <div className="flex gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-1">
+      {MODES.map((m) => (
         <button
           key={m}
           type="button"
@@ -17,13 +26,13 @@ export function ModeSelector() {
             setMode(m);
             setSavedMode(m);
           }}
-          className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold transition ${
+          className={`flex-1 rounded-lg px-2 py-2.5 text-xs font-semibold transition sm:px-3 sm:text-sm ${
             mode === m
               ? "bg-[var(--accent)] text-white"
               : "text-[var(--text-muted)] hover:text-white"
           }`}
         >
-          {t(locale, m === "classic" ? "home.classic" : "home.blind")}
+          {t(locale, modeLabelKey(m))}
         </button>
       ))}
     </div>

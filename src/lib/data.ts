@@ -1,4 +1,5 @@
 import type { Country, Player, PlayerAppearance, WorldCup } from "@/types/player";
+import type { Language } from "@/types/simulation";
 import type { Spin } from "@/types/game";
 import {
   buildCountryCupCombos,
@@ -62,6 +63,12 @@ export function getWorldCups(): WorldCup[] {
 
 export function getCountryByName(name: string): Country | undefined {
   return getCountries().find((c) => c.name === name);
+}
+
+export function getCountryDisplayName(country: string, locale: Language): string {
+  const c = getCountryByName(country);
+  if (!c) return country;
+  return locale === "es" ? c.nameEs : c.name;
 }
 
 export function getFlagCodeForCountry(name: string): string | null {

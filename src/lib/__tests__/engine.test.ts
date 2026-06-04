@@ -4,6 +4,7 @@ import type { DraftedPlayer } from "@/types/simulation";
 import { getFormationString, calculateBalanceScore } from "../formations";
 import { buildTeamProfile, calculateMarginalContribution } from "../scoring";
 import { simulateTournament, simulateMatchScore, STAGES } from "../simulation";
+import { getTournamentPools } from "../historical-opponents";
 import {
   getPositionCountsFromPicks,
   generateSpin,
@@ -141,6 +142,30 @@ describe("simulation", () => {
       }
     }
     expect(found).toBe(true);
+  });
+
+  it("historico mode assigns real opponents from stage pools", () => {
+    const xi = buildFixtureXI();
+    const pools = getTournamentPools();
+    const result = simulateTournament("Hist FC", xi, "en", "historico");
+    expect(result.matches.length).toBeGreaterThan(0);
+    for (const m of result.matches) {
+      expect(m.opponentCountry).toBeTruthy();
+      const key =
+        m.stage === "GROUP_1" || m.stage === "GROUP_2" || m.stage === "GROUP_3"
+          ? "group"
+          : m.stage;
+      expect(pools[key as keyof typeof pools]).toContain(m.opponentCountry);
+    }
+    const opponents = result.matches.map((m) => m.opponentCountry);
+    expect(new Set(opponents).size).toBe(opponents.length);
+  });
+
+  it("abstract mode has no named opponents", () => {
+    const result = simulateTournament("Abs FC", buildFixtureXI(), "en", "classic");
+    for (const m of result.matches) {
+      expect(m.opponentCountry).toBeUndefined();
+    }
   });
 
   it("scorelines always match result (no 5-2 penalty loss)", () => {

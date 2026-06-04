@@ -1,5 +1,11 @@
+import type { GameMode } from "@/types/simulation";
 import type { Language } from "@/types/simulation";
 import { t } from "@/lib/i18n";
+
+/** Classic card stats; historico uses the same reveal rules as classic. */
+export function showsClassicCardStats(mode: GameMode): boolean {
+  return mode === "classic" || mode === "historico";
+}
 
 /** Display tiers mapped from hidden OVR (simulation still uses numeric profile). */
 const TIER_THRESHOLDS: { min: number; key: string }[] = [

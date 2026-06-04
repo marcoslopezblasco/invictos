@@ -55,9 +55,19 @@ After computing base ratings:
 
 **Auto cap:** computed profiles (after all boosts) clamp to **max OVR 96** and **max stat 98**. Only `manual-overrides.json` can assign 97–100 (reserved for a handful of all-time greats).
 
+## Historic simulation mode
+
+`GameMode: "historico"` — card UI same as Classic; tournament faces **real national teams** from the 24-country set only.
+
+- Data: `src/data/tournament-pools.json` (built from `squads.csv` + `player_appearances.csv`)
+- **Group** (3 matches): random from any team that ever played a World Cup group stage
+- **R16 / QF / SF / FINAL**: random from teams that ever reached that round (any edition; cross-era in one run)
+- Opponent strength: country `tier` + stage modifier → `opponentDifficulty`
+- No duplicate opponent in the same tournament run
+
 ## Visible card stats (UI only)
 
-Simulation still uses numeric `profile.*`. Classic mode cards show:
+Simulation still uses numeric `profile.*`. Classic and Histórico mode cards show:
 
 | Visible | Source |
 |---------|--------|

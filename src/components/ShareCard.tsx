@@ -8,6 +8,8 @@ import { getFlagCodeForCountry } from "@/lib/data";
 import { draftedFromSavedResult } from "@/lib/result-draft";
 import { FormationPitch } from "./FormationPitch";
 import { useMemo } from "react";
+import { getCountryDisplayName } from "@/lib/data";
+import { getStageLabel } from "./MatchSchedule";
 
 export function ShareCard({ result }: { result: SavedResult }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -40,6 +42,14 @@ export function ShareCard({ result }: { result: SavedResult }) {
       t(locale, `badge.${result.badge}`),
       `PJ ${tr.played} | PG ${tr.wins} | PE ${tr.draws} | PP ${tr.losses}`,
       `GF ${tr.goalsFor} | GC ${tr.goalsAgainst} | DG ${tr.goalDifference >= 0 ? "+" : ""}${tr.goalDifference}`,
+      ...(result.mode === "historico"
+        ? tr.matches
+            .filter((m) => m.opponentCountry)
+            .map(
+              (m) =>
+                `${getStageLabel(locale, m.stage)}: ${getCountryDisplayName(m.opponentCountry!, locale)} ${m.goalsFor}-${m.goalsAgainst}`,
+            )
+        : []),
       t(locale, "share.cta"),
       "invictos.app",
     ];
@@ -71,6 +81,23 @@ export function ShareCard({ result }: { result: SavedResult }) {
           {tr.goalDifference >= 0 ? "+" : ""}
           {tr.goalDifference}
         </p>
+        {result.mode === "historico" && (
+          <ul className="mt-3 space-y-1 text-left text-[10px] font-semibold text-amber-900/80">
+            {tr.matches
+              .filter((m) => m.opponentCountry)
+              .map((m) => (
+                <li key={m.stage} className="flex justify-between gap-2">
+                  <span>
+                    {getStageLabel(locale, m.stage)} vs{" "}
+                    {getCountryDisplayName(m.opponentCountry!, locale)}
+                  </span>
+                  <span className="font-mono">
+                    {m.goalsFor}-{m.goalsAgainst}
+                  </span>
+                </li>
+              ))}
+          </ul>
+        )}
         <p className="mt-3 text-center text-xs font-semibold">
           {t(locale, "share.cta")}
         </p>

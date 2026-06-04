@@ -3,7 +3,7 @@
 import type { Player, PlayerAppearance } from "@/types/player";
 import type { GameMode, Language } from "@/types/simulation";
 import { CountryFlag } from "./CountryFlag";
-import { tierBadgeClass, tierLabel } from "@/lib/player-display";
+import { showsClassicCardStats, tierBadgeClass, tierLabel } from "@/lib/player-display";
 import { t } from "@/lib/i18n";
 
 export function PlayerCard({
@@ -22,6 +22,7 @@ export function PlayerCard({
   const p = player.profile;
   const worldCups = player.worldCupsPlayed.length;
   const matches = p.matches ?? 0;
+  const showStats = showsClassicCardStats(mode);
 
   return (
     <button
@@ -42,7 +43,7 @@ export function PlayerCard({
             {appearance.position}
           </div>
         </div>
-        {mode === "classic" && (
+        {showStats && (
           <div
             className={`shrink-0 rounded-lg px-2 py-1 text-center text-[10px] font-black uppercase tracking-wide ${tierBadgeClass(p.overall)}`}
           >
@@ -50,7 +51,7 @@ export function PlayerCard({
           </div>
         )}
       </div>
-      {mode === "classic" && (
+      {showStats && (
         <div className="mt-2 grid grid-cols-2 gap-2 text-[10px] font-semibold">
           <div className="rounded bg-amber-900/8 px-2 py-1">
             <div className="text-amber-900/50">{t(locale, "card.worldCups")}</div>

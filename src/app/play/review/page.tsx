@@ -9,10 +9,15 @@ import { t } from "@/lib/i18n";
 import { loadData, getAppearancesById } from "@/lib/data";
 import { picksToDrafted } from "@/lib/draft";
 import { TOTAL_PICKS } from "@/types/game";
+import { buildHistoricalFixtures } from "@/lib/simulation";
+import {
+  MatchSchedule,
+  fixturesToPreviewMatches,
+} from "@/components/MatchSchedule";
 
 export default function ReviewPage() {
   const router = useRouter();
-  const { gameState, runSimulation, locale } = useGame();
+  const { gameState, runSimulation, locale, mode } = useGame();
   const indexes = useMemo(() => loadData(), []);
   const appearancesById = useMemo(() => getAppearancesById(), []);
 
@@ -33,6 +38,13 @@ export default function ReviewPage() {
     indexes.playersById,
   );
 
+  const fixturePreview =
+    mode === "historico"
+      ? fixturesToPreviewMatches(
+          buildHistoricalFixtures(gameState.teamName, drafted),
+        )
+      : null;
+
   const handleSimulate = () => {
     const saved = runSimulation();
     if (saved) router.push(`/result/${saved.id}`);
@@ -42,6 +54,9 @@ export default function ReviewPage() {
     <div className="flex flex-col gap-6 px-4 py-8">
       <h1 className="text-xl font-bold">{t(locale, "review.title")}</h1>
       <TeamSummary drafted={drafted} teamName={gameState.teamName} />
+      {fixturePreview && (
+        <MatchSchedule locale={locale} matches={fixturePreview} preview />
+      )}
       <button
         type="button"
         onClick={handleSimulate}

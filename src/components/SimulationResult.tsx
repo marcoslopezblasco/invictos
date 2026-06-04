@@ -1,43 +1,20 @@
 "use client";
 
 import type { TournamentResult } from "@/types/simulation";
-import { t } from "@/lib/i18n";
 import type { Language } from "@/types/simulation";
+import { MatchSchedule, getStageLabel } from "./MatchSchedule";
 
-const STAGE_LABELS: Record<Language, Record<string, string>> = {
-  es: {
-    GROUP_1: "Grupo J1",
-    GROUP_2: "Grupo J2",
-    GROUP_3: "Grupo J3",
-    R16: "Octavos",
-    QF: "Cuartos",
-    SF: "Semifinal",
-    FINAL: "Final",
-  },
-  en: {
-    GROUP_1: "Group M1",
-    GROUP_2: "Group M2",
-    GROUP_3: "Group M3",
-    R16: "Round of 16",
-    QF: "Quarter-finals",
-    SF: "Semi-final",
-    FINAL: "Final",
-  },
-};
-
-export function SimulationResult({
+function AbstractMatchList({
   tournament,
   locale,
 }: {
   tournament: TournamentResult;
   locale: Language;
 }) {
-  const labels = STAGE_LABELS[locale];
-
   return (
     <div className="flex flex-col gap-2">
       {tournament.matches.map((m) => {
-        const label = labels[m.stage] ?? m.stage;
+        const label = getStageLabel(locale, m.stage);
         const score = `${m.goalsFor}-${m.goalsAgainst}`;
         const resultIcon = m.advancedOnPenalties
           ? "✓"
@@ -56,7 +33,7 @@ export function SimulationResult({
             key={m.stage}
             className="flex items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm"
           >
-            <span>{label}</span>
+            <span className="font-bold text-[var(--accent-gold)]">{label}</span>
             <span className="font-mono font-bold">
               {resultIcon} {score}
               {penNote}
@@ -66,4 +43,18 @@ export function SimulationResult({
       })}
     </div>
   );
+}
+
+export function SimulationResult({
+  tournament,
+  locale,
+}: {
+  tournament: TournamentResult;
+  locale: Language;
+}) {
+  const hasOpponents = tournament.matches.some((m) => m.opponentCountry);
+  if (hasOpponents) {
+    return <MatchSchedule locale={locale} matches={tournament.matches} />;
+  }
+  return <AbstractMatchList tournament={tournament} locale={locale} />;
 }

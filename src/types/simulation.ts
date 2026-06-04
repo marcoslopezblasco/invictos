@@ -1,6 +1,6 @@
 import type { Player, PlayerAppearance, Position } from "./player";
 
-export type GameMode = "classic" | "blind";
+export type GameMode = "classic" | "blind" | "historico";
 export type Language = "es" | "en";
 
 export type Badge =
@@ -41,6 +41,9 @@ export interface DraftedPlayer {
 export interface MatchResult {
   stage: MatchStage;
   opponentDifficulty: number;
+  /** Set in historico mode — real national team from WC history (24-country pool). */
+  opponentCountry?: string;
+  opponentFlagCode?: string | null;
   goalsFor: number;
   goalsAgainst: number;
   result: MatchResultType;

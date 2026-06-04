@@ -8,7 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { GameState } from "@/types/game";
+import type { GameState, Spin } from "@/types/game";
 import type { PlayerAppearance } from "@/types/player";
 import type { GameMode, Language } from "@/types/simulation";
 import { TOTAL_PICKS } from "@/types/game";
@@ -40,6 +40,9 @@ interface GameContextValue {
   startGame: (teamName?: string) => void;
   playAgain: () => void;
   rollInitialSpin: () => void;
+  commitInitialSpin: (spin: Spin) => void;
+  commitReroll: (spin: Spin) => void;
+  previewRerollSpin: () => Spin | null;
   restoreGame: (state: GameState) => void;
   reroll: () => void;
   needsInitialRoll: boolean;
@@ -99,13 +102,36 @@ export function GameProvider({
     saveActiveGame({ gameStateJson: JSON.stringify(state) });
   }, [mode, locale]);
 
+  const commitInitialSpin = useCallback(
+    (spin: Spin) => {
+      if (!gameState || gameState.currentSpin) return;
+      const next = { ...gameState, currentSpin: spin };
+      setGameState(next);
+      saveActiveGame({ gameStateJson: JSON.stringify(next) });
+    },
+    [gameState],
+  );
+
   const rollInitialSpin = useCallback(() => {
     if (!gameState || gameState.currentSpin) return;
-    const spin = getInitialSpin(gameState.id);
-    const next = { ...gameState, currentSpin: spin };
-    setGameState(next);
-    saveActiveGame({ gameStateJson: JSON.stringify(next) });
-  }, [gameState]);
+    commitInitialSpin(getInitialSpin(gameState.id));
+  }, [gameState, commitInitialSpin]);
+
+  const previewRerollSpin = useCallback((): Spin | null => {
+    if (!gameState || gameState.rerollsRemaining <= 0) return null;
+    return generateSpin(gameState, indexes, spinCounter + 1);
+  }, [gameState, indexes, spinCounter]);
+
+  const commitReroll = useCallback(
+    (spin: Spin) => {
+      if (!gameState || gameState.rerollsRemaining <= 0) return;
+      const next = applyReroll(gameState, spin);
+      setGameState(next);
+      setSpinCounter((c) => c + 1);
+      saveActiveGame({ gameStateJson: JSON.stringify(next) });
+    },
+    [gameState],
+  );
 
   const restoreGame = useCallback((state: GameState) => {
     setGameState(state);
@@ -163,6 +189,7 @@ export function GameProvider({
       gameState.teamName,
       drafted,
       gameState.language,
+      gameState.mode,
     );
 
     const appearances = drafted.map((d) => d.appearance);
@@ -193,6 +220,9 @@ export function GameProvider({
     startGame,
     playAgain,
     rollInitialSpin,
+    commitInitialSpin,
+    commitReroll,
+    previewRerollSpin,
     restoreGame,
     needsInitialRoll: Boolean(gameState && !gameState.currentSpin),
     reroll,
