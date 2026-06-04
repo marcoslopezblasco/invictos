@@ -67,7 +67,7 @@ const translations: Record<Locale, Record<string, string>> = {
     "badge.ELIMINATED": "Eliminado",
     "how.title": "Cómo funciona",
     "how.body":
-      "1. Elige Classic, Blind o Histórico y pulsa Jugar.\n2. Draftea 11 jugadores (País + Mundial por ronda).\n3. Classic e Histórico muestran mundiales, partidos y nivel; Histórico enfrenta selecciones reales por fase.\n4. Tienes 3 rerolls; filtra y ordena el plantel.\n5. Simula un Mundial de 7 partidos.\n6. Descubre si tu XI gana invicto.",
+      "1. Elige Classic, Blind o Histórico y pulsa Jugar.\n2. Draftea 11 jugadores (País + Mundial por ronda).\n3. Classic e Histórico muestran mundiales, partidos y nivel; Histórico enfrenta selecciones reales por fase.\n4. Classic: 2 rerolls y rivales más duros; Blind/Histórico: 3 rerolls.\n5. Simula un Mundial de 7 partidos.\n6. Descubre si tu XI gana invicto.",
     "recent.title": "Partidas recientes",
   },
   en: {
@@ -134,7 +134,7 @@ const translations: Record<Locale, Record<string, string>> = {
     "badge.ELIMINATED": "Eliminated",
     "how.title": "How it works",
     "how.body":
-      "1. Pick Classic, Blind, or Historic and tap Play.\n2. Draft 11 World Cup players (Country + World Cup each round).\n3. Classic and Historic show World Cups, matches, and tier; Historic faces real national teams by round.\n4. You get 3 rerolls; filter and sort the squad list.\n5. Simulate a 7-match World Cup.\n6. See if your XI wins undefeated.",
+      "1. Pick Classic, Blind, or Historic and tap Play.\n2. Draft 11 World Cup players (Country + World Cup each round).\n3. Classic and Historic show World Cups, matches, and tier; Historic faces real national teams by round.\n4. Classic: 2 rerolls and tougher opponents; Blind/Historic: 3 rerolls.\n5. Simulate a 7-match World Cup.\n6. See if your XI wins undefeated.",
     "recent.title": "Recent games",
   },
 };

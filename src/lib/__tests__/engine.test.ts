@@ -3,7 +3,12 @@ import type { Player, PlayerAppearance } from "@/types/player";
 import type { DraftedPlayer } from "@/types/simulation";
 import { getFormationString, calculateBalanceScore } from "../formations";
 import { buildTeamProfile, calculateMarginalContribution } from "../scoring";
-import { simulateTournament, simulateMatchScore, STAGES } from "../simulation";
+import {
+  simulateTournament,
+  simulateMatchScore,
+  STAGES,
+  CLASSIC_MODE_DIFFICULTY_BONUS,
+} from "../simulation";
 import {
   getTournamentPools,
   poolCountriesForStage,
@@ -14,6 +19,7 @@ import {
   type DataIndexes,
 } from "../draft";
 import type { GameState } from "@/types/game";
+import { initialRerollsForMode } from "@/types/game";
 import { createInitialGameState } from "../draft";
 
 function makePlayer(
@@ -80,6 +86,14 @@ function buildFixtureXI(): DraftedPlayer[] {
     };
   });
 }
+
+describe("game modes", () => {
+  it("classic starts with fewer rerolls than blind", () => {
+    expect(initialRerollsForMode("classic")).toBe(2);
+    expect(initialRerollsForMode("blind")).toBe(3);
+    expect(initialRerollsForMode("historico")).toBe(3);
+  });
+});
 
 describe("formations", () => {
   it("computes 4-4-2 for balanced XI", () => {
@@ -168,6 +182,18 @@ describe("simulation", () => {
 
   it("has 7 stages defined", () => {
     expect(STAGES).toHaveLength(7);
+  });
+
+  it("classic mode faces harder opponents than blind with same XI", () => {
+    const xi = buildFixtureXI();
+    let classicWins = 0;
+    let blindWins = 0;
+    for (let i = 0; i < 30; i++) {
+      classicWins += simulateTournament(`Cmp C ${i}`, xi, "en", "classic").wins;
+      blindWins += simulateTournament(`Cmp B ${i}`, xi, "en", "blind").wins;
+    }
+    expect(classicWins).toBeLessThan(blindWins);
+    expect(CLASSIC_MODE_DIFFICULTY_BONUS).toBeGreaterThan(0);
   });
 
   it("chaos XI rarely survives the group stage", () => {

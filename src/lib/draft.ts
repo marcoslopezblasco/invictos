@@ -1,7 +1,7 @@
 import type { Country, Player, PlayerAppearance, Position } from "@/types/player";
 import type { GameState, PositionCounts, Spin } from "@/types/game";
 import {
-  INITIAL_REROLLS,
+  initialRerollsForMode,
   POSITION_MINIMUMS,
   TOTAL_PICKS,
 } from "@/types/game";
@@ -255,7 +255,7 @@ export function createInitialGameState(
     teamName,
     mode,
     picks: [],
-    rerollsRemaining: INITIAL_REROLLS,
+    rerollsRemaining: initialRerollsForMode(mode),
     lockedPlayerIds: [],
     language,
     currentSpin: initialSpin,

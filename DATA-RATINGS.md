@@ -55,6 +55,16 @@ After computing base ratings:
 
 **Auto cap:** computed profiles (after all boosts) clamp to **max OVR 96** and **max stat 98**. Only `manual-overrides.json` can assign 97–100 (reserved for a handful of all-time greats).
 
+## Game modes (difficulty)
+
+| Mode | Draft info | Rerolls | Simulation |
+|------|------------|--------:|------------|
+| **Classic** | Tiers, mundiales, partidos | 2 | +4 opponent difficulty (abstract bracket) |
+| **Blind** | Names + positions only | 3 | Base difficulty |
+| **Histórico** | Same as Classic | 3 | Real national teams by phase |
+
+Classic’s visible stats are offset by fewer rerolls and a harder tournament sim.
+
 ## Squad structure (simulation)
 
 `calculateBalanceScore` + `buildTeamProfile` penalize impossible XIs (e.g. **1-3-6** with one defender):

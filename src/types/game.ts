@@ -45,3 +45,9 @@ export const POSITION_MINIMUMS: PositionCounts = {
 
 export const TOTAL_PICKS = 11;
 export const INITIAL_REROLLS = 3;
+/** Classic shows tiers — fewer rerolls and tougher sim than Blind. */
+export const INITIAL_REROLLS_CLASSIC = 2;
+
+export function initialRerollsForMode(mode: GameMode): number {
+  return mode === "classic" ? INITIAL_REROLLS_CLASSIC : INITIAL_REROLLS;
+}
