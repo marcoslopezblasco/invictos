@@ -20,6 +20,7 @@ import {
 import {
   computeProfileFromCareer,
   applyLegendBoost,
+  applyVeteranBoost,
   type PlayerWorldCupProfile,
   type CareerAgg,
 } from "./data/compute-profiles";
@@ -173,9 +174,17 @@ function main() {
     .filter((x) => x.goals > 0)
     .sort((a, b) => b.goals - a.goals);
 
-  const eliteIds = new Set(goalRanking.slice(0, 80).map((x) => x.id));
-  const starIds = new Set(goalRanking.slice(80, 200).map((x) => x.id));
-  const notableIds = new Set(goalRanking.slice(200, 300).map((x) => x.id));
+  const eliteGoalIds = new Set(goalRanking.slice(0, 80).map((x) => x.id));
+  const starGoalIds = new Set(goalRanking.slice(80, 200).map((x) => x.id));
+  const notableGoalIds = new Set(goalRanking.slice(200, 300).map((x) => x.id));
+
+  const appRanking = [...playerMeta.keys()]
+    .map((id) => ({ id, apps: matchApps.get(id) ?? 0 }))
+    .filter((x) => x.apps >= 5)
+    .sort((a, b) => b.apps - a.apps);
+  const eliteAppIds = new Set(appRanking.slice(0, 60).map((x) => x.id));
+  const starAppIds = new Set(appRanking.slice(60, 180).map((x) => x.id));
+  const notableAppIds = new Set(appRanking.slice(180, 280).map((x) => x.id));
 
   const countryTier = new Map(COUNTRIES.map((c) => [c.name, c.tier]));
 
@@ -207,9 +216,16 @@ function main() {
       computeProfileFromCareer(meta.position, career, years, tier);
 
     if (!overrideById.has(playerId) && !overrideByName.has(meta.normalizedName)) {
-      if (eliteIds.has(playerId)) profile = applyLegendBoost(profile, "elite", meta.position);
-      else if (starIds.has(playerId)) profile = applyLegendBoost(profile, "star", meta.position);
-      else if (notableIds.has(playerId)) profile = applyLegendBoost(profile, "notable", meta.position);
+      const legendTier =
+        eliteGoalIds.has(playerId) || eliteAppIds.has(playerId)
+          ? "elite"
+          : starGoalIds.has(playerId) || starAppIds.has(playerId)
+            ? "star"
+            : notableGoalIds.has(playerId) || notableAppIds.has(playerId)
+              ? "notable"
+              : null;
+      if (legendTier) profile = applyLegendBoost(profile, legendTier, meta.position);
+      profile = applyVeteranBoost(profile, career, meta.position);
     }
 
     profile = { ...profile, goals: career.goals || undefined, matches: career.matchApps || undefined };
@@ -261,7 +277,9 @@ function main() {
   console.log(`Players: ${players.length} (${genCount} generic — should be 0)`);
   console.log(`Appearances: ${appearancesOut.length}`);
   console.log(`Manual overrides applied: ${overrideByName.size} by name`);
-  console.log(`Legend tiers: elite ${eliteIds.size}, star ${starIds.size}, notable ${notableIds.size}`);
+  console.log(
+    `Legend tiers: goals elite ${eliteGoalIds.size} / apps elite ${eliteAppIds.size}`,
+  );
 }
 
 main();

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   applyLegendBoost,
+  applyVeteranBoost,
   computeProfileFromCareer,
 } from "../../../scripts/data/compute-profiles";
 
@@ -24,24 +25,37 @@ describe("computeProfileFromCareer", () => {
   });
 });
 
+describe("applyVeteranBoost", () => {
+  it("lifts WC regulars with many appearances", () => {
+    const base = computeProfileFromCareer(
+      "MID",
+      { goals: 0, matchApps: 9, squadTournaments: 3, starterApps: 7 },
+      [1998, 2006, 2010],
+      3,
+    );
+    const boosted = applyVeteranBoost(base, {
+      goals: 0,
+      matchApps: 9,
+      squadTournaments: 3,
+      starterApps: 7,
+    }, "MID");
+    expect(boosted.overall).toBeGreaterThanOrEqual(74);
+  });
+});
+
 describe("applyLegendBoost", () => {
   it("lifts overall without flattening every attribute to the same number", () => {
-    const base = computeProfileFromCareer(
-      "FWD",
-      { goals: 15, matchApps: 20, squadTournaments: 4, starterApps: 18 },
-      [1998, 2002, 2006, 2010],
-      1,
-    );
+    const base = {
+      attack: 72,
+      defense: 58,
+      control: 76,
+      mentality: 70,
+      physical: 68,
+      overall: 70,
+    };
     const boosted = applyLegendBoost(base, "elite", "FWD");
     expect(boosted.overall).toBeGreaterThanOrEqual(88);
-    const attrs = [
-      boosted.attack,
-      boosted.defense,
-      boosted.control,
-      boosted.mentality,
-      boosted.physical,
-    ];
-    expect(new Set(attrs).size).toBeGreaterThan(1);
     expect(boosted.attack).toBeGreaterThan(boosted.defense);
+    expect(boosted.control).not.toBe(boosted.attack);
   });
 });

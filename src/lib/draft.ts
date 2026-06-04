@@ -181,6 +181,49 @@ export function sortEligibleByContribution(
   });
 }
 
+export type EligibleSort = "fit" | "ovr" | "position";
+export type PositionFilter = "ALL" | Position;
+
+const POSITION_ORDER: Record<Position, number> = {
+  GK: 0,
+  DEF: 1,
+  MID: 2,
+  FWD: 3,
+};
+
+export function filterAndSortEligible(
+  appearances: PlayerAppearance[],
+  playersById: Map<string, Player>,
+  filter: PositionFilter,
+  sort: EligibleSort,
+  drafted: DraftedPlayer[],
+): PlayerAppearance[] {
+  let list =
+    filter === "ALL"
+      ? appearances
+      : appearances.filter((a) => a.position === filter);
+
+  if (sort === "fit") {
+    return sortEligibleByContribution(list, drafted, playersById);
+  }
+
+  if (sort === "ovr") {
+    return [...list].sort((a, b) => {
+      const oA = playersById.get(a.playerId)?.profile.overall ?? 0;
+      const oB = playersById.get(b.playerId)?.profile.overall ?? 0;
+      return oB - oA;
+    });
+  }
+
+  return [...list].sort((a, b) => {
+    const byPos = POSITION_ORDER[a.position] - POSITION_ORDER[b.position];
+    if (byPos !== 0) return byPos;
+    const oA = playersById.get(a.playerId)?.profile.overall ?? 0;
+    const oB = playersById.get(b.playerId)?.profile.overall ?? 0;
+    return oB - oA;
+  });
+}
+
 export function picksToDrafted(
   picks: GameState["picks"],
   appearancesById: Map<string, PlayerAppearance>,

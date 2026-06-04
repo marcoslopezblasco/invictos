@@ -28,16 +28,30 @@ npm run playtest-drafts  # 50 draft simulations
 
 - Inputs: WC goals, match appearances, squad tournaments, primary position, country tier, era multiplier
 - Outputs: attack, defense, control, mentality, physical, overall (position-weighted)
+- **Note:** Ratings reflect **World Cup career impact**, not club reputation. A star with 3 WC apps and 0 goals will still rate modestly unless manually curated.
 
-## Legend tiers (auto, ~300 players)
+## Veteran boost (auto)
+
+After legend tiers, `applyVeteranBoost` lifts **non-scoring WC regulars** by career match count:
+
+| WC match apps | Min overall |
+|---------------|------------:|
+| 12+ | 80 |
+| 8+ | 74 |
+| 5+ | 70 |
+| 3+ and 2+ tournaments | 66 |
+
+## Legend tiers (auto)
 
 After computing base ratings:
 
-| Tier | Count | Rule |
-|------|------:|------|
-| Elite | Top 80 WC goal scorers (min 1 goal) | `applyLegendBoost(..., "elite")` — preserves position stat shape |
-| Star | Next 120 | `"star"` |
-| Notable | Next 100 | `"notable"` |
+| Tier | Goals rule | Appearances rule |
+|------|------------|------------------|
+| Elite | Top 80 scorers (≥1 goal) | Top 60 by WC match apps (≥5 apps) |
+| Star | Next 120 | Next 120 apps |
+| Notable | Next 100 | Next 100 apps |
+
+`applyLegendBoost` preserves position stat shape (union of both tracks).
 
 Manual overrides in `manual-overrides.json` **replace** computed values (exact `normalizedName` match).
 

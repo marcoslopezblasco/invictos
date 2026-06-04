@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { getResultById, type SavedResult } from "@/lib/storage";
 import { SimulationResult } from "@/components/SimulationResult";
 import { ShareCard } from "@/components/ShareCard";
@@ -11,8 +11,9 @@ import { useGame } from "@/context/GameContext";
 
 export default function ResultPage() {
   const params = useParams();
+  const router = useRouter();
   const id = params.id as string;
-  const { locale: ctxLocale } = useGame();
+  const { locale: ctxLocale, playAgain } = useGame();
   const [result, setResult] = useState<SavedResult | null>(null);
 
   useEffect(() => {
@@ -69,11 +70,21 @@ export default function ResultPage() {
       <SimulationResult tournament={tr} locale={locale} />
       <ShareCard result={result} />
 
-      <Link
-        href="/play"
-        className="rounded-2xl bg-[var(--accent)] py-4 text-center text-lg font-bold text-white"
+      <button
+        type="button"
+        onClick={() => {
+          playAgain();
+          router.push("/play");
+        }}
+        className="w-full rounded-2xl bg-[var(--accent)] py-4 text-lg font-bold text-white"
       >
-        {t(locale, "home.play")}
+        {t(locale, "result.playAgain")}
+      </button>
+      <Link
+        href="/"
+        className="block text-center text-sm text-[var(--text-muted)] underline"
+      >
+        {t(locale, "app.title")}
       </Link>
     </div>
   );

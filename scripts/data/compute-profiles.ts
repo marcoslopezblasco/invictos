@@ -43,11 +43,11 @@ export function computeProfileFromCareer(
 
   const production =
     Math.min(goals * 2.8, 28) +
-    Math.min(matchApps * 0.35, 18) +
+    Math.min(matchApps * 0.5, 26) +
     Math.min(squadTournaments * 2.5, 14) +
-    Math.min(starterApps * 0.2, 10);
+    Math.min(starterApps * 0.4, 16);
 
-  const base = (52 + production + tierBoost) * era;
+  const base = (56 + production + tierBoost) * era;
 
   let attack = base;
   let defense = base;
@@ -123,6 +123,43 @@ export function weightedOverall(
     s.mentality * weights.mentality +
     s.physical * weights.physical
   );
+}
+
+/** Lift profiles for players who played significant WC minutes (non-scorers). */
+export function applyVeteranBoost(
+  profile: PlayerWorldCupProfile,
+  career: CareerAgg,
+  position: Position,
+): PlayerWorldCupProfile {
+  const { matchApps, squadTournaments } = career;
+  let floor = 0;
+  if (matchApps >= 12) floor = 80;
+  else if (matchApps >= 8) floor = 74;
+  else if (matchApps >= 5) floor = 70;
+  else if (matchApps >= 3 && squadTournaments >= 2) floor = 66;
+
+  if (floor <= profile.overall) return profile;
+
+  const factor = floor / Math.max(profile.overall, 1);
+  const attrs = {
+    attack: profile.attack * factor,
+    defense: profile.defense * factor,
+    control: profile.control * factor,
+    mentality: profile.mentality * factor,
+    physical: profile.physical * factor,
+  };
+
+  return {
+    attack: clamp(attrs.attack),
+    defense: clamp(attrs.defense),
+    control: clamp(attrs.control),
+    mentality: clamp(attrs.mentality),
+    physical: clamp(attrs.physical),
+    overall: clamp(weightedOverall(position, attrs)),
+    goals: profile.goals,
+    assists: profile.assists,
+    matches: profile.matches,
+  };
 }
 
 /** Boost computed profile toward legend tier (preserves position shape) */

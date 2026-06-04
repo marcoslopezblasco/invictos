@@ -20,8 +20,8 @@ import {
   generateSpin,
   getEligibleAppearances,
   picksToDrafted,
-  sortEligibleByContribution,
 } from "@/lib/draft";
+import { pickRandomTeamName } from "@/lib/i18n";
 import { simulateTournament } from "@/lib/simulation";
 import {
   clearActiveGame,
@@ -37,7 +37,8 @@ interface GameContextValue {
   setMode: (m: GameMode) => void;
   gameState: GameState | null;
   eligible: PlayerAppearance[];
-  startGame: (teamName: string) => void;
+  startGame: (teamName?: string) => void;
+  playAgain: () => void;
   restoreGame: (state: GameState) => void;
   reroll: () => void;
   selectPlayer: (appearanceId: string) => void;
@@ -71,34 +72,32 @@ export function GameProvider({
   const eligible = useMemo(() => {
     if (!gameState?.currentSpin) return [];
     const locked = new Set(gameState.lockedPlayerIds);
-    const apps = getEligibleAppearances(
-      gameState.currentSpin,
-      locked,
-      indexes,
-    );
-    const drafted = picksToDrafted(
-      gameState.picks,
-      appearancesById,
-      indexes.playersById,
-    );
-    return sortEligibleByContribution(
-      apps,
-      drafted,
-      indexes.playersById,
-    );
-  }, [gameState, indexes, appearancesById]);
+    return getEligibleAppearances(gameState.currentSpin, locked, indexes);
+  }, [gameState, indexes]);
 
   const startGame = useCallback(
-    (teamName: string) => {
+    (teamName?: string) => {
       const id = newGameId();
       const spin = getInitialSpin(id);
-      const state = createInitialGameState(id, teamName, mode, locale, spin);
+      const name = teamName?.trim() || pickRandomTeamName(locale);
+      const state = createInitialGameState(id, name, mode, locale, spin);
       setGameState(state);
       setSpinCounter(0);
       saveActiveGame({ gameStateJson: JSON.stringify(state) });
     },
     [mode, locale],
   );
+
+  const playAgain = useCallback(() => {
+    clearActiveGame();
+    const id = newGameId();
+    const spin = getInitialSpin(id);
+    const name = pickRandomTeamName(locale);
+    const state = createInitialGameState(id, name, mode, locale, spin);
+    setGameState(state);
+    setSpinCounter(0);
+    saveActiveGame({ gameStateJson: JSON.stringify(state) });
+  }, [mode, locale]);
 
   const restoreGame = useCallback((state: GameState) => {
     setGameState(state);
@@ -184,6 +183,7 @@ export function GameProvider({
     gameState,
     eligible,
     startGame,
+    playAgain,
     restoreGame,
     reroll,
     selectPlayer,

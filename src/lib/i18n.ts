@@ -18,6 +18,13 @@ const translations: Record<Locale, Record<string, string>> = {
     "draft.rerolls": "Rerolls",
     "draft.choose": "Elige un jugador",
     "draft.reroll": "Reroll",
+    "draft.filterAll": "Todos",
+    "draft.sortFit": "Mejor encaje",
+    "draft.sortOvr": "OVR",
+    "draft.sortPosition": "Posición",
+    "draft.filter": "Filtrar",
+    "draft.sort": "Ordenar",
+    "result.playAgain": "Jugar de nuevo",
     "draft.yourXi": "Tu XI",
     "draft.formation": "Formación",
     "draft.emptySlot": "Vacío",
@@ -29,6 +36,7 @@ const translations: Record<Locale, Record<string, string>> = {
     "slots.def": "DEF",
     "slots.mid": "MID",
     "slots.fwd": "FWD",
+    "slots.att": "ATT",
     "review.title": "Tu XI está listo",
     "review.simulate": "Simular Mundial",
     "result.share": "Compartir",
@@ -41,7 +49,7 @@ const translations: Record<Locale, Record<string, string>> = {
     "badge.ELIMINATED": "Eliminado",
     "how.title": "Cómo funciona",
     "how.body":
-      "1. Elige modo Classic o Blind.\n2. Draftea 11 jugadores (País + Mundial por ronda).\n3. Tienes 3 rerolls.\n4. No puedes repetir jugador.\n5. Simula un Mundial de 7 partidos.\n6. Descubre si tu XI gana invicto.",
+      "1. Elige Classic o Blind y pulsa Jugar.\n2. Draftea 11 jugadores (País + Mundial por ronda).\n3. Tienes 3 rerolls; filtra y ordena el plantel.\n4. No puedes repetir jugador.\n5. Simula un Mundial de 7 partidos.\n6. Descubre si tu XI gana invicto.",
     "recent.title": "Partidas recientes",
   },
   en: {
@@ -59,6 +67,13 @@ const translations: Record<Locale, Record<string, string>> = {
     "draft.rerolls": "Rerolls",
     "draft.choose": "Choose a player",
     "draft.reroll": "Reroll",
+    "draft.filterAll": "All",
+    "draft.sortFit": "Best fit",
+    "draft.sortOvr": "OVR",
+    "draft.sortPosition": "Position",
+    "draft.filter": "Filter",
+    "draft.sort": "Sort",
+    "result.playAgain": "Play again",
     "draft.yourXi": "Your XI",
     "draft.formation": "Formation",
     "draft.emptySlot": "Empty",
@@ -70,6 +85,7 @@ const translations: Record<Locale, Record<string, string>> = {
     "slots.def": "DEF",
     "slots.mid": "MID",
     "slots.fwd": "FWD",
+    "slots.att": "ATT",
     "review.title": "Your XI is ready",
     "review.simulate": "Simulate World Cup",
     "result.share": "Share",
@@ -82,7 +98,7 @@ const translations: Record<Locale, Record<string, string>> = {
     "badge.ELIMINATED": "Eliminated",
     "how.title": "How it works",
     "how.body":
-      "1. Pick Classic or Blind mode.\n2. Draft 11 World Cup players (Country + World Cup each round).\n3. You get 3 rerolls.\n4. No duplicate players.\n5. Simulate a 7-match World Cup.\n6. See if your XI wins undefeated.",
+      "1. Pick Classic or Blind and tap Play.\n2. Draft 11 World Cup players (Country + World Cup each round).\n3. You get 3 rerolls; filter and sort the squad list.\n4. No duplicate players.\n5. Simulate a 7-match World Cup.\n6. See if your XI wins undefeated.",
     "recent.title": "Recent games",
   },
 };
@@ -95,6 +111,11 @@ export function detectLanguage(): Locale {
 
 export function t(locale: Locale, key: string): string {
   return translations[locale][key] ?? key;
+}
+
+export function pickRandomTeamName(locale: Locale): string {
+  const names = RANDOM_TEAM_NAMES[locale];
+  return names[Math.floor(Math.random() * names.length)]!;
 }
 
 export const RANDOM_TEAM_NAMES = {

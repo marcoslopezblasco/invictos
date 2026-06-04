@@ -43,5 +43,10 @@
   { "normalizedName": "james-rodriguez", "profile": { "attack": 88, "defense": 48, "control": 90, "mentality": 85, "physical": 78, "overall": 89 } },
   { "normalizedName": "roger-milla", "profile": { "attack": 88, "defense": 40, "control": 78, "mentality": 92, "physical": 80, "overall": 88 } },
   { "normalizedName": "jay-jay-okocha", "profile": { "attack": 85, "defense": 48, "control": 94, "mentality": 85, "physical": 82, "overall": 89 } },
-  { "normalizedName": "achraf-hakimi", "profile": { "attack": 78, "defense": 85, "control": 82, "mentality": 88, "physical": 90, "overall": 88 } }
+  { "normalizedName": "achraf-hakimi", "profile": { "attack": 78, "defense": 85, "control": 82, "mentality": 88, "physical": 90, "overall": 88 } },
+  { "normalizedName": "federico-valverde", "profile": { "attack": 82, "defense": 72, "control": 86, "mentality": 82, "physical": 84, "overall": 86 } },
+  { "normalizedName": "enzo-francescoli", "profile": { "attack": 88, "defense": 62, "control": 92, "mentality": 90, "physical": 78, "overall": 90 } },
+  { "normalizedName": "dejan-stankovic", "profile": { "attack": 78, "defense": 72, "control": 90, "mentality": 88, "physical": 80, "overall": 88 } },
+  { "normalizedName": "patrice-evra", "profile": { "attack": 68, "defense": 88, "control": 82, "mentality": 86, "physical": 84, "overall": 88 } },
+  { "normalizedName": "paul-pogba", "profile": { "attack": 85, "defense": 72, "control": 92, "mentality": 88, "physical": 86, "overall": 90 } }
 ]
