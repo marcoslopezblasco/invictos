@@ -33,6 +33,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# source CSVs — run npm run import-data locally
+/data/raw/*.csv
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

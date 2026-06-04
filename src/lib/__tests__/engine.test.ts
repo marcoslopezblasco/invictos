@@ -165,6 +165,7 @@ describe("draft position forcing", () => {
       worldCup: 2002,
       selectedAppearanceId: `striker-Brazil-2002`,
       selectedPlayerId: "striker",
+      assignedPosition: "FWD" as const,
     }));
 
     const state: GameState = {
@@ -178,7 +179,7 @@ describe("draft position forcing", () => {
       currentSpin: { country: "Brazil", worldCup: 2002 },
     };
 
-    const counts = getPositionCountsFromPicks(picks, players);
+    const counts = getPositionCountsFromPicks(picks);
     expect(counts.GK).toBe(0);
     const spin = generateSpin(state, indexes, 0);
     expect(spin.country).toBe("Brazil");

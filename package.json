@@ -9,8 +9,10 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
+    "import-data": "npx tsx scripts/import-data.ts",
+    "generate-data": "npx tsx scripts/build-data.ts",
     "validate-data": "npx tsx scripts/validate-data.ts",
-    "generate-data": "npx tsx scripts/generate-data.ts"
+    "playtest-drafts": "npx tsx scripts/playtest-drafts.ts"
   },
   "dependencies": {
     "html-to-image": "^1.11.13",
@@ -25,6 +27,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6.0.2",
+    "csv-parse": "^6.2.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
     "tailwindcss": "^4",

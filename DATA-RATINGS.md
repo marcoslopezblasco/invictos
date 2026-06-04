@@ -1,29 +1,59 @@
 # Invictos — Data ratings rubric (internal)
 
-## Scale
+## Sources
 
-All stats use 1–100. `overall` is position-weighted, not a simple average.
+- **Squads & names:** [Fjelstul World Cup Database](https://github.com/jfjelstul/worldcup) via [datahub.io/football/worldcup](https://datahub.io/football/worldcup) (`squads.csv`)
+- **Goals:** `goals.csv` (career WC goal counts)
+- **Match apps:** `player_appearances.csv` (starter / appearance counts)
+- **Manual overrides:** `data/sources/manual-overrides.json` (45 legends, matched by `normalizedName`)
 
-## Hybrid model
+## Pipeline
 
-- Modern eras: influenced by known World Cup performance
-- Pre-1970: lower caps via `eraMultiplier` in generator; more manual curation for legends
-- Legends in `CURATED` array: hand-tuned
-- Squad fillers: `tierBoost` + position template
-
-## Position weights (overall intuition)
-
-| Position | Primary stats |
-|----------|----------------|
-| GK | defense, mentality |
-| DEF | defense, control |
-| MID | control, mentality |
-| FWD | attack, physical |
+```bash
+npm run import-data    # download CSVs → data/raw/
+npm run generate-data  # build src/data/*.json
+npm run validate-data
+npm run playtest-drafts  # 50 draft simulations
+```
 
 ## Player integrity
 
-One `playerId` per human. Appearances are cosmetic (country + year). Simulation always uses `careerWorldCupProfile` / `profile`.
+- One `playerId` per human (`p-14758` = Fjelstul `P-14758`)
+- Multiple **appearances** (country + year on card)
+- **Simulation** uses aggregated career profile, not single-tournament stats
+
+## Computed profiles
+
+`scripts/data/compute-profiles.ts`:
+
+- Inputs: WC goals, match appearances, squad tournaments, primary position, country tier, era multiplier
+- Outputs: attack, defense, control, mentality, physical, overall (position-weighted)
+
+## Legend tiers (auto, ~300 players)
+
+After computing base ratings:
+
+| Tier | Count | Rule |
+|------|------:|------|
+| Elite | Top 80 WC goal scorers | `applyLegendBoost(..., "elite")` |
+| Star | Next 120 | `"star"` |
+| Notable | Next 100 | `"notable"` |
+
+Manual overrides in `manual-overrides.json` **replace** computed values (exact `normalizedName` match).
+
+## Team aliases
+
+| Dataset name | Invictos country |
+|--------------|------------------|
+| West Germany | Germany |
+| Czechoslovakia | Czech Republic |
+| Yugoslavia / FR Yugoslavia / Serbia and Montenegro | Serbia |
+
+## No generic fillers
+
+`-gen-` placeholder players are **not** generated. Every row is a real name from `squads.csv`.
 
 ## Expansion
 
-Add rows to `CURATED` in `scripts/generate-data.ts`, then `npm run generate-data` and `npm run validate-data`.
+1. Add rows to `manual-overrides.json` (`normalizedName` or `playerId`)
+2. Re-run `npm run generate-data`

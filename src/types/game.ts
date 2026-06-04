@@ -1,3 +1,4 @@
+import type { Position } from "./player";
 import type { GameMode, Language } from "./simulation";
 
 export type { GameMode, Language };
@@ -8,6 +9,8 @@ export interface DraftPick {
   worldCup: number;
   selectedAppearanceId: string;
   selectedPlayerId: string;
+  /** Position the user assigns for formation / balance (may differ from natural role). */
+  assignedPosition?: Position;
 }
 
 export interface Spin {

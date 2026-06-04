@@ -48,7 +48,18 @@ const playerIds = new Set(players.map((p) => p.id));
 const appearanceIds = new Set<string>();
 let errors = 0;
 
+for (const player of players) {
+  if (/not applicable/i.test(player.name)) {
+    console.error(`Invalid player name: ${player.id} -> ${player.name}`);
+    errors++;
+  }
+}
+
 for (const app of appearances) {
+  if (/not applicable/i.test(app.displayName)) {
+    console.error(`Invalid appearance name: ${app.id} -> ${app.displayName}`);
+    errors++;
+  }
   if (appearanceIds.has(app.id)) {
     console.error(`Duplicate appearance id: ${app.id}`);
     errors++;
@@ -87,8 +98,19 @@ if (appearances.length < 600) {
   errors++;
 }
 
-if (players.length < 300) {
-  console.error(`FAIL: Need 300+ unique players, got ${players.length}`);
+const genericPlayers = players.filter((p) => p.id.includes("-gen-"));
+if (genericPlayers.length > 0) {
+  console.error(`FAIL: ${genericPlayers.length} generic placeholder players remain`);
+  errors++;
+}
+
+if (players.length < 3000) {
+  console.error(`FAIL: Need 3000+ unique players, got ${players.length}`);
+  errors++;
+}
+
+if (appearances.length < 6000) {
+  console.error(`FAIL: Need 6000+ appearances, got ${appearances.length}`);
   errors++;
 }
 

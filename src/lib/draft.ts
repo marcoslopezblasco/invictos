@@ -1,4 +1,4 @@
-import type { Country, Player, PlayerAppearance } from "@/types/player";
+import type { Country, Player, PlayerAppearance, Position } from "@/types/player";
 import type { GameState, PositionCounts, Spin } from "@/types/game";
 import {
   INITIAL_REROLLS,
@@ -33,16 +33,55 @@ export function buildCountryCupCombos(indexes: DataIndexes): Spin[] {
   return combos;
 }
 
+function resolveAssignedPosition(
+  pick: GameState["picks"][number],
+  playersById?: Map<string, Player>,
+  appearancesById?: Map<string, PlayerAppearance>,
+): Position {
+  if (pick.assignedPosition) return pick.assignedPosition;
+  const player = playersById?.get(pick.selectedPlayerId);
+  const app = appearancesById?.get(pick.selectedAppearanceId);
+  return player?.position ?? app?.position ?? "MID";
+}
+
 export function getPositionCountsFromPicks(
   picks: GameState["picks"],
-  playersById: Map<string, Player>,
+  playersById?: Map<string, Player>,
+  appearancesById?: Map<string, PlayerAppearance>,
 ): PositionCounts {
   const counts: PositionCounts = { GK: 0, DEF: 0, MID: 0, FWD: 0 };
   for (const pick of picks) {
-    const player = playersById.get(pick.selectedPlayerId);
-    if (player) counts[player.position]++;
+    counts[resolveAssignedPosition(pick, playersById, appearancesById)]++;
   }
   return counts;
+}
+
+const ALL_POSITIONS: Position[] = ["GK", "DEF", "MID", "FWD"];
+
+/** Positions the user may assign on this pick without making the XI impossible to complete. */
+export function getValidAssignedPositions(
+  counts: PositionCounts,
+  picksLeft: number,
+): Position[] {
+  if (picksLeft <= 0) return [];
+  return ALL_POSITIONS.filter((pos) => {
+    const next: PositionCounts = { ...counts, [pos]: counts[pos] + 1 };
+    return canStillSatisfyMinimums(next, picksLeft - 1);
+  });
+}
+
+export function getPositionUrgency(
+  counts: PositionCounts,
+  picksLeft: number,
+  locale: "es" | "en",
+): string | null {
+  const forced = getForcedPosition(counts, picksLeft);
+  if (!forced) return null;
+  const need = POSITION_MINIMUMS[forced] - counts[forced];
+  if (locale === "es") {
+    return `Necesitas ${need} ${forced} en ${picksLeft} pick${picksLeft === 1 ? "" : "s"}`;
+  }
+  return `Need ${need} ${forced} in ${picksLeft} pick${picksLeft === 1 ? "" : "s"}`;
 }
 
 function picksRemaining(gameState: GameState): number {
@@ -100,7 +139,7 @@ export function generateSpin(
   spinIndex: number,
 ): Spin {
   const locked = new Set(gameState.lockedPlayerIds);
-  const counts = getPositionCountsFromPicks(gameState.picks, indexes.playersById);
+  const counts = getPositionCountsFromPicks(gameState.picks);
   const picksLeft = picksRemaining(gameState);
   const forced = getForcedPosition(counts, picksLeft);
   const combos = indexes.countryCupCombos;
@@ -152,7 +191,11 @@ export function picksToDrafted(
       const appearance = appearancesById.get(pick.selectedAppearanceId);
       const player = playersById.get(pick.selectedPlayerId);
       if (!appearance || !player) return null;
-      return { appearance, player };
+      const assigned = resolveAssignedPosition(pick, playersById, appearancesById);
+      return {
+        appearance: { ...appearance, position: assigned },
+        player,
+      };
     })
     .filter((x): x is DraftedPlayer => x !== null);
 }
@@ -188,6 +231,7 @@ export function applyReroll(gameState: GameState, newSpin: Spin): GameState {
 export function applyPick(
   gameState: GameState,
   appearance: PlayerAppearance,
+  assignedPosition: Position,
   nextSpin: Spin | null,
 ): GameState {
   const pick = {
@@ -196,6 +240,7 @@ export function applyPick(
     worldCup: gameState.currentSpin!.worldCup,
     selectedAppearanceId: appearance.id,
     selectedPlayerId: appearance.playerId,
+    assignedPosition,
   };
   return {
     ...gameState,

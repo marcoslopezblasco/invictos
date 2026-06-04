@@ -37,7 +37,8 @@ export function TeamSummary({
             <span>{getFlagForCountry(d.appearance.country)}</span>
             <span className="font-bold">{d.appearance.displayName}</span>
             <span className="text-amber-900/60">
-              {d.appearance.position} · {d.appearance.worldCup}
+              {d.appearance.position} · {d.appearance.country}{" "}
+              {d.appearance.worldCup}
             </span>
           </li>
         ))}
