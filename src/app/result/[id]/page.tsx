@@ -6,8 +6,11 @@ import { useParams, useRouter } from "next/navigation";
 import { getResultById, type SavedResult } from "@/lib/storage";
 import { SimulationResult } from "@/components/SimulationResult";
 import { ShareCard } from "@/components/ShareCard";
+import { FormationPitch } from "@/components/FormationPitch";
 import { t } from "@/lib/i18n";
+import { draftedFromSavedResult } from "@/lib/result-draft";
 import { useGame } from "@/context/GameContext";
+import { useMemo } from "react";
 
 export default function ResultPage() {
   const params = useParams();
@@ -19,6 +22,11 @@ export default function ResultPage() {
   useEffect(() => {
     setResult(getResultById(id));
   }, [id]);
+
+  const drafted = useMemo(
+    () => (result ? draftedFromSavedResult(result) : []),
+    [result],
+  );
 
   if (!result) {
     return (
@@ -42,8 +50,12 @@ export default function ResultPage() {
 
       <div>
         <h1 className="text-2xl font-black">{result.teamName}</h1>
-        <p className="text-[var(--accent-gold)]">{result.formation}</p>
+        <p className="text-lg font-bold text-[var(--accent-gold)]">
+          {result.formation}
+        </p>
       </div>
+
+      <FormationPitch drafted={drafted} />
 
       <div className="rounded-2xl border border-[var(--accent-gold)]/40 bg-[var(--bg-card)] p-4 text-center">
         <div className="text-sm text-[var(--text-muted)]">Score</div>

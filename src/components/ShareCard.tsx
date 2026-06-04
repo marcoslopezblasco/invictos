@@ -5,12 +5,18 @@ import { toPng } from "html-to-image";
 import type { SavedResult } from "@/lib/storage";
 import { t } from "@/lib/i18n";
 import { getFlagCodeForCountry } from "@/lib/data";
-import { CountryFlag } from "./CountryFlag";
+import { draftedFromSavedResult } from "@/lib/result-draft";
+import { FormationPitch } from "./FormationPitch";
+import { useMemo } from "react";
 
 export function ShareCard({ result }: { result: SavedResult }) {
   const ref = useRef<HTMLDivElement>(null);
   const locale = result.language;
   const tr = result.tournament;
+  const drafted = useMemo(
+    () => draftedFromSavedResult(result),
+    [result],
+  );
 
   const downloadImage = async () => {
     if (!ref.current) return;
@@ -51,14 +57,9 @@ export function ShareCard({ result }: { result: SavedResult }) {
         </div>
         <h3 className="mt-1 text-center text-lg font-black">{result.teamName}</h3>
         <p className="text-center text-sm font-bold">{result.formation}</p>
-        <ul className="mt-3 space-y-1 text-xs">
-          {result.appearances.slice(0, 11).map((a) => (
-            <li key={a.id} className="flex items-center gap-2">
-              <CountryFlag country={a.country} size={16} />
-              <span>{a.displayName}</span>
-            </li>
-          ))}
-        </ul>
+        <div className="mt-3">
+          <FormationPitch drafted={drafted} compact />
+        </div>
         <div className="mt-4 text-center text-sm font-black text-amber-900">
           🏆 {t(locale, `badge.${result.badge}`)}
         </div>
