@@ -124,7 +124,7 @@ export function DraftScreen() {
   const showSpin = spinAnim ?? { active: false, target: spin, onDone: () => {} };
 
   return (
-    <div className="flex flex-col gap-4 px-4 pb-8">
+    <div className="flex flex-col gap-3 px-4 pb-6">
       <div className="flex items-center justify-between">
         <span className="text-sm font-bold text-[var(--accent-gold)]">
           {t(locale, "draft.pick")} {pickNum}/{TOTAL_PICKS}
@@ -166,23 +166,23 @@ export function DraftScreen() {
       </div>
 
       {isRolling ? (
-        <p className="py-6 text-center text-sm font-semibold text-[var(--text-muted)]">
+        <p className="py-3 text-center text-xs font-semibold text-[var(--text-muted)]">
           {t(locale, "draft.rolling")}
         </p>
       ) : (
-      <div className="flex flex-col gap-2">
-        <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-1">
           <span className="text-xs font-bold uppercase tracking-wide text-[var(--text-muted)]">
             {t(locale, "draft.filter")}
           </span>
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-1">
             {POSITION_FILTERS.map((f) => (
               <button
                 key={f}
                 type="button"
                 disabled={isRolling}
                 onClick={() => setPositionFilter(f)}
-                className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+                className={`rounded-lg px-2.5 py-1 text-xs font-bold transition ${
                   positionFilter === f
                     ? "bg-[var(--accent)] text-white"
                     : "border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-muted)]"
@@ -194,18 +194,18 @@ export function DraftScreen() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1">
           <span className="text-xs font-bold uppercase tracking-wide text-[var(--text-muted)]">
             {t(locale, "draft.sort")}
           </span>
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-1">
             {SORT_OPTIONS.map((s) => (
               <button
                 key={s}
                 type="button"
                 disabled={isRolling}
                 onClick={() => setSortBy(s)}
-                className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+                className={`rounded-lg px-2.5 py-1 text-xs font-bold transition ${
                   sortBy === s
                     ? "bg-[var(--accent-gold)] text-black"
                     : "border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-muted)]"
@@ -217,7 +217,7 @@ export function DraftScreen() {
           </div>
         </div>
 
-        <p className="text-sm font-semibold text-[var(--text-muted)]">
+        <p className="text-xs font-semibold text-[var(--text-muted)]">
           {t(locale, "draft.choose")}
           {displayed.length !== eligible.length && (
             <span className="ml-1 text-[var(--accent-gold)]">
@@ -226,9 +226,9 @@ export function DraftScreen() {
           )}
         </p>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1">
           {displayed.length === 0 ? (
-            <p className="rounded-xl border border-dashed border-[var(--border)] px-4 py-6 text-center text-sm text-[var(--text-muted)]">
+            <p className="rounded-lg border border-dashed border-[var(--border)] px-3 py-4 text-center text-xs text-[var(--text-muted)]">
               —
             </p>
           ) : (

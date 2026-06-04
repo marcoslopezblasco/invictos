@@ -41,8 +41,8 @@ export function TeamBuilderPanel({
   );
 
   return (
-    <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-3">
-      <div className="mb-2 flex items-center justify-between">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-2.5">
+      <div className="mb-1.5 flex items-center justify-between">
         <span className="text-xs font-bold uppercase tracking-wide text-[var(--text-muted)]">
           {t(locale, "draft.yourXi")}
         </span>
@@ -54,7 +54,7 @@ export function TeamBuilderPanel({
       <PositionSlots counts={counts} locale={locale} />
 
       {drafted.length > 0 && (
-        <div className="mt-3">
+        <div className="mt-2">
           <FormationPitch drafted={drafted} compact />
         </div>
       )}

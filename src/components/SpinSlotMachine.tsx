@@ -76,7 +76,7 @@ export function SpinSlotMachine({
 
   return (
     <div
-      className={`paper-texture flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded-xl border-2 px-2.5 py-1.5 transition-all duration-300 ${
+      className={`paper-texture flex min-h-9 min-w-0 flex-1 items-center gap-1.5 rounded-lg border-2 px-2 py-1 transition-all duration-300 ${
         landed
           ? "border-amber-500/70"
           : "border-amber-700/40 shadow-inner"
