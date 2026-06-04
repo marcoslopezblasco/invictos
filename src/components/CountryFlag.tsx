@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { getCountryByName } from "@/lib/data";
 
 export function CountryFlag({
@@ -12,13 +15,14 @@ export function CountryFlag({
   const meta = getCountryByName(country);
   const code = meta?.flagCode?.trim() || null;
   const flagSrc = meta?.flagSrc;
+  const [imgFailed, setImgFailed] = useState(false);
   /** 4:3 for flag-icons; 3:2 for custom flagSrc SVGs/PNGs. */
   const width = size;
   const height = flagSrc
     ? Math.round((width * 2) / 3)
     : Math.round((width * 3) / 4);
 
-  if (flagSrc) {
+  if (flagSrc && !imgFailed) {
     return (
       <span
         className={`inline-flex shrink-0 items-center justify-center overflow-hidden rounded-sm border border-black/10 bg-white/90 shadow-sm ${className}`}
@@ -32,7 +36,21 @@ export function CountryFlag({
           alt=""
           className="h-full w-full object-contain"
           draggable={false}
+          onError={() => setImgFailed(true)}
         />
+      </span>
+    );
+  }
+
+  if (flagSrc && imgFailed) {
+    const initials = meta?.id.slice(0, 2).toUpperCase() ?? "?";
+    return (
+      <span
+        className={`inline-flex shrink-0 items-center justify-center rounded-sm bg-amber-900/15 text-[9px] font-bold text-amber-900/60 ${className}`}
+        style={{ width, height }}
+        aria-hidden
+      >
+        {initials}
       </span>
     );
   }

@@ -423,7 +423,7 @@
     "nameEs": "Yugoslavia",
     "flagCode": "",
     "flag": "",
-    "flagSrc": "https://flagcdn.com/w80/yu.webp",
+    "flagSrc": "/flags/yugoslavia.svg",
     "tier": 3,
     "worldCups": [
       1930,
@@ -443,7 +443,7 @@
     "nameEs": "Serbia y Montenegro",
     "flagCode": "",
     "flag": "",
-    "flagSrc": "https://flagcdn.com/w80/cs.webp",
+    "flagSrc": "/flags/serbia-montenegro.svg",
     "tier": 3,
     "worldCups": [
       2006
