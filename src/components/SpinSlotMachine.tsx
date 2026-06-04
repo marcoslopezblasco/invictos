@@ -18,11 +18,13 @@ export function SpinSlotMachine({
   pool,
   active,
   onComplete,
+  className = "",
 }: {
   target: Spin;
   pool: Spin[];
   active: boolean;
   onComplete?: () => void;
+  className?: string;
 }) {
   const [display, setDisplay] = useState<Spin>(target);
   const [landed, setLanded] = useState(!active);
@@ -74,40 +76,30 @@ export function SpinSlotMachine({
 
   return (
     <div
-      className={`paper-texture rounded-2xl border-2 p-4 text-center transition-all duration-300 ${
+      className={`paper-texture flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded-xl border-2 px-2.5 py-1.5 transition-all duration-300 ${
         landed
-          ? "border-amber-500/70 shadow-md shadow-amber-900/20"
+          ? "border-amber-500/70"
           : "border-amber-700/40 shadow-inner"
-      }`}
+      } ${!landed ? "animate-pulse" : ""} ${className}`}
     >
-      <div
-        className={`mx-auto flex max-w-xs justify-center gap-6 ${!landed ? "animate-pulse" : ""}`}
+      <CountryFlag country={display.country} size={28} />
+      <span
+        className={`min-w-0 flex-1 truncate text-sm font-black text-amber-950 ${
+          landed ? "opacity-100" : "opacity-80"
+        }`}
       >
-        <div className="min-w-0 flex-1 text-center">
-          <div className="flex justify-center">
-            <CountryFlag country={display.country} size={48} />
-          </div>
-          <div
-            className={`mt-2 truncate text-lg font-black text-amber-950 transition-opacity ${
-              landed ? "opacity-100" : "opacity-80"
-            }`}
-          >
-            {display.country}
-          </div>
-        </div>
-        <div className="flex shrink-0 flex-col items-center justify-center">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-amber-900/50">
-            WC
-          </div>
-          <div
-            className={`min-w-[4.5rem] text-4xl font-black tabular-nums text-amber-900 ${
-              !landed ? "blur-[0.4px]" : ""
-            }`}
-          >
-            {display.worldCup}
-          </div>
-        </div>
-      </div>
+        {display.country}
+      </span>
+      <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-amber-900/50">
+        WC
+      </span>
+      <span
+        className={`shrink-0 text-xl font-black tabular-nums leading-none text-amber-900 ${
+          !landed ? "blur-[0.4px]" : ""
+        }`}
+      >
+        {display.worldCup}
+      </span>
     </div>
   );
 }

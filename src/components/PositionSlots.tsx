@@ -19,18 +19,18 @@ export function PositionSlots({
   ];
 
   return (
-    <div className="grid grid-cols-4 gap-2">
+    <div className="flex gap-1.5">
       {slots.map(({ key, labelKey }) => (
         <div
           key={key}
-          className="rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-2 py-2 text-center"
+          className="flex min-w-0 flex-1 items-center justify-center gap-1 rounded-md border border-[var(--border)] bg-[var(--bg-card)] px-1.5 py-1"
         >
-          <div className="text-[10px] font-bold text-[var(--text-muted)]">
+          <span className="text-[10px] font-bold text-[var(--text-muted)]">
             {t(locale, labelKey)}
-          </div>
-          <div className="text-lg font-black tabular-nums text-[var(--accent-gold)]">
+          </span>
+          <span className="text-sm font-black tabular-nums leading-none text-[var(--accent-gold)]">
             {counts[key]}
-          </div>
+          </span>
         </div>
       ))}
     </div>

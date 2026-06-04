@@ -30,9 +30,6 @@ export function InitialRollScreen() {
         <p className="text-sm font-bold text-[var(--accent-gold)]">
           {t(locale, "draft.pick")} 1/11
         </p>
-        <p className="mt-2 text-sm text-[var(--text-muted)]">
-          {spinning ? t(locale, "draft.rolling") : t(locale, "draft.rollHint")}
-        </p>
         <p className="mt-1 text-xs text-[var(--text-muted)]">
           {mode === "blind"
             ? t(locale, "home.blind")
@@ -44,25 +41,33 @@ export function InitialRollScreen() {
 
       <TeamBuilderPanel gameState={gameState} locale={locale} />
 
-      {spinning && target ? (
-        <SpinSlotMachine
-          target={target}
-          pool={pool}
-          active
-          onComplete={() => {
-            commitInitialSpin(target);
-            setSpinning(false);
-          }}
-        />
-      ) : (
+      <div className="flex items-stretch gap-2">
+        {spinning && target ? (
+          <SpinSlotMachine
+            target={target}
+            pool={pool}
+            active
+            onComplete={() => {
+              commitInitialSpin(target);
+              setSpinning(false);
+            }}
+          />
+        ) : (
+          <div className="flex min-h-11 min-w-0 flex-1 items-center justify-center rounded-xl border border-dashed border-[var(--border)] px-2 py-1.5">
+            <p className="text-center text-xs text-[var(--text-muted)]">
+              {t(locale, "draft.rollHint")}
+            </p>
+          </div>
+        )}
         <button
           type="button"
           onClick={handleRoll}
-          className="rounded-2xl bg-[var(--accent-gold)] py-5 text-2xl font-black tracking-widest text-black shadow-lg transition active:scale-[0.98]"
+          disabled={spinning}
+          className="shrink-0 rounded-xl bg-[var(--accent-gold)] px-5 py-2 text-sm font-black tracking-wide text-black shadow-md transition active:scale-[0.98] disabled:opacity-50"
         >
-          {t(locale, "draft.roll")}
+          {spinning ? t(locale, "draft.rolling") : t(locale, "draft.roll")}
         </button>
-      )}
+      </div>
     </div>
   );
 }

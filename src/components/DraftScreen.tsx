@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useGame } from "@/context/GameContext";
 import { loadData, getAppearancesById } from "@/lib/data";
 import {
@@ -58,7 +58,7 @@ export function DraftScreen() {
   const prevSpinKey = useRef<string | null>(null);
   const skipNextSpinEffect = useRef(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!spin || !gameState) return;
     const key = `${spin.country}::${spin.worldCup}::${gameState.picks.length}`;
     if (skipNextSpinEffect.current) {
@@ -140,25 +140,29 @@ export function DraftScreen() {
         </p>
       )}
 
-      <SpinSlotMachine
-        target={showSpin.target}
-        pool={pool}
-        active={showSpin.active}
-        onComplete={showSpin.onDone}
-      />
+      <div className="flex items-stretch gap-2">
+        <SpinSlotMachine
+          target={showSpin.target}
+          pool={pool}
+          active={showSpin.active}
+          onComplete={showSpin.onDone}
+        />
+        <button
+          type="button"
+          disabled={gameState.rerollsRemaining <= 0 || isRolling}
+          onClick={handleReroll}
+          className="shrink-0 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] px-4 py-2 text-sm font-semibold disabled:opacity-40"
+        >
+          {isRolling ? t(locale, "draft.rolling") : t(locale, "draft.reroll")}
+        </button>
+      </div>
 
-      <button
-        type="button"
-        disabled={gameState.rerollsRemaining <= 0 || isRolling}
-        onClick={handleReroll}
-        className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] py-3 text-sm font-semibold disabled:opacity-40"
-      >
-        {isRolling ? t(locale, "draft.rolling") : t(locale, "draft.reroll")}
-      </button>
-
-      <div
-        className={`flex flex-col gap-2 transition-opacity ${isRolling ? "pointer-events-none opacity-40" : ""}`}
-      >
+      {isRolling ? (
+        <p className="py-6 text-center text-sm font-semibold text-[var(--text-muted)]">
+          {t(locale, "draft.rolling")}
+        </p>
+      ) : (
+      <div className="flex flex-col gap-2">
         <div className="flex flex-col gap-2">
           <span className="text-xs font-bold uppercase tracking-wide text-[var(--text-muted)]">
             {t(locale, "draft.filter")}
@@ -237,6 +241,7 @@ export function DraftScreen() {
           )}
         </div>
       </div>
+      )}
     </div>
   );
 }
