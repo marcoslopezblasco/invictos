@@ -1,0 +1,104 @@
+import { readFileSync } from "fs";
+import { join } from "path";
+import { z } from "zod";
+
+const PositionSchema = z.enum(["GK", "DEF", "MID", "FWD"]);
+
+const ProfileSchema = z.object({
+  attack: z.number().min(1).max(100),
+  defense: z.number().min(1).max(100),
+  control: z.number().min(1).max(100),
+  mentality: z.number().min(1).max(100),
+  physical: z.number().min(1).max(100),
+  overall: z.number().min(1).max(100),
+});
+
+const PlayerSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  normalizedName: z.string(),
+  countries: z.array(z.string()),
+  position: PositionSchema,
+  worldCupsPlayed: z.array(z.number()),
+  profile: ProfileSchema,
+});
+
+const AppearanceSchema = z.object({
+  id: z.string(),
+  playerId: z.string(),
+  country: z.string(),
+  worldCup: z.number(),
+  displayName: z.string(),
+  displayCountry: z.string(),
+  displayYear: z.number(),
+  position: PositionSchema,
+});
+
+const dataDir = join(process.cwd(), "src", "data");
+
+function loadJson<T>(file: string): T {
+  return JSON.parse(readFileSync(join(dataDir, file), "utf-8")) as T;
+}
+
+const players = z.array(PlayerSchema).parse(loadJson("players.json"));
+const appearances = z.array(AppearanceSchema).parse(loadJson("appearances.json"));
+const countries = loadJson<Array<{ name: string; worldCups: number[] }>>("countries.json");
+
+const playerIds = new Set(players.map((p) => p.id));
+const appearanceIds = new Set<string>();
+let errors = 0;
+
+for (const app of appearances) {
+  if (appearanceIds.has(app.id)) {
+    console.error(`Duplicate appearance id: ${app.id}`);
+    errors++;
+  }
+  appearanceIds.add(app.id);
+
+  if (!playerIds.has(app.playerId)) {
+    console.error(`Orphan appearance: ${app.id} -> ${app.playerId}`);
+    errors++;
+  }
+}
+
+const comboCounts = new Map<string, number>();
+for (const app of appearances) {
+  const key = `${app.country}::${app.worldCup}`;
+  comboCounts.set(key, (comboCounts.get(key) ?? 0) + 1);
+}
+
+for (const country of countries) {
+  for (const year of country.worldCups) {
+    const key = `${country.name}::${year}`;
+    const count = comboCounts.get(key) ?? 0;
+    if (count < 5) {
+      console.error(`Thin squad: ${key} has only ${count} players`);
+      errors++;
+    }
+  }
+}
+
+console.log(`Players: ${players.length}`);
+console.log(`Appearances: ${appearances.length}`);
+console.log(`Country-Cup combos: ${comboCounts.size}`);
+
+if (appearances.length < 600) {
+  console.error(`FAIL: Need 600+ appearances, got ${appearances.length}`);
+  errors++;
+}
+
+if (players.length < 300) {
+  console.error(`FAIL: Need 300+ unique players, got ${players.length}`);
+  errors++;
+}
+
+if (countries.length < 24) {
+  console.error(`FAIL: Need 24 countries, got ${countries.length}`);
+  errors++;
+}
+
+if (errors > 0) {
+  process.exit(1);
+}
+
+console.log("Data validation passed.");

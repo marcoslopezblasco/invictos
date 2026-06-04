@@ -1,0 +1,4 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "npm run validate-data && npm run build"
+}
