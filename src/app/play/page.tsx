@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useGame } from "@/context/GameContext";
 import { DraftScreen } from "@/components/DraftScreen";
+import { InitialRollScreen } from "@/components/InitialRollScreen";
 import { t } from "@/lib/i18n";
 import { setSavedMode, getActiveGame } from "@/lib/storage";
 import type { GameState } from "@/types/game";
@@ -11,8 +12,15 @@ import { TOTAL_PICKS } from "@/types/game";
 
 export default function PlayPage() {
   const router = useRouter();
-  const { locale, mode, gameState, startGame, restoreGame, isDraftComplete } =
-    useGame();
+  const {
+    locale,
+    mode,
+    gameState,
+    startGame,
+    restoreGame,
+    isDraftComplete,
+    needsInitialRoll,
+  } = useGame();
   const booted = useRef(false);
 
   useEffect(() => {
@@ -56,6 +64,10 @@ export default function PlayPage() {
 
   if (gameState.picks.length >= TOTAL_PICKS) {
     return null;
+  }
+
+  if (needsInitialRoll) {
+    return <InitialRollScreen />;
   }
 
   return (

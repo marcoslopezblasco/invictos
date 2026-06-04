@@ -248,7 +248,7 @@ export function createInitialGameState(
   teamName: string,
   mode: GameState["mode"],
   language: GameState["language"],
-  initialSpin: Spin,
+  initialSpin: Spin | null = null,
 ): GameState {
   return {
     id,

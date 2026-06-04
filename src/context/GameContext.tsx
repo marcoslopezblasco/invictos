@@ -39,8 +39,10 @@ interface GameContextValue {
   eligible: PlayerAppearance[];
   startGame: (teamName?: string) => void;
   playAgain: () => void;
+  rollInitialSpin: () => void;
   restoreGame: (state: GameState) => void;
   reroll: () => void;
+  needsInitialRoll: boolean;
   selectPlayer: (appearanceId: string) => void;
   runSimulation: () => SavedResult | null;
   isDraftComplete: boolean;
@@ -78,9 +80,8 @@ export function GameProvider({
   const startGame = useCallback(
     (teamName?: string) => {
       const id = newGameId();
-      const spin = getInitialSpin(id);
       const name = teamName?.trim() || pickRandomTeamName(locale);
-      const state = createInitialGameState(id, name, mode, locale, spin);
+      const state = createInitialGameState(id, name, mode, locale, null);
       setGameState(state);
       setSpinCounter(0);
       saveActiveGame({ gameStateJson: JSON.stringify(state) });
@@ -91,13 +92,20 @@ export function GameProvider({
   const playAgain = useCallback(() => {
     clearActiveGame();
     const id = newGameId();
-    const spin = getInitialSpin(id);
     const name = pickRandomTeamName(locale);
-    const state = createInitialGameState(id, name, mode, locale, spin);
+    const state = createInitialGameState(id, name, mode, locale, null);
     setGameState(state);
     setSpinCounter(0);
     saveActiveGame({ gameStateJson: JSON.stringify(state) });
   }, [mode, locale]);
+
+  const rollInitialSpin = useCallback(() => {
+    if (!gameState || gameState.currentSpin) return;
+    const spin = getInitialSpin(gameState.id);
+    const next = { ...gameState, currentSpin: spin };
+    setGameState(next);
+    saveActiveGame({ gameStateJson: JSON.stringify(next) });
+  }, [gameState]);
 
   const restoreGame = useCallback((state: GameState) => {
     setGameState(state);
@@ -184,7 +192,9 @@ export function GameProvider({
     eligible,
     startGame,
     playAgain,
+    rollInitialSpin,
     restoreGame,
+    needsInitialRoll: Boolean(gameState && !gameState.currentSpin),
     reroll,
     selectPlayer,
     runSimulation,
