@@ -19,7 +19,6 @@ import {
   type DataIndexes,
 } from "../draft";
 import type { GameState } from "@/types/game";
-import { initialRerollsForMode } from "@/types/game";
 import { createInitialGameState } from "../draft";
 
 function makePlayer(
@@ -86,14 +85,6 @@ function buildFixtureXI(): DraftedPlayer[] {
     };
   });
 }
-
-describe("game modes", () => {
-  it("classic starts with fewer rerolls than blind", () => {
-    expect(initialRerollsForMode("classic")).toBe(2);
-    expect(initialRerollsForMode("blind")).toBe(3);
-    expect(initialRerollsForMode("historico")).toBe(3);
-  });
-});
 
 describe("formations", () => {
   it("computes 4-4-2 for balanced XI", () => {
@@ -193,7 +184,7 @@ describe("simulation", () => {
       blindWins += simulateTournament(`Cmp B ${i}`, xi, "en", "blind").wins;
     }
     expect(classicWins).toBeLessThan(blindWins);
-    expect(CLASSIC_MODE_DIFFICULTY_BONUS).toBeGreaterThan(0);
+    expect(CLASSIC_MODE_DIFFICULTY_BONUS).toBe(8);
   });
 
   it("chaos XI rarely survives the group stage", () => {

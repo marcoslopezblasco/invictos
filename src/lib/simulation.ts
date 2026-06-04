@@ -13,7 +13,7 @@ import { generateNarrative } from "./narrative";
 import { pickHistoricalOpponent } from "./historical-opponents";
 
 /** Classic sees player tiers — opponents play tougher in the abstract bracket. */
-export const CLASSIC_MODE_DIFFICULTY_BONUS = 4;
+export const CLASSIC_MODE_DIFFICULTY_BONUS = 8;
 
 const STAGES: { stage: MatchStage; difficulty: number }[] = [
   { stage: "GROUP_1", difficulty: 68 },
