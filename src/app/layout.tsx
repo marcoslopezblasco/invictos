@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { ClientAppShell } from "@/components/ClientAppShell";
 
-const geist = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const arcadeGamer = localFont({
+  src: "./fonts/ArcadeGamer-Regular.ttf",
+  variable: "--font-arcade",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -25,8 +26,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${geist.variable} h-full`}>
-      <body className="min-h-full font-sans antialiased">
+    <html lang="es" className={`${arcadeGamer.variable} h-full`}>
+      <body className={`${arcadeGamer.className} min-h-full font-sans antialiased`}>
         <ClientAppShell>{children}</ClientAppShell>
       </body>
     </html>

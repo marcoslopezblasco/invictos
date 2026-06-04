@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useGame } from "@/context/GameContext";
 import { TeamSummary } from "@/components/TeamSummary";
+import { PlayHomeButton } from "@/components/PlayHomeButton";
 import { t } from "@/lib/i18n";
 import { loadData, getAppearancesById } from "@/lib/data";
 import { picksToDrafted } from "@/lib/draft";
@@ -51,7 +52,9 @@ export default function ReviewPage() {
   };
 
   return (
-    <div className="flex flex-col gap-6 px-4 py-8">
+    <div className="flex flex-col gap-6 pb-8">
+      <PlayHomeButton locale={locale} />
+      <div className="flex flex-col gap-6 px-4">
       <h1 className="text-xl font-bold">{t(locale, "review.title")}</h1>
       <TeamSummary drafted={drafted} teamName={gameState.teamName} />
       {fixturePreview && (
@@ -64,6 +67,7 @@ export default function ReviewPage() {
       >
         {t(locale, "review.simulate")}
       </button>
+      </div>
     </div>
   );
 }

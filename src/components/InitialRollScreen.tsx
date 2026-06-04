@@ -25,7 +25,7 @@ export function InitialRollScreen() {
   };
 
   return (
-    <div className="flex flex-col gap-6 px-4 py-6">
+    <div className="flex flex-col gap-6 px-4 pb-6 pt-2">
       <div className="text-center">
         <p className="text-sm font-bold text-[var(--accent-gold)]">
           {t(locale, "draft.pick")} 1/11

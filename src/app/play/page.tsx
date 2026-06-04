@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useGame } from "@/context/GameContext";
 import { DraftScreen } from "@/components/DraftScreen";
 import { InitialRollScreen } from "@/components/InitialRollScreen";
+import { PlayHomeButton } from "@/components/PlayHomeButton";
 import { t } from "@/lib/i18n";
 import { setSavedMode, getActiveGame } from "@/lib/storage";
 import type { GameState } from "@/types/game";
@@ -66,13 +67,10 @@ export default function PlayPage() {
     return null;
   }
 
-  if (needsInitialRoll) {
-    return <InitialRollScreen />;
-  }
-
   return (
-    <div className="py-4">
-      <DraftScreen />
-    </div>
+    <>
+      <PlayHomeButton locale={locale} />
+      {needsInitialRoll ? <InitialRollScreen /> : <DraftScreen />}
+    </>
   );
 }

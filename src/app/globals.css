@@ -15,12 +15,14 @@
 @theme inline {
   --color-background: var(--bg);
   --color-foreground: var(--text);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-arcade), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-arcade), ui-monospace, monospace;
 }
 
 body {
   background: var(--bg);
   color: var(--text);
+  letter-spacing: 0.02em;
   background-image: radial-gradient(
       ellipse at 20% 0%,
       rgba(45, 138, 78, 0.12) 0%,

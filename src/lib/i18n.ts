@@ -4,6 +4,7 @@ export type Locale = Language;
 
 const translations: Record<Locale, Record<string, string>> = {
   es: {
+    "nav.home": "Inicio",
     "app.title": "Invictos",
     "app.claim": "Draftea un XI histórico. Simula un Mundial. Descubre si puedes ganarlo invicto.",
     "home.play": "Jugar",
@@ -83,6 +84,7 @@ const translations: Record<Locale, Record<string, string>> = {
     "recent.title": "Partidas recientes",
   },
   en: {
+    "nav.home": "Home",
     "app.title": "Invictos",
     "app.claim": "Draft a historic XI. Simulate a World Cup. See if you can win it undefeated.",
     "home.play": "Play",
