@@ -1,7 +1,6 @@
 "use client";
 
 import type { PositionCounts } from "@/types/simulation";
-import { POSITION_MINIMUMS } from "@/types/game";
 import { t } from "@/lib/i18n";
 import type { Language } from "@/types/simulation";
 
@@ -29,8 +28,8 @@ export function PositionSlots({
           <div className="text-[10px] font-bold text-[var(--text-muted)]">
             {t(locale, labelKey)}
           </div>
-          <div className="text-sm font-bold">
-            {counts[key]}/{POSITION_MINIMUMS[key]}
+          <div className="text-lg font-black tabular-nums text-[var(--accent-gold)]">
+            {counts[key]}
           </div>
         </div>
       ))}

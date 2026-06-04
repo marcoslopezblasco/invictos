@@ -2,7 +2,7 @@
 
 import type { DraftedPlayer } from "@/types/simulation";
 import { buildTeamProfile } from "@/lib/scoring";
-import { CountryFlag } from "./CountryFlag";
+import { FormationPitch } from "./FormationPitch";
 
 export function TeamSummary({
   drafted,
@@ -28,21 +28,7 @@ export function TeamSummary({
           <div>Balance: {Math.round(profile.balance)}</div>
         </div>
       </div>
-      <ul className="flex flex-col gap-2">
-        {drafted.map((d) => (
-          <li
-            key={d.appearance.id}
-            className="card-sticker flex items-center gap-2 rounded-lg px-3 py-2 text-sm"
-          >
-            <CountryFlag country={d.appearance.country} size={18} />
-            <span className="font-bold">{d.appearance.displayName}</span>
-            <span className="text-amber-900/60">
-              {d.appearance.position} · {d.appearance.country}{" "}
-              {d.appearance.worldCup}
-            </span>
-          </li>
-        ))}
-      </ul>
+      <FormationPitch drafted={drafted} />
     </div>
   );
 }

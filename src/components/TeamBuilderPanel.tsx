@@ -2,14 +2,13 @@
 
 import { useMemo } from "react";
 import type { GameState } from "@/types/game";
-import { TOTAL_PICKS } from "@/types/game";
-import { getPositionCountsFromPicks } from "@/lib/draft";
+import { getPositionCountsFromPicks, picksToDrafted } from "@/lib/draft";
 import { getFormationString } from "@/lib/formations";
 import { loadData, getAppearancesById } from "@/lib/data";
-import { CountryFlag } from "./CountryFlag";
 import { t } from "@/lib/i18n";
 import type { Language } from "@/types/simulation";
 import { PositionSlots } from "./PositionSlots";
+import { FormationPitch } from "./FormationPitch";
 
 export function TeamBuilderPanel({
   gameState,
@@ -31,22 +30,15 @@ export function TeamBuilderPanel({
       ? getFormationString(counts)
       : "—";
 
-  const slots = Array.from({ length: TOTAL_PICKS }, (_, i) => {
-    const pick = gameState.picks[i];
-    if (!pick) return null;
-    const app = appearancesById.get(pick.selectedAppearanceId);
-    const player = indexes.playersById.get(pick.selectedPlayerId);
-    return {
-      pick,
-      name: app?.displayName ?? player?.name ?? "?",
-      country: pick.country,
-      position:
-        pick.assignedPosition ??
-        indexes.playersById.get(pick.selectedPlayerId)?.position ??
-        "MID",
-      year: pick.worldCup,
-    };
-  });
+  const drafted = useMemo(
+    () =>
+      picksToDrafted(
+        gameState.picks,
+        appearancesById,
+        indexes.playersById,
+      ),
+    [gameState.picks, appearancesById, indexes.playersById],
+  );
 
   return (
     <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-3">
@@ -61,35 +53,11 @@ export function TeamBuilderPanel({
 
       <PositionSlots counts={counts} locale={locale} />
 
-      <ul className="mt-3 max-h-36 space-y-1 overflow-y-auto">
-        {slots.map((slot, i) =>
-          slot ? (
-            <li
-              key={slot.pick.selectedAppearanceId}
-              className="flex items-center gap-2 rounded-lg bg-black/20 px-2 py-1.5 text-xs"
-            >
-              <span className="w-4 shrink-0 text-[var(--text-muted)]">
-                {i + 1}
-              </span>
-              <CountryFlag country={slot.country} size={16} />
-              <span className="min-w-0 flex-1 truncate font-semibold">
-                {slot.name}
-              </span>
-              <span className="shrink-0 rounded bg-[var(--accent)]/20 px-1.5 py-0.5 font-bold text-[var(--accent)]">
-                {slot.position}
-              </span>
-            </li>
-          ) : (
-            <li
-              key={`empty-${i}`}
-              className="flex items-center gap-2 rounded-lg border border-dashed border-[var(--border)] px-2 py-1.5 text-xs text-[var(--text-muted)]"
-            >
-              <span className="w-4">{i + 1}</span>
-              <span className="italic">{t(locale, "draft.emptySlot")}</span>
-            </li>
-          ),
-        )}
-      </ul>
+      {drafted.length > 0 && (
+        <div className="mt-3">
+          <FormationPitch drafted={drafted} compact />
+        </div>
+      )}
     </div>
   );
 }
