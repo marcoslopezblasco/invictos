@@ -200,6 +200,26 @@ function resolvePenalties(
 }
 
 /** Opponents for all 7 matches (deterministic; same as simulateTournament historico). */
+/** Fill missing opponent fields on saved results (same seed as original sim). */
+export function enrichHistoricMatches(
+  matches: MatchResult[],
+  teamName: string,
+  drafted: DraftedPlayer[],
+): MatchResult[] {
+  const fixtures = buildHistoricalFixtures(teamName, drafted);
+  const byStage = new Map(fixtures.map((f) => [f.stage, f]));
+  return matches.map((m) => {
+    const f = byStage.get(m.stage);
+    if (!f) return m;
+    return {
+      ...m,
+      opponentCountry: m.opponentCountry ?? f.opponentCountry,
+      opponentWorldCup: m.opponentWorldCup ?? f.opponentWorldCup,
+      opponentFlagCode: m.opponentFlagCode ?? f.opponentFlagCode,
+    };
+  });
+}
+
 export function buildHistoricalFixtures(
   teamName: string,
   drafted: DraftedPlayer[],

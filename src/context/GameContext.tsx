@@ -38,7 +38,8 @@ interface GameContextValue {
   gameState: GameState | null;
   eligible: PlayerAppearance[];
   startGame: (teamName?: string) => void;
-  playAgain: () => void;
+  /** Clear active run and return user to home (mode selection). */
+  exitToHome: () => void;
   rollInitialSpin: () => void;
   commitInitialSpin: (spin: Spin) => void;
   commitReroll: (spin: Spin) => void;
@@ -92,15 +93,11 @@ export function GameProvider({
     [mode, locale],
   );
 
-  const playAgain = useCallback(() => {
+  const exitToHome = useCallback(() => {
     clearActiveGame();
-    const id = newGameId();
-    const name = pickRandomTeamName(locale);
-    const state = createInitialGameState(id, name, mode, locale, null);
-    setGameState(state);
+    setGameState(null);
     setSpinCounter(0);
-    saveActiveGame({ gameStateJson: JSON.stringify(state) });
-  }, [mode, locale]);
+  }, []);
 
   const commitInitialSpin = useCallback(
     (spin: Spin) => {
@@ -218,7 +215,7 @@ export function GameProvider({
     gameState,
     eligible,
     startGame,
-    playAgain,
+    exitToHome,
     rollInitialSpin,
     commitInitialSpin,
     commitReroll,

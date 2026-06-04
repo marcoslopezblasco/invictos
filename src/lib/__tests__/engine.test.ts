@@ -10,6 +10,7 @@ import {
 import {
   simulateTournament,
   simulateMatchScore,
+  enrichHistoricMatches,
   STAGES,
   CLASSIC_MODE_DIFFICULTY_BONUS,
 } from "../simulation";
@@ -227,6 +228,20 @@ describe("simulation", () => {
       }
     }
     expect(found).toBe(true);
+  });
+
+  it("enrichHistoricMatches backfills opponents on saved rows", () => {
+    const xi = buildFixtureXI();
+    const raw = simulateTournament("Enrich FC", xi, "en", "historico");
+    const stripped = raw.matches.map((m) => ({
+      ...m,
+      opponentCountry: undefined,
+      opponentWorldCup: undefined,
+      opponentFlagCode: undefined,
+    }));
+    const enriched = enrichHistoricMatches(stripped, "Enrich FC", xi);
+    expect(enriched.every((m) => m.opponentCountry)).toBe(true);
+    expect(enriched[0]?.opponentCountry).toBe(raw.matches[0]?.opponentCountry);
   });
 
   it("historico mode assigns real opponents from stage pools", () => {

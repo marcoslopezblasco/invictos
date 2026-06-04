@@ -3,32 +3,10 @@
 import type { Language, MatchResult, MatchStage } from "@/types/simulation";
 import { getCountryDisplayName } from "@/lib/data";
 import { t } from "@/lib/i18n";
+import { getStageLabel } from "@/lib/stages";
 import { CountryFlag } from "./CountryFlag";
 
-const STAGE_LABELS: Record<Language, Record<MatchStage, string>> = {
-  es: {
-    GROUP_1: "Grupo J1",
-    GROUP_2: "Grupo J2",
-    GROUP_3: "Grupo J3",
-    R16: "Octavos",
-    QF: "Cuartos",
-    SF: "Semifinal",
-    FINAL: "Final",
-  },
-  en: {
-    GROUP_1: "Group M1",
-    GROUP_2: "Group M2",
-    GROUP_3: "Group M3",
-    R16: "Round of 16",
-    QF: "Quarter-finals",
-    SF: "Semi-final",
-    FINAL: "Final",
-  },
-};
-
-export function getStageLabel(locale: Language, stage: MatchStage): string {
-  return STAGE_LABELS[locale][stage] ?? stage;
-}
+export { getStageLabel } from "@/lib/stages";
 
 function resultLine(m: MatchResult, locale: Language): string | null {
   const score = `${m.goalsFor}-${m.goalsAgainst}`;
@@ -50,16 +28,26 @@ export function MatchSchedule({
   locale,
   matches,
   preview = false,
+  compact = false,
+  showHeading = true,
+  abstract = false,
 }: {
   locale: Language;
   matches: MatchResult[];
   preview?: boolean;
+  /** Tighter rows for results page (stage + opponent + score). */
+  compact?: boolean;
+  showHeading?: boolean;
+  /** Classic/Blind: stage + score only. */
+  abstract?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <h2 className="text-sm font-bold uppercase tracking-wide text-[var(--accent-gold)]">
-        {t(locale, preview ? "sim.fixturesPreview" : "sim.fixtures")}
-      </h2>
+      {showHeading && (
+        <h2 className="text-sm font-bold uppercase tracking-wide text-[var(--accent-gold)]">
+          {t(locale, preview ? "sim.fixturesPreview" : "sim.fixtures")}
+        </h2>
+      )}
       {matches.map((m) => {
         const opponent = m.opponentCountry;
         const displayName = opponent
@@ -67,6 +55,53 @@ export function MatchSchedule({
           : null;
         const year = m.opponentWorldCup;
         const result = preview ? null : resultLine(m, locale);
+        const label = getStageLabel(locale, m.stage);
+
+        if (compact && abstract) {
+          return (
+            <div
+              key={m.stage}
+              className="flex items-center justify-between gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm"
+            >
+              <span className="font-bold text-[var(--accent-gold)]">{label}</span>
+              {result && (
+                <span className="shrink-0 font-mono font-bold">{result}</span>
+              )}
+            </div>
+          );
+        }
+
+        if (compact && displayName) {
+          return (
+            <div
+              key={m.stage}
+              className="flex items-center justify-between gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2"
+            >
+              <div className="min-w-0 flex-1">
+                <div className="text-[10px] font-bold uppercase tracking-wide text-[var(--accent-gold)]">
+                  {label}
+                </div>
+                <div className="mt-0.5 flex min-w-0 items-center gap-1.5">
+                  <span className="text-[10px] font-semibold text-[var(--text-muted)]">
+                    {t(locale, "sim.vs")}
+                  </span>
+                  <CountryFlag country={opponent!} size={18} />
+                  <span className="truncate text-xs font-bold">
+                    {displayName}
+                    {year != null && (
+                      <span className="ml-1 font-black tabular-nums text-[var(--accent-gold)]">
+                        {year}
+                      </span>
+                    )}
+                  </span>
+                </div>
+              </div>
+              {result && (
+                <span className="shrink-0 font-mono text-sm font-bold">{result}</span>
+              )}
+            </div>
+          );
+        }
 
         return (
           <div
@@ -74,7 +109,7 @@ export function MatchSchedule({
             className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2.5"
           >
             <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-              {getStageLabel(locale, m.stage)}
+              {label}
             </div>
             {displayName ? (
               <div className="mt-1 flex items-center justify-between gap-2">

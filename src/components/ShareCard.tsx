@@ -1,66 +1,53 @@
 "use client";
 
-import { useRef } from "react";
-import { toPng } from "html-to-image";
+import { useRef, useMemo } from "react";
 import type { SavedResult } from "@/lib/storage";
 import { t } from "@/lib/i18n";
-import { getFlagCodeForCountry } from "@/lib/data";
+import { getCountryDisplayName } from "@/lib/data";
+import { getStageLabel } from "@/lib/stages";
 import { draftedFromSavedResult } from "@/lib/result-draft";
 import { FormationPitch } from "./FormationPitch";
-import { useMemo } from "react";
-import { getCountryDisplayName } from "@/lib/data";
-import { getStageLabel } from "./MatchSchedule";
+import { buildShareMessage, getPublicSiteUrl } from "@/lib/share";
+import { SocialShareButtons } from "./SocialShareButtons";
 
 export function ShareCard({ result }: { result: SavedResult }) {
   const ref = useRef<HTMLDivElement>(null);
   const locale = result.language;
   const tr = result.tournament;
+  const siteUrl = getPublicSiteUrl();
+  const shareText = useMemo(() => buildShareMessage(result), [result]);
   const drafted = useMemo(
     () => draftedFromSavedResult(result),
     [result],
   );
 
-  const downloadImage = async () => {
-    if (!ref.current) return;
-    const dataUrl = await toPng(ref.current, { pixelRatio: 2 });
-    const a = document.createElement("a");
-    a.href = dataUrl;
-    a.download = `invictos-${result.id}.png`;
-    a.click();
-  };
-
-  const copyText = () => {
-    const lines = [
-      "INVICTOS",
-      result.teamName,
-      result.formation,
-      ...result.appearances.map((a) => {
-        const code = getFlagCodeForCountry(a.country);
-        const prefix = code ? `[${code.toUpperCase()}]` : a.country;
-        return `${prefix} ${a.displayName}`;
-      }),
-      t(locale, `badge.${result.badge}`),
-      `PJ ${tr.played} | PG ${tr.wins} | PE ${tr.draws} | PP ${tr.losses}`,
-      `GF ${tr.goalsFor} | GC ${tr.goalsAgainst} | DG ${tr.goalDifference >= 0 ? "+" : ""}${tr.goalDifference}`,
-      ...(result.mode === "historico"
-        ? tr.matches
-            .filter((m) => m.opponentCountry)
-            .map(
-              (m) =>
-                `${getStageLabel(locale, m.stage)}: ${getCountryDisplayName(m.opponentCountry!, locale)}${m.opponentWorldCup ? ` ${m.opponentWorldCup}` : ""} ${m.goalsFor}-${m.goalsAgainst}`,
-            )
-        : []),
-      t(locale, "share.cta"),
-      "invictos.app",
-    ];
-    navigator.clipboard.writeText(lines.join("\n"));
-  };
+  const displayHost = siteUrl.replace(/^https?:\/\//, "");
 
   return (
-    <div className="flex flex-col gap-3">
+    <section className="flex flex-col gap-4">
+      <div className="rounded-2xl border border-[var(--accent-gold)]/30 bg-[var(--bg-card)] p-4 text-center">
+        <p className="text-xs font-bold uppercase tracking-widest text-[var(--accent-gold)]">
+          {t(locale, "share.challengeLabel")}
+        </p>
+        <h2 className="mt-2 text-xl font-black leading-tight text-white sm:text-2xl">
+          {t(locale, "share.challenge")}
+        </h2>
+        <p className="mt-2 text-sm text-[var(--text-muted)]">
+          {t(locale, "share.subtitle")}
+        </p>
+        <a
+          href={siteUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 inline-block text-sm font-bold text-[var(--accent)] underline decoration-[var(--accent)]/40 underline-offset-4"
+        >
+          {displayHost} →
+        </a>
+      </div>
+
       <div
         ref={ref}
-        className="paper-texture mx-auto w-full max-w-sm rounded-2xl border-2 border-amber-800/40 p-5 text-amber-950"
+        className="paper-texture mx-auto w-full max-w-sm rounded-2xl border-2 border-amber-800/40 p-5 text-amber-950 shadow-lg"
       >
         <div className="text-center text-xs font-bold tracking-widest text-amber-900/60">
           INVICTOS
@@ -73,6 +60,9 @@ export function ShareCard({ result }: { result: SavedResult }) {
         <div className="mt-4 text-center text-sm font-black text-amber-900">
           🏆 {t(locale, `badge.${result.badge}`)}
         </div>
+        <p className="mt-1 text-center text-xs font-bold tabular-nums text-amber-800">
+          {result.score} pts
+        </p>
         <p className="mt-2 text-center text-xs font-mono">
           PJ {tr.played} | PG {tr.wins} | PE {tr.draws} | PP {tr.losses}
         </p>
@@ -93,34 +83,27 @@ export function ShareCard({ result }: { result: SavedResult }) {
                     {m.opponentWorldCup ? ` ${m.opponentWorldCup}` : ""}
                   </span>
                   <span className="font-mono">
+                    {m.result === "W" ? "✓" : m.result === "D" ? "=" : "✗"}{" "}
                     {m.goalsFor}-{m.goalsAgainst}
                   </span>
                 </li>
               ))}
           </ul>
         )}
-        <p className="mt-3 text-center text-xs font-semibold">
-          {t(locale, "share.cta")}
-        </p>
-        <p className="text-center text-[10px] text-amber-900/50">invictos.app</p>
+        <div className="mt-4 rounded-xl border border-amber-900/20 bg-amber-950/5 px-3 py-3 text-center">
+          <p className="text-sm font-black leading-snug text-amber-950">
+            {t(locale, "share.challenge")}
+          </p>
+          <p className="mt-1 text-[11px] font-bold text-amber-900/70">{displayHost}</p>
+        </div>
       </div>
 
-      <div className="flex gap-2">
-        <button
-          type="button"
-          onClick={copyText}
-          className="flex-1 rounded-xl border border-[var(--border)] py-3 text-sm font-semibold"
-        >
-          {t(locale, "result.copy")}
-        </button>
-        <button
-          type="button"
-          onClick={downloadImage}
-          className="flex-1 rounded-xl bg-[var(--accent)] py-3 text-sm font-bold text-white"
-        >
-          {t(locale, "result.share")}
-        </button>
-      </div>
-    </div>
+      <SocialShareButtons
+        locale={locale}
+        shareText={shareText}
+        cardRef={ref}
+        resultId={result.id}
+      />
+    </section>
   );
 }

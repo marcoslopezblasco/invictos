@@ -16,7 +16,7 @@ export default function ResultPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
-  const { locale: ctxLocale, playAgain } = useGame();
+  const { locale: ctxLocale, exitToHome } = useGame();
   const [result, setResult] = useState<SavedResult | null>(null);
 
   useEffect(() => {
@@ -79,25 +79,25 @@ export default function ResultPage() {
         {tr.narrative}
       </p>
 
-      <SimulationResult tournament={tr} locale={locale} />
+      <SimulationResult
+        tournament={tr}
+        locale={locale}
+        mode={result.mode}
+        teamName={result.teamName}
+        drafted={drafted}
+      />
       <ShareCard result={result} />
 
       <button
         type="button"
         onClick={() => {
-          playAgain();
-          router.push("/play");
+          exitToHome();
+          router.push("/");
         }}
         className="w-full rounded-2xl bg-[var(--accent)] py-4 text-lg font-bold text-white"
       >
         {t(locale, "result.playAgain")}
       </button>
-      <Link
-        href="/"
-        className="block text-center text-sm text-[var(--text-muted)] underline"
-      >
-        {t(locale, "app.title")}
-      </Link>
     </div>
   );
 }
